@@ -18,19 +18,25 @@ echo "=================================================="
 
 # 1. Step 1: Run Local Dataset Acquisition (Ticket 2.1)
 echo ""
-echo "[Step 1/2] Acquiring & Staging Raw Datasets..."
+echo "[Step 1/3] Acquiring & Staging Raw Datasets..."
 python3 scripts/stage_raw_datasets.py --local-only
 
 # 2. Step 2: Run Local ETL Processing Pipeline (Ticket 2.2)
 echo ""
-echo "[Step 2/2] Running ETL Pipeline to generate processed scheme catalog..."
+echo "[Step 2/3] Running ETL Pipeline to generate processed scheme catalog..."
 python3 scripts/etl_load_schemes.py
+
+# 3. Step 3: Run BigQuery Schema Validation (Ticket 2.3)
+echo ""
+echo "[Step 3/3] Validating processed catalog against BigQuery schema..."
+python3 scripts/load_bigquery.py --dry-run
 
 echo ""
 echo "=================================================="
-echo "✓ Data Preparation Complete!"
+echo "✓ Data Pipeline & BigQuery Schema Validation Complete!"
 echo "  Processed Catalog: data/processed/schemes_women.json"
 echo "  CSV Export:        data/processed/schemes_women.csv"
+echo "  BigQuery DDL SQL:  scripts/schema_schemes_women.sql"
 echo "=================================================="
 echo ""
 echo "💡 Quick Start Commands for Backend & Frontend:"

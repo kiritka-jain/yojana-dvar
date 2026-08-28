@@ -25,7 +25,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"maternal\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301271+00:00"
+    "updated_at": "2026-08-28T14:12:15.917770+00:00"
   },
   {
     "scheme_id": "ssy-central",
@@ -53,7 +53,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301482+00:00"
+    "updated_at": "2026-08-28T14:12:15.917934+00:00"
   },
   {
     "scheme_id": "step-central",
@@ -81,7 +81,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301505+00:00"
+    "updated_at": "2026-08-28T14:12:15.917949+00:00"
   },
   {
     "scheme_id": "standup-india-women",
@@ -109,7 +109,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301519+00:00"
+    "updated_at": "2026-08-28T14:12:15.917961+00:00"
   },
   {
     "scheme_id": "ignwps-pension",
@@ -137,7 +137,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301532+00:00"
+    "updated_at": "2026-08-28T14:12:15.917972+00:00"
   },
   {
     "scheme_id": "kanya-sumangala-up",
@@ -165,7 +165,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301545+00:00"
+    "updated_at": "2026-08-28T14:12:15.917982+00:00"
   },
   {
     "scheme_id": "pudhumai-penn-tn",
@@ -193,7 +193,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301557+00:00"
+    "updated_at": "2026-08-28T14:12:15.917992+00:00"
   },
   {
     "scheme_id": "kanyashree-wb",
@@ -221,7 +221,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301569+00:00"
+    "updated_at": "2026-08-28T14:12:15.918003+00:00"
   },
   {
     "scheme_id": "ladli-behna-mp",
@@ -249,7 +249,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301581+00:00"
+    "updated_at": "2026-08-28T14:12:15.918013+00:00"
   },
   {
     "scheme_id": "pm-ujjwala-yojana",
@@ -277,7 +277,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301592+00:00"
+    "updated_at": "2026-08-28T14:12:15.918022+00:00"
   },
   {
     "scheme_id": "hf-scheme-001",
@@ -305,7 +305,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\", \"single_girl_child\", \"higher_education\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301912+00:00"
+    "updated_at": "2026-08-28T14:12:15.918186+00:00"
   },
   {
     "scheme_id": "hf-scheme-002",
@@ -333,7 +333,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"financial_security\", \"savings\", \"all_women\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301930+00:00"
+    "updated_at": "2026-08-28T14:12:15.918198+00:00"
   },
   {
     "scheme_id": "hf-scheme-003",
@@ -361,6 +361,6 @@
     "requires_disability": false,
     "life_stage_tags": "[\"working_women\", \"housing\", \"entrepreneur\", \"urban\"]",
     "is_active": true,
-    "updated_at": "2026-08-28T13:48:38.301944+00:00"
+    "updated_at": "2026-08-28T14:12:15.918209+00:00"
   }
 ]
