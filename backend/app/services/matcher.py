@@ -1,0 +1,194 @@
+import json
+import os
+import time
+import uuid
+from typing import List, Dict, Any, Tuple
+from app.models.profile import ProfileInput, SchemeMatchResult, MatchResponse
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+PROCESSED_CATALOG_PATH = os.path.join(BASE_DIR, "data", "processed", "schemes_women.json")
+
+class EligibilityMatcher:
+    """Deterministic rule-based eligibility match engine for Yojana Dvar."""
+
+    def __init__(self, catalog_path: str = PROCESSED_CATALOG_PATH):
+        self.catalog_path = catalog_path
+        self._catalog_cache: List[Dict[str, Any]] = []
+
+    def get_catalog(self) -> List[Dict[str, Any]]:
+        """Loads and caches scheme catalog from processed JSON storage."""
+        if not self._catalog_cache:
+            if os.path.exists(self.catalog_path):
+                with open(self.catalog_path, "r", encoding="utf-8") as f:
+                    self._catalog_cache = json.load(f)
+            else:
+                self._catalog_cache = []
+        return self._catalog_cache
+
+    def evaluate_scheme(self, profile: ProfileInput, scheme: Dict[str, Any]) -> Tuple[bool, int, List[str]]:
+        """
+        Evaluates hard eligibility rules and computes ranking score.
+        Returns: (is_eligible, match_score, match_reasons)
+        """
+        reasons = []
+        
+        # 1. Active Status Check
+        if not scheme.get("is_active", True):
+            return False, 0, []
+
+        # 2. Gender Rule Check
+        scheme_gender = str(scheme.get("gender", "Female")).strip().lower()
+        user_gender = profile.gender.strip().lower()
+        if scheme_gender not in ["all", "female", "women"] and scheme_gender != user_gender:
+            return False, 0, []
+
+        # 3. Age Bounds Check
+        age_min = int(scheme.get("age_min", 0))
+        age_max = int(scheme.get("age_max", 100))
+        if not (age_min <= profile.age <= age_max):
+            return False, 0, []
+        reasons.append(f"Age {profile.age} is within eligible range ({age_min}–{age_max} years)")
+
+        # 4. State Coverage Check
+        scheme_state = str(scheme.get("state", "All")).strip()
+        eligible_states_raw = scheme.get("eligible_states", "[\"All\"]")
+        try:
+            eligible_states = json.loads(eligible_states_raw) if isinstance(eligible_states_raw, str) else eligible_states_raw
+        except Exception:
+            eligible_states = ["All"]
+
+        user_state = profile.state.strip()
+        state_matched = False
+        if scheme_state.lower() in ["all", "all india"] or "All" in eligible_states:
+            state_matched = True
+            reasons.append("Available central scheme across all States/UTs")
+        elif scheme_state.lower() == user_state.lower() or any(st.lower() == user_state.lower() for st in eligible_states):
+            state_matched = True
+            reasons.append(f"Targeted state scheme for residents of {user_state}")
+            
+        if not state_matched:
+            return False, 0, []
+
+        # 5. Caste Category Check
+        caste_raw = scheme.get("caste_categories", "[\"All\"]")
+        try:
+            caste_categories = json.loads(caste_raw) if isinstance(caste_raw, str) else caste_raw
+        except Exception:
+            caste_categories = ["All"]
+
+        user_caste = profile.caste.strip()
+        caste_matched = "All" in caste_categories or any(c.lower() == user_caste.lower() for c in caste_categories)
+        if not caste_matched:
+            return False, 0, []
+
+        # 6. Max Income Limit Check
+        income_max = int(scheme.get("income_max", 0))
+        if income_max > 0 and profile.income > income_max:
+            return False, 0, []
+        if income_max > 0:
+            reasons.append(f"Annual income (Rs {profile.income:,}) is within cap (Rs {income_max:,})")
+
+        # 7. Residence Type Check
+        scheme_residence = str(scheme.get("residence", "All")).strip().lower()
+        user_residence = profile.residence.strip().lower()
+        if scheme_residence != "all" and user_residence != "all" and scheme_residence != user_residence:
+            return False, 0, []
+
+        # 8. BPL Requirement Check
+        requires_bpl = bool(scheme.get("requires_bpl", False))
+        if requires_bpl and not profile.is_bpl:
+            return False, 0, []
+        if requires_bpl and profile.is_bpl:
+            reasons.append("Eligible under Below Poverty Line (BPL) entitlement priority")
+
+        # 9. Disability Requirement Check
+        requires_disability = bool(scheme.get("requires_disability", False))
+        if requires_disability and not profile.has_disability:
+            return False, 0, []
+
+        # ----------------------------------------------------------------------
+        # Weighted Scoring Algorithm (Section 7.3)
+        # ----------------------------------------------------------------------
+        score = 50  # Base score for passing all hard rules
+        
+        # Life Stage Boost (+30)
+        tags_raw = scheme.get("life_stage_tags", "[\"general\"]")
+        try:
+            life_stage_tags = json.loads(tags_raw) if isinstance(tags_raw, str) else tags_raw
+        except Exception:
+            life_stage_tags = ["general"]
+            
+        user_life_stage = profile.life_stage.strip().lower()
+        if any(tag.lower() == user_life_stage for tag in life_stage_tags):
+            score += 30
+            reasons.append(f"Directly matches your target life stage ('{profile.life_stage}')")
+
+        # State Specificity Boost (+20)
+        if scheme_state.lower() == user_state.lower() and scheme_state.lower() != "all":
+            score += 20
+
+        # Income Targeting Boost (+10)
+        if income_max > 0:
+            score += 10
+            
+        # Cap score at 100%
+        final_score = min(score, 100)
+        return True, final_score, reasons
+
+    def match_profile(self, profile: ProfileInput) -> MatchResponse:
+        """Runs match engine against input profile and returns ranked results."""
+        start_time = time.time()
+        catalog = self.get_catalog()
+        
+        eligible_results: List[SchemeMatchResult] = []
+        
+        for scheme in catalog:
+            is_eligible, score, reasons = self.evaluate_scheme(profile, scheme)
+            if is_eligible:
+                res = SchemeMatchResult(
+                    scheme_id=scheme.get("scheme_id", ""),
+                    name=scheme.get("name", ""),
+                    description=scheme.get("description", ""),
+                    ministry=scheme.get("ministry", ""),
+                    department=scheme.get("department", ""),
+                    state=scheme.get("state", "All"),
+                    category=scheme.get("category", ""),
+                    beneficiary_type=scheme.get("beneficiary_type", ""),
+                    benefits=scheme.get("benefits", ""),
+                    eligibility_text=scheme.get("eligibility_text", ""),
+                    documents_required=scheme.get("documents_required", ""),
+                    application_process=scheme.get("application_process", ""),
+                    apply_url=scheme.get("apply_url", ""),
+                    official_url=scheme.get("official_url", ""),
+                    age_min=int(scheme.get("age_min", 0)),
+                    age_max=int(scheme.get("age_max", 100)),
+                    gender=scheme.get("gender", "Female"),
+                    caste_categories=str(scheme.get("caste_categories", "[\"All\"]")),
+                    income_max=int(scheme.get("income_max", 0)),
+                    residence=scheme.get("residence", "All"),
+                    eligible_states=str(scheme.get("eligible_states", "[\"All\"]")),
+                    requires_bpl=bool(scheme.get("requires_bpl", False)),
+                    requires_disability=bool(scheme.get("requires_disability", False)),
+                    life_stage_tags=str(scheme.get("life_stage_tags", "[\"general\"]")),
+                    is_active=bool(scheme.get("is_active", True)),
+                    match_score=score,
+                    match_reasons=reasons
+                )
+                eligible_results.append(res)
+
+        # Sort by match_score descending, then scheme_id
+        eligible_results.sort(key=lambda s: (-s.match_score, s.scheme_id))
+        
+        # Limit results
+        top_results = eligible_results[:profile.limit]
+        elapsed_ms = round((time.time() - start_time) * 1000, 2)
+        
+        return MatchResponse(
+            match_id=str(uuid.uuid4()),
+            count=len(top_results),
+            schemes=top_results,
+            execution_time_ms=elapsed_ms
+        )
+
+# Global Matcher Singleton Instance
+matcher_service = EligibilityMatcher()

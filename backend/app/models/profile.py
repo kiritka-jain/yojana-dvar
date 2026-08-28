@@ -1,0 +1,54 @@
+from typing import List, Optional
+from pydantic import BaseModel, Field
+
+class ProfileInput(BaseModel):
+    """Demographic input model for eligibility matching."""
+    state: str = Field(default="All", description="User's state of residence")
+    age: int = Field(default=25, ge=0, le=120, description="User's age in years")
+    gender: str = Field(default="Female", description="User's gender (Female, Male, Other)")
+    caste: str = Field(default="General", description="Caste category (General, SC, ST, OBC)")
+    income: int = Field(default=0, ge=0, description="Annual family income in INR")
+    residence: str = Field(default="All", description="Residence type (Rural, Urban, All)")
+    life_stage: str = Field(default="general", description="Life stage tag (student, maternal, entrepreneur, senior, general)")
+    occupation: Optional[str] = Field(default="", description="User's current occupation")
+    education: Optional[str] = Field(default="", description="Highest education level")
+    is_bpl: bool = Field(default=False, description="Below Poverty Line cardholder flag")
+    has_disability: bool = Field(default=False, description="Disability flag")
+    limit: int = Field(default=10, ge=1, le=50, description="Max number of matched schemes to return")
+
+class SchemeMatchResult(BaseModel):
+    """Matched scheme output model with confidence score and match reasons."""
+    scheme_id: str
+    name: str
+    description: str
+    ministry: str
+    department: str
+    state: str
+    category: str
+    beneficiary_type: str
+    benefits: str
+    eligibility_text: str
+    documents_required: str
+    application_process: str
+    apply_url: str
+    official_url: str
+    age_min: int
+    age_max: int
+    gender: str
+    caste_categories: str
+    income_max: int
+    residence: str
+    eligible_states: str
+    requires_bpl: bool
+    requires_disability: bool
+    life_stage_tags: str
+    is_active: bool
+    match_score: int = Field(description="Normalized match confidence score (0-100%)")
+    match_reasons: List[str] = Field(default=[], description="Key reasons why user qualifies for scheme")
+
+class MatchResponse(BaseModel):
+    """Envelope response model for /match API endpoint."""
+    match_id: str
+    count: int
+    schemes: List[SchemeMatchResult]
+    execution_time_ms: float
