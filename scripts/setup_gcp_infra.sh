@@ -2,19 +2,22 @@
 set -e
 
 # ==============================================================================
-# Setup script for Yojana Dvar GCP Infrastructure (Ticket 1.2)
+# Setup script for Yojana Dvar GCP Infrastructure (Tickets 1.2 & 2.1)
 # Provisions:
 #   1. BigQuery dataset 'yojana_dvar' in region asia-south1
-#   2. Secret Manager secret 'gemini-api-key'
-#   3. Cloud Run Service Account 'yojana-dvar-runner' with IAM roles:
+#   2. Cloud Storage bucket 'yojana-dvar-raw' for raw scheme datasets
+#   3. Secret Manager secret 'gemini-api-key'
+#   4. Cloud Run Service Account 'yojana-dvar-runner' with IAM roles:
 #      - roles/bigquery.dataViewer
 #      - roles/bigquery.jobUser
 #      - roles/secretmanager.secretAccessor
+#      - roles/storage.objectViewer
 # ==============================================================================
 
 PROJECT_ID="${GCP_PROJECT_ID:-$(gcloud config get-value project 2>/dev/null || echo "")}"
 REGION="${GCP_REGION:-asia-south1}"
 DATASET_NAME="yojana_dvar"
+BUCKET_NAME="${GCS_RAW_BUCKET:-yojana-dvar-raw}"
 SECRET_NAME="gemini-api-key"
 SA_NAME="yojana-dvar-runner"
 
@@ -28,19 +31,21 @@ echo "=================================================="
 echo "Initializing GCP Infrastructure for Yojana Dvar"
 echo "Project ID: $PROJECT_ID"
 echo "Region:     $REGION"
+echo "Bucket:     gs://$BUCKET_NAME"
 echo "=================================================="
 
 # 1. Enable required GCP APIs
-echo "[1/5] Enabling GCP Service APIs..."
+echo "[1/6] Enabling GCP Service APIs..."
 gcloud services enable \
   bigquery.googleapis.com \
+  storage.googleapis.com \
   secretmanager.googleapis.com \
   run.googleapis.com \
   iam.googleapis.com \
   --project="$PROJECT_ID"
 
 # 2. Create BigQuery Dataset
-echo "[2/5] Creating BigQuery dataset '$DATASET_NAME' in location '$REGION'..."
+echo "[2/6] Creating BigQuery dataset '$DATASET_NAME' in location '$REGION'..."
 if bq show --project_id="$PROJECT_ID" "$DATASET_NAME" >/dev/null 2>&1; then
   echo "✓ BigQuery dataset '$DATASET_NAME' already exists."
 else
@@ -51,8 +56,19 @@ else
   echo "✓ BigQuery dataset '$DATASET_NAME' created successfully."
 fi
 
-# 3. Create Secret Manager Secret
-echo "[3/5] Creating Secret Manager secret '$SECRET_NAME'..."
+# 3. Create Cloud Storage Staging Bucket
+echo "[3/6] Creating Cloud Storage bucket 'gs://$BUCKET_NAME'..."
+if gcloud storage buckets describe "gs://$BUCKET_NAME" --project="$PROJECT_ID" >/dev/null 2>&1; then
+  echo "✓ Bucket 'gs://$BUCKET_NAME' already exists."
+else
+  gcloud storage buckets create "gs://$BUCKET_NAME" \
+    --location="$REGION" \
+    --project="$PROJECT_ID" || true
+  echo "✓ Bucket 'gs://$BUCKET_NAME' created or verified."
+fi
+
+# 4. Create Secret Manager Secret
+echo "[4/6] Creating Secret Manager secret '$SECRET_NAME'..."
 if gcloud secrets describe "$SECRET_NAME" --project="$PROJECT_ID" >/dev/null 2>&1; then
   echo "✓ Secret '$SECRET_NAME' already exists."
 else
@@ -64,9 +80,9 @@ else
   echo "  echo -n 'YOUR_API_KEY' | gcloud secrets versions add $SECRET_NAME --data-file=- --project=$PROJECT_ID"
 fi
 
-# 4. Create Service Account for Cloud Run
+# 5. Create Service Account for Cloud Run
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
-echo "[4/5] Creating Service Account '$SA_NAME'..."
+echo "[5/6] Creating Service Account '$SA_NAME'..."
 if gcloud iam service-accounts describe "$SA_EMAIL" --project="$PROJECT_ID" >/dev/null 2>&1; then
   echo "✓ Service account '$SA_EMAIL' already exists."
 else
@@ -76,12 +92,13 @@ else
   echo "✓ Service account '$SA_EMAIL' created."
 fi
 
-# 5. Bind IAM Roles
-echo "[5/5] Binding IAM roles to Service Account '$SA_EMAIL'..."
+# 6. Bind IAM Roles
+echo "[6/6] Binding IAM roles to Service Account '$SA_EMAIL'..."
 ROLES=(
   "roles/bigquery.dataViewer"
   "roles/bigquery.jobUser"
   "roles/secretmanager.secretAccessor"
+  "roles/storage.objectViewer"
 )
 
 for ROLE in "${ROLES[@]}"; do
@@ -97,6 +114,7 @@ echo "=================================================="
 echo "✓ GCP Infrastructure Setup Complete!"
 echo "Summary:"
 echo "  - BigQuery Dataset: $PROJECT_ID:$DATASET_NAME ($REGION)"
+echo "  - GCS Raw Bucket:   gs://$BUCKET_NAME"
 echo "  - Secret Manager:   $SECRET_NAME"
 echo "  - Service Account:  $SA_EMAIL"
 echo "=================================================="

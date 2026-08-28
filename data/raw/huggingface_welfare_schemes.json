@@ -1,0 +1,97 @@
+[
+  {
+    "hf_id": "hf-scheme-001",
+    "title": "Post Graduate Indira Gandhi Scholarship for Single Girl Child",
+    "organization": "University Grants Commission (UGC) / Ministry of Education",
+    "geography": "All India",
+    "domain": "Higher Education",
+    "summary": "Scholarship of Rs 36,200 per annum for 2 years to support single girl child pursuing PG degree courses in non-professional streams.",
+    "eligibility": {
+      "gender": "Female",
+      "single_child": true,
+      "min_age": 18,
+      "max_age": 30,
+      "max_income": 500000,
+      "course": "Post Graduate 1st Year"
+    },
+    "benefits_text": "Rs 3,100 per month (Rs 36,200 p.a.) for 2 years duration of PG course.",
+    "documents": [
+      "Proof of Single Girl Child (Affidavit on stamp paper)",
+      "Aadhaar Card",
+      "Graduation Marksheet",
+      "PG Admission Verification"
+    ],
+    "urls": {
+      "apply": "https://scholarships.gov.in/",
+      "portal": "https://www.ugc.gov.in/"
+    },
+    "tags": [
+      "student",
+      "single_girl_child",
+      "higher_education"
+    ]
+  },
+  {
+    "hf_id": "hf-scheme-002",
+    "title": "Mahila Samman Savings Certificate (MSSC)",
+    "organization": "Department of Posts / Ministry of Finance",
+    "geography": "All India",
+    "domain": "Financial Security & Savings",
+    "summary": "One-time small savings scheme for women and girls offering guaranteed 7.5% fixed interest per annum for a 2-year tenor.",
+    "eligibility": {
+      "gender": "Female",
+      "min_age": 0,
+      "max_age": 100,
+      "max_income": 0,
+      "requires_bpl": false
+    },
+    "benefits_text": "7.5% fixed interest rate compounded quarterly. Deposit up to Rs 2 Lakhs. Partial withdrawal up to 40% allowed after 1 year.",
+    "documents": [
+      "Aadhaar Card",
+      "PAN Card",
+      "KYC Form",
+      "Passport size photo"
+    ],
+    "urls": {
+      "apply": "https://www.indiapost.gov.in/",
+      "portal": "https://www.indiapost.gov.in/"
+    },
+    "tags": [
+      "financial_security",
+      "savings",
+      "all_women"
+    ]
+  },
+  {
+    "hf_id": "hf-scheme-003",
+    "title": "Working Women Hostel Scheme (Sakhi Niwas)",
+    "organization": "Ministry of Women and Child Development",
+    "geography": "All India",
+    "domain": "Safe Housing & Employment Support",
+    "summary": "Safe, affordable hostel accommodation with day care facilities for children of working women in urban, semi-urban, and rural areas.",
+    "eligibility": {
+      "gender": "Female",
+      "min_age": 18,
+      "max_age": 60,
+      "max_income": 500000,
+      "occupation": "Working Women / Job Seekers / Trainees"
+    },
+    "benefits_text": "Subsidized secure lodging, daycare center (Crèche) for children up to 8 years, mess facilities, and 24/7 security.",
+    "documents": [
+      "Employment Certificate / Salary Slip",
+      "Aadhaar Card",
+      "Passport photo",
+      "Identity Card from Employer"
+    ],
+    "urls": {
+      "apply": "https://wcd.nic.in/schemes/working-women-hostel",
+      "portal": "https://wcd.nic.in/"
+    },
+    "tags": [
+      "working_women",
+      "housing",
+      "entrepreneur",
+      "urban"
+    ]
+  }
+]
