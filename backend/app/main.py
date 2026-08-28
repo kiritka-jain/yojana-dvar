@@ -7,6 +7,7 @@ from app.config import settings
 from app.routers.health import router as health_router
 from app.routers.match import router as match_router
 from app.routers.schemes import router as schemes_router
+from app.routers.personas import router as personas_router
 
 # Configure Structured Logging (Cloud Logging compatible)
 logging.basicConfig(
@@ -46,6 +47,7 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(match_router)
 app.include_router(schemes_router)
+app.include_router(personas_router)
 
 if __name__ == "__main__":
     import uvicorn

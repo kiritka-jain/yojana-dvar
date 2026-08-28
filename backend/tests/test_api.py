@@ -61,3 +61,16 @@ def test_search_schemes_with_state_filter():
     data = response.json()
     assert "count" in data
     assert "schemes" in data
+
+def test_get_personas_endpoint():
+    """Verify GET /personas returns array of 3 structured persona objects."""
+    response = client.get("/personas")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 3
+    persona_ids = [p["id"] for p in data]
+    assert "priya" in persona_ids
+    assert "sunita" in persona_ids
+    assert "lakshmi" in persona_ids
+    assert "profile" in data[0]
