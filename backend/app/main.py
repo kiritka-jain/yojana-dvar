@@ -9,7 +9,7 @@ from app.routers.match import router as match_router
 from app.routers.schemes import router as schemes_router
 from app.routers.personas import router as personas_router
 from app.routers.explain import router as explain_router
-from app.routers.user import router as user_router
+from app.routers.user import auth_router, user_router
 
 from app.services.gemini import gemini_service
 from app.auth import init_firebase_admin
@@ -59,6 +59,8 @@ app.include_router(match_router)
 app.include_router(schemes_router)
 app.include_router(personas_router)
 app.include_router(explain_router)
+app.include_router(auth_router)
+app.include_router(auth_router, prefix="/api/v1", include_in_schema=False)
 app.include_router(user_router)
 app.include_router(user_router, prefix="/api/v1", include_in_schema=False)
 
