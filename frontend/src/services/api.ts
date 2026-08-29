@@ -39,8 +39,8 @@ export interface SchemeMatchResult {
   requires_disability?: boolean;
   life_stage_tags?: string;
   is_active?: boolean;
-  match_score: number;
-  match_reasons: string[];
+  match_score?: number;
+  match_reasons?: string[];
 }
 
 export interface MatchResponse {
@@ -76,6 +76,28 @@ export async function matchSchemes(profile: ProfileInput): Promise<MatchResponse
     throw new Error(`Scheme matching request failed (${response.status}): ${errorBody}`);
   }
 
+  return response.json();
+}
+
+export async function searchSchemes(q = '', state = '', category = '', limit = 20): Promise<{ count: number; schemes: SchemeMatchResult[] }> {
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (state) params.set('state', state);
+  if (category) params.set('category', category);
+  params.set('limit', String(limit));
+
+  const response = await fetch(`${API_BASE_URL}/schemes/search?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch scheme search results (${response.status})`);
+  }
+  return response.json();
+}
+
+export async function getSchemeById(schemeId: string): Promise<SchemeMatchResult> {
+  const response = await fetch(`${API_BASE_URL}/schemes/${encodeURIComponent(schemeId)}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch scheme details for ${schemeId} (${response.status})`);
+  }
   return response.json();
 }
 
@@ -152,4 +174,43 @@ export async function fetchDemoPersonas(): Promise<DemoPersona[]> {
       }
     }
   ];
+}
+
+// ----------------------------------------------------------------------------
+// Local Bookmark Management
+// ----------------------------------------------------------------------------
+
+const BOOKMARKS_STORAGE_KEY = 'yojana_saved_bookmarks';
+
+export function getLocalBookmarks(): string[] {
+  try {
+    const raw = localStorage.getItem(BOOKMARKS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function isLocalBookmarked(schemeId: string): boolean {
+  const bookmarks = getLocalBookmarks();
+  return bookmarks.includes(schemeId);
+}
+
+export function toggleLocalBookmark(schemeId: string): boolean {
+  const bookmarks = getLocalBookmarks();
+  const index = bookmarks.indexOf(schemeId);
+  let isSaved = false;
+
+  if (index >= 0) {
+    bookmarks.splice(index, 1);
+    isSaved = false;
+  } else {
+    bookmarks.push(schemeId);
+    isSaved = true;
+  }
+
+  localStorage.setItem(BOOKMARKS_STORAGE_KEY, JSON.stringify(bookmarks));
+  // Dispatch custom window event so all UI components update reactively
+  window.dispatchEvent(new Event('yojana_bookmarks_updated'));
+  return isSaved;
 }

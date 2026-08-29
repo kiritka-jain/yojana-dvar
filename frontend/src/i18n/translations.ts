@@ -112,6 +112,31 @@ export interface TranslationDictionary {
   wizardSubmitBtn: string;
   wizardMatchingLoading: string;
 
+  // Results Page & SchemeCard
+  resultsTitle: string;
+  resultsSubtitle: string;
+  resultsFoundCount: string;
+  resultsExecutionTime: string;
+  resultsRefineProfile: string;
+  filterAllCategories: string;
+  filterCategory: string;
+  filterScope: string;
+  filterScopeAll: string;
+  filterScopeCentral: string;
+  filterScopeState: string;
+  sortLabel: string;
+  sortHighestMatch: string;
+  sortNameAsc: string;
+  searchInResults: string;
+  cardMatchScore: string;
+  cardWhyYouQualify: string;
+  cardKeyBenefits: string;
+  cardViewDetails: string;
+  emptyResultsTitle: string;
+  emptyResultsDesc: string;
+  emptyResetFilters: string;
+  emptyBackToWizard: string;
+
   // Footer & Disclaimer
   footerDisclaimer: string;
   footerRights: string;
@@ -202,8 +227,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldIncome: "Annual Household Income (₹)",
     fieldIncomeHelper: "Estimated yearly income of your immediate family",
     fieldResidence: "Residence Area",
-    fieldResidenceRural: "Rural (गाँव / ग्रामीण)",
-    fieldResidenceUrban: "Urban (शहर / नगरीय)",
+    fieldResidenceRural: "Rural (गाँव / Rural)",
+    fieldResidenceUrban: "Urban (शहर / Urban)",
     fieldResidenceSemiUrban: "Semi-Urban (कस्बा)",
     fieldResidenceAll: "Any / All Area",
 
@@ -226,6 +251,31 @@ export const translations: Record<Language, TranslationDictionary> = {
     wizardEdit: "Edit",
     wizardSubmitBtn: "Find My Eligible Schemes",
     wizardMatchingLoading: "Matching against 100+ schemes with 9-rule engine...",
+
+    // Results Page
+    resultsTitle: "Your Eligible Welfare Schemes",
+    resultsSubtitle: "Ranked by our 9-rule deterministic engine based on your demographic profile",
+    resultsFoundCount: "Eligible Schemes Found",
+    resultsExecutionTime: "Matched in",
+    resultsRefineProfile: "Refine Profile in Wizard",
+    filterAllCategories: "All Categories",
+    filterCategory: "Category",
+    filterScope: "Scope",
+    filterScopeAll: "All Schemes",
+    filterScopeCentral: "Central Only",
+    filterScopeState: "State Only",
+    sortLabel: "Sort by",
+    sortHighestMatch: "Highest Match Score",
+    sortNameAsc: "Scheme Name (A-Z)",
+    searchInResults: "Filter schemes by keyword...",
+    cardMatchScore: "Match",
+    cardWhyYouQualify: "Why you qualify:",
+    cardKeyBenefits: "Key Benefits:",
+    cardViewDetails: "View Scheme Details",
+    emptyResultsTitle: "No Schemes Found for Selected Filters",
+    emptyResultsDesc: "No welfare schemes currently match your active filter criteria. Try clearing search keywords or widening your filters.",
+    emptyResetFilters: "Reset All Filters",
+    emptyBackToWizard: "Adjust Profile in Wizard",
 
     footerDisclaimer: "Disclaimer: Yojana Dvar is an informational gateway and not an official government agency. Eligibility criteria and disbursements are subject to official guidelines on respective nodal portals.",
     footerRights: "© 2026 Yojana Dvar. Open-source civic tech built for Indian women welfare empowerment.",
@@ -338,6 +388,31 @@ export const translations: Record<Language, TranslationDictionary> = {
     wizardEdit: "संपादित करें",
     wizardSubmitBtn: "मेरी पात्र योजनाएं खोजें",
     wizardMatchingLoading: "100+ योजनाओं और 9 नियमों से आपकी पात्रता जांची जा रही है...",
+
+    // Results Page
+    resultsTitle: "आपकी पात्र सरकारी योजनाएं",
+    resultsSubtitle: "आपकी जनसांख्यिकीय प्रोफ़ाइल के आधार पर 9-नियम इंजन द्वारा क्रमबद्ध",
+    resultsFoundCount: "पात्र योजनाएं मिलीं",
+    resultsExecutionTime: "गणना समय:",
+    resultsRefineProfile: "विज़ार्ड में प्रोफ़ाइल बदलें",
+    filterAllCategories: "सभी श्रेणियां",
+    filterCategory: "श्रेणी",
+    filterScope: "दायरा",
+    filterScopeAll: "सभी योजनाएं",
+    filterScopeCentral: "केवल केंद्रीय",
+    filterScopeState: "केवल राज्य",
+    sortLabel: "क्रमबद्ध करें",
+    sortHighestMatch: "उच्चतम पात्रता स्कोर",
+    sortNameAsc: "योजना का नाम (A-Z)",
+    searchInResults: "कीवर्ड द्वारा फ़िल्टर करें...",
+    cardMatchScore: "पात्रता",
+    cardWhyYouQualify: "आप क्यों पात्र हैं:",
+    cardKeyBenefits: "मुख्य लाभ:",
+    cardViewDetails: "योजना का पूर्ण विवरण",
+    emptyResultsTitle: "चयनित फ़िल्टर के लिए कोई योजना नहीं मिली",
+    emptyResultsDesc: "वर्तमान में आपकी फ़िल्टर शर्तों से कोई योजना मेल नहीं खाती। कृपया फ़िल्टर रीसेट करें या विज़ार्ड में प्रोफ़ाइल बदलें।",
+    emptyResetFilters: "सभी फ़िल्टर रीसेट करें",
+    emptyBackToWizard: "विज़ार्ड में प्रोफ़ाइल बदलें",
 
     footerDisclaimer: "अस्वीकरण: योजना द्वार एक सूचनात्मक मंच है, सरकारी एजेंसी नहीं। पात्रता व लाभ की अंतिम पुष्टि संबंधित आधिकारिक सरकारी पोर्टल पर की जानी चाहिए।",
     footerRights: "© 2026 योजना द्वार। भारतीय महिला कल्याण और डिजिटल समावेशन के लिए समर्पित।",
