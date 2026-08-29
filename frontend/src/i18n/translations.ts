@@ -59,6 +59,59 @@ export interface TranslationDictionary {
   tagCentral: string;
   tagState: string;
 
+  // Wizard Stepper & Steps
+  wizardTitle: string;
+  wizardSubtitle: string;
+  wizardPersonaLoaded: string;
+  wizardStep1Title: string;
+  wizardStep1Subtitle: string;
+  wizardStep2Title: string;
+  wizardStep2Subtitle: string;
+  wizardStep3Title: string;
+  wizardStep3Subtitle: string;
+  wizardStep4Title: string;
+  wizardStep4Subtitle: string;
+
+  // Wizard Form Fields
+  fieldState: string;
+  fieldStatePlaceholder: string;
+  fieldAge: string;
+  fieldAgeHelper: string;
+  fieldGender: string;
+  fieldGenderFemale: string;
+  fieldGenderTransgender: string;
+  fieldGenderAll: string;
+
+  fieldCaste: string;
+  fieldIncome: string;
+  fieldIncomeHelper: string;
+  fieldResidence: string;
+  fieldResidenceRural: string;
+  fieldResidenceUrban: string;
+  fieldResidenceSemiUrban: string;
+  fieldResidenceAll: string;
+
+  fieldLifeStage: string;
+  fieldLifeStageStudent: string;
+  fieldLifeStageMaternal: string;
+  fieldLifeStageEntrepreneur: string;
+  fieldLifeStageSenior: string;
+  fieldLifeStageGeneral: string;
+
+  fieldBpl: string;
+  fieldBplHelper: string;
+  fieldDisability: string;
+  fieldDisabilityHelper: string;
+  fieldYes: string;
+  fieldNo: string;
+
+  // Wizard Review & Submit
+  wizardSummaryTitle: string;
+  wizardSummarySubtitle: string;
+  wizardEdit: string;
+  wizardSubmitBtn: string;
+  wizardMatchingLoading: string;
+
   // Footer & Disclaimer
   footerDisclaimer: string;
   footerRights: string;
@@ -123,6 +176,57 @@ export const translations: Record<Language, TranslationDictionary> = {
     tagCentral: "Central Scheme",
     tagState: "State Scheme",
 
+    // Wizard
+    wizardTitle: "Scheme Eligibility Wizard",
+    wizardSubtitle: "Answer a few simple questions to find all government welfare benefits you qualify for.",
+    wizardPersonaLoaded: "Demo persona pre-loaded. Feel free to adjust any fields or proceed.",
+    wizardStep1Title: "Basic Information",
+    wizardStep1Subtitle: "State of residence, age, and gender identity",
+    wizardStep2Title: "Socio-Economic Profile",
+    wizardStep2Subtitle: "Caste category, family income, and residence location",
+    wizardStep3Title: "Life Stage & Priority Status",
+    wizardStep3Subtitle: "Current stage of life, ration card, and disability status",
+    wizardStep4Title: "Review & Find Schemes",
+    wizardStep4Subtitle: "Confirm your demographic profile to calculate eligibility",
+
+    fieldState: "Select Your State / UT",
+    fieldStatePlaceholder: "-- Choose your State --",
+    fieldAge: "Your Age (in Years)",
+    fieldAgeHelper: "Schemes have specific age criteria (e.g. 0-10 for SSY, 19-45 for PMMVY)",
+    fieldGender: "Gender",
+    fieldGenderFemale: "Female (महिला)",
+    fieldGenderTransgender: "Transgender (किन्नर / तृतीय लिंग)",
+    fieldGenderAll: "All (सभी)",
+
+    fieldCaste: "Social Category / Caste",
+    fieldIncome: "Annual Household Income (₹)",
+    fieldIncomeHelper: "Estimated yearly income of your immediate family",
+    fieldResidence: "Residence Area",
+    fieldResidenceRural: "Rural (गाँव / ग्रामीण)",
+    fieldResidenceUrban: "Urban (शहर / नगरीय)",
+    fieldResidenceSemiUrban: "Semi-Urban (कस्बा)",
+    fieldResidenceAll: "Any / All Area",
+
+    fieldLifeStage: "Current Life Stage",
+    fieldLifeStageStudent: "Student / Education",
+    fieldLifeStageMaternal: "Pregnant / Lactating Mother",
+    fieldLifeStageEntrepreneur: "Self-Employed / Business",
+    fieldLifeStageSenior: "Widow / Senior Citizen",
+    fieldLifeStageGeneral: "General / Other",
+
+    fieldBpl: "Do you hold a Below Poverty Line (BPL) or Antyodaya Ration Card?",
+    fieldBplHelper: "Many central schemes offer priority grants to BPL families",
+    fieldDisability: "Do you have a recognized Disability (PwD)?",
+    fieldDisabilityHelper: "40%+ benchmark disability qualifies for special assistive pensions and devices",
+    fieldYes: "Yes (हाँ)",
+    fieldNo: "No (नहीं)",
+
+    wizardSummaryTitle: "Summary of Your Profile",
+    wizardSummarySubtitle: "Our 9-rule match engine will filter and rank schemes against these parameters",
+    wizardEdit: "Edit",
+    wizardSubmitBtn: "Find My Eligible Schemes",
+    wizardMatchingLoading: "Matching against 100+ schemes with 9-rule engine...",
+
     footerDisclaimer: "Disclaimer: Yojana Dvar is an informational gateway and not an official government agency. Eligibility criteria and disbursements are subject to official guidelines on respective nodal portals.",
     footerRights: "© 2026 Yojana Dvar. Open-source civic tech built for Indian women welfare empowerment.",
     footerGovtPortals: "Official Portals: myScheme.gov.in • Ministry of Women & Child Development • Digital India",
@@ -183,6 +287,57 @@ export const translations: Record<Language, TranslationDictionary> = {
     tagEligible: "100% पात्र",
     tagCentral: "केंद्रीय योजना",
     tagState: "राज्य योजना",
+
+    // Wizard
+    wizardTitle: "सरकारी योजना पात्रता विज़ार्ड",
+    wizardSubtitle: "कुछ सरल प्रश्नों के उत्तर दें और उन सभी योजनाओं की सूची पाएं जिनके लिए आप पात्र हैं।",
+    wizardPersonaLoaded: "डेमो प्रोफाइल लोड हो गई है। आप इसे अपनी आवश्यकता अनुसार बदल सकते हैं।",
+    wizardStep1Title: "बुनियादी जानकारी",
+    wizardStep1Subtitle: "निवास राज्य, आपकी आयु और लिंग",
+    wizardStep2Title: "सामाजिक एवं आर्थिक स्थिति",
+    wizardStep2Subtitle: "जाति श्रेणी, वार्षिक पारिवारिक आय और निवास क्षेत्र",
+    wizardStep3Title: "जीवन का चरण एवं विशेष प्राथमिकता",
+    wizardStep3Subtitle: "वर्तमान जीवन चरण, बीपीएल राशन कार्ड और दिव्यांगता स्थिति",
+    wizardStep4Title: "पुष्टि करें और योजनाएं खोजें",
+    wizardStep4Subtitle: "अपनी पात्रता जांचने के लिए दर्ज की गई जानकारी की पुष्टि करें",
+
+    fieldState: "अपना राज्य / केंद्रशासित प्रदेश चुनें",
+    fieldStatePlaceholder: "-- अपना राज्य चुनें --",
+    fieldAge: "आपकी आयु (वर्ष में)",
+    fieldAgeHelper: "योजनाओं में विशिष्ट आयु सीमा होती है (जैसे सुकन्या के लिए 0-10, PMMVY के लिए 19-45 वर्ष)",
+    fieldGender: "लिंग",
+    fieldGenderFemale: "महिला (Female)",
+    fieldGenderTransgender: "किन्नर / तृतीय लिंग (Transgender)",
+    fieldGenderAll: "सभी (All)",
+
+    fieldCaste: "सामाजिक श्रेणी / जाति",
+    fieldIncome: "वार्षिक पारिवारिक आय (₹)",
+    fieldIncomeHelper: "आपके परिवार की कुल अनुमानित वार्षिक कमाई",
+    fieldResidence: "निवास क्षेत्र",
+    fieldResidenceRural: "ग्रामीण (गाँव / Rural)",
+    fieldResidenceUrban: "शहरी (शहर / Urban)",
+    fieldResidenceSemiUrban: "कस्बा (Semi-Urban)",
+    fieldResidenceAll: "कोई भी क्षेत्र (All)",
+
+    fieldLifeStage: "जीवन का मुख्य चरण",
+    fieldLifeStageStudent: "छात्रा / उच्च शिक्षा (Student)",
+    fieldLifeStageMaternal: "गर्भवती / धात्री माता (Maternal)",
+    fieldLifeStageEntrepreneur: "महिला उद्यमी / स्व-रोजगार (Business)",
+    fieldLifeStageSenior: "वरिष्ठ नागरिक / विधवा (Senior)",
+    fieldLifeStageGeneral: "सामान्य / अन्य (General)",
+
+    fieldBpl: "क्या आपके पास बीपीएल (BPL) या अंत्योदय राशन कार्ड है?",
+    fieldBplHelper: "कई केंद्रीय योजनाओं में बीपीएल परिवारों को सीधी प्राथमिकता मिलती है",
+    fieldDisability: "क्या आप दिव्यांग (PwD) श्रेणी में आते हैं?",
+    fieldDisabilityHelper: "40% या अधिक दिव्यांगता पर विशेष सहायता पेंशन व उपकरण उपलब्ध हैं",
+    fieldYes: "हाँ (Yes)",
+    fieldNo: "नहीं (No)",
+
+    wizardSummaryTitle: "आपकी प्रोफ़ाइल का सारांश",
+    wizardSummarySubtitle: "हमारा 9-नियम इंजन इन विवरणों के आधार पर योजनाओं की गणना करेगा",
+    wizardEdit: "संपादित करें",
+    wizardSubmitBtn: "मेरी पात्र योजनाएं खोजें",
+    wizardMatchingLoading: "100+ योजनाओं और 9 नियमों से आपकी पात्रता जांची जा रही है...",
 
     footerDisclaimer: "अस्वीकरण: योजना द्वार एक सूचनात्मक मंच है, सरकारी एजेंसी नहीं। पात्रता व लाभ की अंतिम पुष्टि संबंधित आधिकारिक सरकारी पोर्टल पर की जानी चाहिए।",
     footerRights: "© 2026 योजना द्वार। भारतीय महिला कल्याण और डिजिटल समावेशन के लिए समर्पित।",
