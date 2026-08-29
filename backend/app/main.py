@@ -8,6 +8,7 @@ from app.routers.health import router as health_router
 from app.routers.match import router as match_router
 from app.routers.schemes import router as schemes_router
 from app.routers.personas import router as personas_router
+from app.routers.explain import router as explain_router
 
 from app.services.gemini import gemini_service
 
@@ -54,6 +55,7 @@ app.include_router(health_router)
 app.include_router(match_router)
 app.include_router(schemes_router)
 app.include_router(personas_router)
+app.include_router(explain_router)
 
 if __name__ == "__main__":
     import uvicorn
