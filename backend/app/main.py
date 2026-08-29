@@ -9,6 +9,8 @@ from app.routers.match import router as match_router
 from app.routers.schemes import router as schemes_router
 from app.routers.personas import router as personas_router
 
+from app.services.gemini import gemini_service
+
 # Configure Structured Logging (Cloud Logging compatible)
 logging.basicConfig(
     level=logging.INFO,
@@ -21,6 +23,10 @@ logger = logging.getLogger("yojana_dvar")
 async def lifespan(app: FastAPI):
     """Application lifespan context manager."""
     logger.info(f"Starting {settings.APP_NAME} v{settings.VERSION} in {settings.ENVIRONMENT} mode.")
+    if gemini_service.is_available():
+        logger.info(f"Gemini AI Service ready (Model: {gemini_service.get_model_name()}).")
+    else:
+        logger.info("Gemini AI Service running in fallback mode (GEMINI_API_KEY not configured).")
     yield
     logger.info(f"Shutting down {settings.APP_NAME}.")
 
