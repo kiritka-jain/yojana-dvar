@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     GEMINI_SECRET_NAME: str = os.getenv("GEMINI_SECRET_NAME", "gemini-api-key")
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    GEMINI_TIMEOUT_SECONDS: float = float(os.getenv("GEMINI_TIMEOUT_SECONDS", "15.0"))
     
     # CORS Config
     ALLOWED_ORIGINS: List[str] = [

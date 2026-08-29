@@ -1,3 +1,5 @@
+import asyncio
+import concurrent.futures
 import json
 import logging
 import os
@@ -15,9 +17,10 @@ DISCLAIMER_HI = "अस्वीकरण: योजना द्वार क�
 
 class GeminiService:
     """
-    Service wrapper for Google Gemini API Client (Tickets 4.1 & 4.2).
+    Service wrapper for Google Gemini API Client (Tickets 4.1, 4.2 & 4.3).
     Securely resolves GEMINI_API_KEY from environment or GCP Secret Manager.
-    Generates plain-language multilingual eligibility explanations with guardrails.
+    Enforces strict 15-second timeout on Gemini API calls and provides resilient
+    static template fallbacks for zero-downtime UX.
     """
 
     def __init__(self):
@@ -25,6 +28,7 @@ class GeminiService:
         self.client: Optional[genai.Client] = None
         self.is_configured: bool = False
         self.model_name: str = settings.GEMINI_MODEL
+        self.timeout_seconds: float = settings.GEMINI_TIMEOUT_SECONDS
         self._initialize()
 
     def _resolve_api_key(self) -> Optional[str]:
@@ -175,10 +179,22 @@ Guardrails & Instructions:
             is_fallback=True
         )
 
-    def generate_explanation(self, scheme: Dict[str, Any], profile: ProfileInput, language: str = "en") -> ExplainResponse:
+    def _call_gemini_raw(self, prompt: str) -> Optional[str]:
+        """Internal worker calling Google GenAI client."""
+        if not self.client:
+            return None
+        response = self.client.models.generate_content(
+            model=self.model_name,
+            contents=prompt
+        )
+        return response.text if response else None
+
+    async def generate_explanation_async(
+        self, scheme: Dict[str, Any], profile: ProfileInput, language: str = "en"
+    ) -> ExplainResponse:
         """
-        Generates multilingual eligibility explanation using Gemini API (with static fallback).
-        Ticket 4.2 implementation.
+        Asynchronously generates multilingual eligibility explanation enforcing
+        a strict 15-second SLA timeout and fallback resilience (Ticket 4.3).
         """
         lang = "hi" if language.lower() in ["hi", "hindi"] else "en"
         disclaimer = DISCLAIMER_HI if lang == "hi" else DISCLAIMER_EN
@@ -190,13 +206,14 @@ Guardrails & Instructions:
         prompt = self._build_prompt(scheme, profile, lang)
 
         try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt
+            # Enforce 15-second timeout on Gemini API call
+            raw_text = await asyncio.wait_for(
+                asyncio.to_thread(self._call_gemini_raw, prompt),
+                timeout=self.timeout_seconds
             )
 
-            if response and response.text:
-                parsed = self._clean_json_response(response.text)
+            if raw_text:
+                parsed = self._clean_json_response(raw_text)
                 return ExplainResponse(
                     scheme_id=scheme.get("scheme_id", ""),
                     language=lang,
@@ -207,8 +224,55 @@ Guardrails & Instructions:
                     disclaimer=disclaimer,
                     is_fallback=False
                 )
+        except asyncio.TimeoutError:
+            logger.warning(
+                f"Gemini API call timed out after {self.timeout_seconds}s SLA. "
+                "Serving static fallback explanation to preserve user experience."
+            )
         except Exception as e:
-            logger.warning(f"Gemini API call failed: {e}. Falling back to static template.")
+            logger.warning(f"Gemini API call failed ({e}). Serving static fallback explanation.")
+
+        return self._generate_fallback_explanation(scheme, profile, lang)
+
+    def generate_explanation(
+        self, scheme: Dict[str, Any], profile: ProfileInput, language: str = "en"
+    ) -> ExplainResponse:
+        """
+        Synchronous wrapper enforcing 15-second timeout and fallback resilience.
+        """
+        lang = "hi" if language.lower() in ["hi", "hindi"] else "en"
+        disclaimer = DISCLAIMER_HI if lang == "hi" else DISCLAIMER_EN
+
+        if not self.is_available():
+            logger.info("Gemini API unavailable. Using static fallback explanation.")
+            return self._generate_fallback_explanation(scheme, profile, lang)
+
+        prompt = self._build_prompt(scheme, profile, lang)
+
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(self._call_gemini_raw, prompt)
+                raw_text = future.result(timeout=self.timeout_seconds)
+
+            if raw_text:
+                parsed = self._clean_json_response(raw_text)
+                return ExplainResponse(
+                    scheme_id=scheme.get("scheme_id", ""),
+                    language=lang,
+                    summary=parsed.get("summary", ""),
+                    key_benefits=parsed.get("key_benefits", [scheme.get("benefits", "")]),
+                    documents_required=parsed.get("documents_required", []),
+                    next_steps=parsed.get("next_steps", f"Apply at {scheme.get('apply_url', 'portal')}."),
+                    disclaimer=disclaimer,
+                    is_fallback=False
+                )
+        except concurrent.futures.TimeoutError:
+            logger.warning(
+                f"Gemini API call timed out after {self.timeout_seconds}s SLA. "
+                "Serving static fallback explanation to preserve user experience."
+            )
+        except Exception as e:
+            logger.warning(f"Gemini API call failed ({e}). Serving static fallback explanation.")
 
         return self._generate_fallback_explanation(scheme, profile, lang)
 

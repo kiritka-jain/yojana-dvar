@@ -40,14 +40,16 @@ async def explain_scheme_eligibility(request: ExplainRequest):
         )
 
     try:
-        explanation = gemini_service.generate_explanation(
+        explanation = await gemini_service.generate_explanation_async(
             scheme=target_scheme,
             profile=request.profile,
             language=request.language
         )
         return explanation
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to generate eligibility explanation: {str(e)}"
+        # Guarantee HTTP 200 with static fallback to protect UX (Ticket 4.3)
+        return gemini_service._generate_fallback_explanation(
+            scheme=target_scheme,
+            profile=request.profile,
+            lang=request.language
         )
