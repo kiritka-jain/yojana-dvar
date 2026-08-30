@@ -219,6 +219,23 @@ export interface TranslationDictionary {
   bookmarksSearchPlaceholder: string;
   bookmarksCountBadge: string;
 
+  // About Page (Ticket 6.8)
+  aboutTitle: string;
+  aboutSubtitle: string;
+  aboutMissionHeading: string;
+  aboutMissionP1: string;
+  aboutMissionP2: string;
+  aboutPillarsHeading: string;
+  aboutDataSourcesHeading: string;
+  aboutDataSourcesDesc: string;
+  aboutLegalDisclaimerHeading: string;
+  aboutLegalDisclaimerP1: string;
+  aboutLegalDisclaimerP2: string;
+  aboutLegalDisclaimerP3: string;
+  aboutOfficialPortalsHeading: string;
+  aboutCtaHeading: string;
+  aboutCtaButton: string;
+
   // Footer & Disclaimer
   footerDisclaimer: string;
   footerRights: string;
@@ -441,6 +458,23 @@ export const translations: Record<Language, TranslationDictionary> = {
     bookmarksSearchPlaceholder: "Filter saved schemes by title or keyword...",
     bookmarksCountBadge: "Saved Schemes",
 
+    // About Page (Ticket 6.8)
+    aboutTitle: "About Yojana Dvar (योजना द्वार)",
+    aboutSubtitle: "Empowering 700+ million Indian women with AI-guided welfare entitlement discovery, algorithmic transparency, and plain-language guidance.",
+    aboutMissionHeading: "Project Mission & Vision",
+    aboutMissionP1: "India maintains one of the world's most extensive social welfare safety nets, offering hundreds of central and state government schemes designed to uplift women across health, education, livelihood, maternity, and social security. However, complex eligibility guidelines, dense administrative jargon, and fragmented portals prevent millions of eligible beneficiaries from accessing the entitlements they rightfully deserve.",
+    aboutMissionP2: "Yojana Dvar (योजना द्वार) was created to bridge this critical discovery gap. Built as an open-source civic technology platform, it empowers citizens to input simple demographic attributes and instantaneously uncover welfare schemes they qualify for, accompanied by clear plain-language explanations in English and हिंदी.",
+    aboutPillarsHeading: "Core Architectural Pillars",
+    aboutDataSourcesHeading: "Data Sources & Public Attribution",
+    aboutDataSourcesDesc: "Our catalog is synthesized and cross-verified against official Indian government public domains and open data repositories. We gratefully attribute scheme metadata to:",
+    aboutLegalDisclaimerHeading: "Explicit Legal Advisory & Disclaimer",
+    aboutLegalDisclaimerP1: "Important Notice: Yojana Dvar is an independent open-source civic technology platform developed for public informational purposes. It is NOT an official government agency, department, or disbursement authority.",
+    aboutLegalDisclaimerP2: "Yojana Dvar does NOT collect application fees, does NOT process monetary transactions, does NOT issue approvals, and does NOT distribute benefits. All entitlement eligibility, quotas, budget sanction, and final disbursements are determined solely by the competent authorities of the Government of India and respective State Governments.",
+    aboutLegalDisclaimerP3: "Citizens must always submit their official applications and verify current eligibility guidelines on the designated nodal government portals (*.gov.in and *.nic.in). Yojana Dvar provides direct external links to these official portals for every listed scheme.",
+    aboutOfficialPortalsHeading: "Recognized Official Portals",
+    aboutCtaHeading: "Ready to Discover Your Eligible Entitlements?",
+    aboutCtaButton: "Find Schemes with Discovery Form",
+
     footerDisclaimer: "Disclaimer: Yojana Dvar is an informational gateway and not an official government agency. Eligibility criteria and disbursements are subject to official guidelines on respective nodal portals.",
     footerRights: "© 2026 Yojana Dvar. Open-source civic tech built for Indian women welfare empowerment.",
     footerGovtPortals: "Official Portals: myScheme.gov.in • Ministry of Women & Child Development • Digital India",
@@ -659,6 +693,23 @@ export const translations: Record<Language, TranslationDictionary> = {
     bookmarksExploreBtn: "सरकारी योजनाएं खोजें",
     bookmarksSearchPlaceholder: "सहेजी गई योजनाओं में खोजें...",
     bookmarksCountBadge: "सहेजी गई योजनाएं",
+
+    // About Page (Ticket 6.8)
+    aboutTitle: "योजना द्वार (Yojana Dvar) के बारे में",
+    aboutSubtitle: "एआई-संचालित योजना खोज, पारदर्शी एल्गोरिदम और सरल भाषा मार्गदर्शन के साथ 70 करोड़ से अधिक भारतीय महिलाओं का सशक्तिकरण।",
+    aboutMissionHeading: "परियोजना का उद्देश्य एवं विजन",
+    aboutMissionP1: "भारत सरकार और राज्य सरकारों द्वारा महिलाओं के शिक्षा, मातृत्व, आजीविका, स्वास्थ्य और सामाजिक सुरक्षा के लिए सैकड़ों कल्याणकारी योजनाएं चलाई जा रही हैं। परंतु जटिल प्रशासनिक शब्दावली, लंबी शर्तें और बिखरे हुए पोर्टलों के कारण करोड़ों पात्र महिलाएं इन अधिकारों से वंचित रह जाती हैं।",
+    aboutMissionP2: "योजना द्वार (Yojana Dvar) इसी अंतिम छोर की दूरी को पाटने के लिए बनाया गया एक मुक्त-स्रोत (Open-Source) जन-कल्याण मंच है। यहाँ नागरिक सरल जनसांख्यिकीय विवरण दर्ज करके तुरंत अपनी पात्र योजनाओं को खोज सकते हैं और जेमिनी एआई की मदद से हिंदी व अंग्रेजी में अपनी भाषा में समझ सकते हैं।",
+    aboutPillarsHeading: "मूल तकनीकी स्तंभ",
+    aboutDataSourcesHeading: "डेटा स्रोत एवं सार्वजनिक श्रेय",
+    aboutDataSourcesDesc: "हमारा योजना कैटलॉग भारत सरकार के आधिकारिक सार्वजनिक डोमेन और ओपन डेटा रिपॉजिटरी से एकत्रित और सत्यापित किया गया है:",
+    aboutLegalDisclaimerHeading: "विशिष्ट कानूनी सलाह एवं सार्वजनिक अस्वीकरण",
+    aboutLegalDisclaimerP1: "महत्वपूर्ण सूचना: योजना द्वार एक स्वतंत्र ओपन-सोर्स नागरिक तकनीक मंच है जो केवल जन-सूचना और जागरूकता के उद्देश्य से बनाया गया है। यह कोई आधिकारिक सरकारी एजेंसी, विभाग या संवितरण प्राधिकरण नहीं है।",
+    aboutLegalDisclaimerP2: "योजना द्वार किसी भी प्रकार का आवेदन शुल्क नहीं लेता, कोई वित्तीय लेन-देन नहीं करता और न ही प्रत्यक्ष लाभ वितरित करता है। किसी भी योजना की अंतिम पात्रता, बजट आवंटन और लाभ संवितरण का पूर्ण अधिकार केवल संबंधित केंद्र एवं राज्य सरकार के प्राधिकारियों के पास सुरक्षित है।",
+    aboutLegalDisclaimerP3: "नागरिकों को हमेशा संबंधित आधिकारिक सरकारी पोर्टलों (*.gov.in और *.nic.in) पर जाकर ही अंतिम पात्रता की पुष्टि करनी चाहिए और आवेदन प्रस्तुत करना चाहिए। योजना द्वार प्रत्येक योजना के लिए आधिकारिक पोर्टल का सीधा लिंक प्रदान करता है।",
+    aboutOfficialPortalsHeading: "मान्यता प्राप्त सरकारी पोर्टल",
+    aboutCtaHeading: "क्या आप अपने कल्याणकारी अधिकारों को खोजने के लिए तैयार हैं?",
+    aboutCtaButton: "पात्र योजनाएं खोजें",
 
     footerDisclaimer: "अस्वीकरण: योजना द्वार एक सूचनात्मक मंच है, सरकारी एजेंसी नहीं। पात्रता व लाभ की अंतिम पुष्टि संबंधित आधिकारिक सरकारी पोर्टल पर की जानी चाहिए।",
     footerRights: "© 2026 योजना द्वार। भारतीय महिला कल्याण और डिजिटल समावेशन के लिए समर्पित।",

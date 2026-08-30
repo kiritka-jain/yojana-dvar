@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { ShieldCheck, ExternalLink, Heart } from 'lucide-react';
 
@@ -119,7 +120,9 @@ export const Footer: React.FC = () => {
             <span>•</span>
             <span className="hover:text-charcoal-700 cursor-pointer">{t('footerTerms')}</span>
             <span>•</span>
-            <span className="hover:text-charcoal-700 cursor-pointer">{t('footerAbout')}</span>
+            <Link to="/about" className="hover:text-saffron-700 font-semibold hover:underline">
+              {t('footerAbout')}
+            </Link>
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { Results } from './pages/Results';
 import { SchemeDetail } from './pages/SchemeDetail';
 import { Bookmarks } from './pages/Bookmarks';
 import { Profile } from './pages/Profile';
+import { About } from './pages/About';
 
 export const App: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ export const App: React.FC = () => {
               <Route path="/schemes/:id" element={<SchemeDetail />} />
               <Route path="/bookmarks" element={<Bookmarks />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/about" element={<About />} />
               {/* Fallback to Home */}
               <Route path="*" element={<Home />} />
             </Routes>
