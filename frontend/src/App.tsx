@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './context/LanguageContext';
+import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 
@@ -13,14 +14,16 @@ import { Profile } from './pages/Profile';
 
 export const App: React.FC = () => {
   return (
-    <LanguageProvider>
-      <Router>
+    <AuthProvider>
+      <LanguageProvider>
+        <Router>
         <div className="flex flex-col min-h-screen bg-[#fdfbf7] text-[#1c1917]">
           <Navbar />
           
           <main className="flex-1">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/find" element={<Wizard />} />
               <Route path="/wizard" element={<Wizard />} />
               <Route path="/results" element={<Results />} />
               <Route path="/schemes/:id" element={<SchemeDetail />} />
@@ -34,7 +37,8 @@ export const App: React.FC = () => {
           <Footer />
         </div>
       </Router>
-    </LanguageProvider>
+      </LanguageProvider>
+    </AuthProvider>
   );
 };
 

@@ -104,6 +104,21 @@ export interface TranslationDictionary {
   fieldDisabilityHelper: string;
   fieldYes: string;
   fieldNo: string;
+  presetTitle: string;
+  presetSubtitle: string;
+  presetReset: string;
+  presetActive: string;
+  presetClear: string;
+  viewModeWizard: string;
+  viewModeAll: string;
+  validationErrorState: string;
+  validationErrorAge: string;
+  validationErrorIncome: string;
+  fieldAgeDirectInput: string;
+  fieldIncomeDirectInput: string;
+  fieldAdditionalInfo: string;
+  fieldOccupation: string;
+  fieldEducation: string;
 
   // Wizard Review & Submit
   wizardSummaryTitle: string;
@@ -124,18 +139,85 @@ export interface TranslationDictionary {
   filterScopeAll: string;
   filterScopeCentral: string;
   filterScopeState: string;
+  filterLifeStage: string;
+  filterLifeStageAll: string;
   sortLabel: string;
   sortHighestMatch: string;
   sortNameAsc: string;
+  sortMinistryAsc: string;
   searchInResults: string;
   cardMatchScore: string;
   cardWhyYouQualify: string;
   cardKeyBenefits: string;
   cardViewDetails: string;
+  cardApplyOfficial: string;
   emptyResultsTitle: string;
   emptyResultsDesc: string;
   emptyResetFilters: string;
   emptyBackToWizard: string;
+  resultsProfileSummary: string;
+  toastBookmarkSaved: string;
+  toastBookmarkRemoved: string;
+
+  // Scheme Detail Page
+  detailBackToResults: string;
+  detailNodalMinistry: string;
+  detailNodalDepartment: string;
+  detailKeyAttributes: string;
+  detailAgeLimit: string;
+  detailGender: string;
+  detailCaste: string;
+  detailIncomeLimit: string;
+  detailNoIncomeLimit: string;
+  detailResidence: string;
+  detailBplPriority: string;
+  detailDisabilityPriority: string;
+  detailLifeStageTags: string;
+  detailBenefitsTitle: string;
+  detailEligibilityTitle: string;
+  detailDocumentsTitle: string;
+  detailDocsChecklistHelp: string;
+  detailDocReady: string;
+  detailDocPending: string;
+  detailApplicationProcessTitle: string;
+  detailOfficialPortalCTA: string;
+  detailOfficialWebsite: string;
+  detailSchemeNotFound: string;
+  detailSchemeNotFoundDesc: string;
+
+  // AI Explanation Component
+  aiExplainTitle: string;
+  aiExplainSubtitle: string;
+  aiExplainLangToggle: string;
+  aiExplainTriggerBtn: string;
+  aiExplainLoadingTitle: string;
+  aiExplainLoadingDesc: string;
+  aiExplainSummaryTitle: string;
+  aiExplainBenefitsTitle: string;
+  aiExplainDocsTitle: string;
+  aiExplainNextStepsTitle: string;
+  aiExplainDisclaimerTitle: string;
+  aiExplainGeminiBadge: string;
+  aiExplainFallbackBadge: string;
+
+  // Bookmarks Page & Dashboard
+  bookmarksTitle: string;
+  bookmarksSubtitle: string;
+  bookmarksAuthPromptTitle: string;
+  bookmarksAuthPromptDesc: string;
+  bookmarksQuickSignIn: string;
+  bookmarksCustomSignIn: string;
+  bookmarksSignInBtn: string;
+  bookmarksRemoveBtn: string;
+  bookmarksProfileCardTitle: string;
+  bookmarksProfileCardDesc: string;
+  bookmarksFindWithProfile: string;
+  bookmarksRefineProfile: string;
+  bookmarksEmptyTitle: string;
+  bookmarksEmptyDesc: string;
+  bookmarksExploreBtn: string;
+  bookmarksSearchPlaceholder: string;
+  bookmarksCountBadge: string;
 
   // Footer & Disclaimer
   footerDisclaimer: string;
@@ -245,6 +327,21 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldDisabilityHelper: "40%+ benchmark disability qualifies for special assistive pensions and devices",
     fieldYes: "Yes (हाँ)",
     fieldNo: "No (नहीं)",
+    presetTitle: "Load Demo Persona",
+    presetSubtitle: "Instant 1-click test with real persona data",
+    presetReset: "Reset to Default",
+    presetActive: "Preset Active",
+    presetClear: "Clear Preset",
+    viewModeWizard: "Guided Steps",
+    viewModeAll: "All-in-One Form",
+    validationErrorState: "Please select your state or UT of residence.",
+    validationErrorAge: "Please enter a valid age between 0 and 110 years.",
+    validationErrorIncome: "Please enter a valid annual income (₹0 or higher).",
+    fieldAgeDirectInput: "Direct Age Input",
+    fieldIncomeDirectInput: "Direct Income Input (₹)",
+    fieldAdditionalInfo: "Additional Demographic Details (Optional)",
+    fieldOccupation: "Current Occupation",
+    fieldEducation: "Highest Education Level",
 
     wizardSummaryTitle: "Summary of Your Profile",
     wizardSummarySubtitle: "Our 9-rule match engine will filter and rank schemes against these parameters",
@@ -264,18 +361,85 @@ export const translations: Record<Language, TranslationDictionary> = {
     filterScopeAll: "All Schemes",
     filterScopeCentral: "Central Only",
     filterScopeState: "State Only",
+    filterLifeStage: "Life Stage",
+    filterLifeStageAll: "All Life Stages",
     sortLabel: "Sort by",
     sortHighestMatch: "Highest Match Score",
     sortNameAsc: "Scheme Name (A-Z)",
+    sortMinistryAsc: "Ministry (A-Z)",
     searchInResults: "Filter schemes by keyword...",
     cardMatchScore: "Match",
     cardWhyYouQualify: "Why you qualify:",
     cardKeyBenefits: "Key Benefits:",
     cardViewDetails: "View Scheme Details",
+    cardApplyOfficial: "Apply on Official Portal",
     emptyResultsTitle: "No Schemes Found for Selected Filters",
     emptyResultsDesc: "No welfare schemes currently match your active filter criteria. Try clearing search keywords or widening your filters.",
     emptyResetFilters: "Reset All Filters",
-    emptyBackToWizard: "Adjust Profile in Wizard",
+    emptyBackToWizard: "Adjust Profile in Discovery Form",
+    resultsProfileSummary: "Active Demographic Profile",
+    toastBookmarkSaved: "Scheme saved to your bookmarks!",
+    toastBookmarkRemoved: "Scheme removed from bookmarks",
+
+    // Scheme Detail Page
+    detailBackToResults: "Back to Matched Results",
+    detailNodalMinistry: "Nodal Ministry",
+    detailNodalDepartment: "Department",
+    detailKeyAttributes: "Eligibility Snapshot",
+    detailAgeLimit: "Age Limit",
+    detailGender: "Gender",
+    detailCaste: "Caste / Category",
+    detailIncomeLimit: "Income Ceiling",
+    detailNoIncomeLimit: "No Maximum Income Limit",
+    detailResidence: "Residence Scope",
+    detailBplPriority: "BPL Priority",
+    detailDisabilityPriority: "Disability (PwD) Priority",
+    detailLifeStageTags: "Life Stages",
+    detailBenefitsTitle: "Comprehensive Benefit Details",
+    detailEligibilityTitle: "Official Eligibility Criteria",
+    detailDocumentsTitle: "Required Document Checklist",
+    detailDocsChecklistHelp: "Check off the documents you have ready before applying online:",
+    detailDocReady: "Ready",
+    detailDocPending: "Pending",
+    detailApplicationProcessTitle: "How to Apply",
+    detailOfficialPortalCTA: "Apply on Official Portal",
+    detailOfficialWebsite: "Nodal Website",
+    detailSchemeNotFound: "Scheme Not Found",
+    detailSchemeNotFoundDesc: "The requested welfare scheme ID could not be located in our national catalog.",
+
+    // AI Explanation Component
+    aiExplainTitle: "Personalized AI Entitlement Explanation",
+    aiExplainSubtitle: "Powered by Gemini AI — Plain-language reasoning translated from complex administrative guidelines",
+    aiExplainLangToggle: "Explanation Language",
+    aiExplainTriggerBtn: "Explain My Eligibility",
+    aiExplainLoadingTitle: "Analyzing your profile with Gemini AI...",
+    aiExplainLoadingDesc: "Cross-referencing scheme guidelines against your demographic criteria in plain language.",
+    aiExplainSummaryTitle: "Plain-Language Eligibility Summary",
+    aiExplainBenefitsTitle: "Entitlements You Will Receive",
+    aiExplainDocsTitle: "Customized Verification Documents",
+    aiExplainNextStepsTitle: "Next Steps to Apply",
+    aiExplainDisclaimerTitle: "Official Advisory Notice",
+    aiExplainGeminiBadge: "Generated by Gemini 2.5 Flash",
+    aiExplainFallbackBadge: "Verified Deterministic Advisory",
+
+    // Bookmarks Page & Dashboard
+    bookmarksTitle: "My Saved Bookmarks",
+    bookmarksSubtitle: "Manage your shortlisted welfare schemes and synced demographic profile",
+    bookmarksAuthPromptTitle: "Sign In to Access Your Bookmarks",
+    bookmarksAuthPromptDesc: "Sign in to save and sync your eligible welfare benefits across all devices.",
+    bookmarksQuickSignIn: "Quick Demo Persona Sign In:",
+    bookmarksCustomSignIn: "Or Sign In with Email:",
+    bookmarksSignInBtn: "Sign In & Access Bookmarks",
+    bookmarksRemoveBtn: "Remove Bookmark",
+    bookmarksProfileCardTitle: "Saved Demographic Profile",
+    bookmarksProfileCardDesc: "Used for instantaneous personalized entitlement calculations",
+    bookmarksFindWithProfile: "Find Schemes with My Profile",
+    bookmarksRefineProfile: "Update Profile",
+    bookmarksEmptyTitle: "No Saved Bookmarks Yet",
+    bookmarksEmptyDesc: "Explore our nationwide catalog to find schemes you qualify for and save them here.",
+    bookmarksExploreBtn: "Discover Welfare Schemes",
+    bookmarksSearchPlaceholder: "Filter saved schemes by title or keyword...",
+    bookmarksCountBadge: "Saved Schemes",
 
     footerDisclaimer: "Disclaimer: Yojana Dvar is an informational gateway and not an official government agency. Eligibility criteria and disbursements are subject to official guidelines on respective nodal portals.",
     footerRights: "© 2026 Yojana Dvar. Open-source civic tech built for Indian women welfare empowerment.",
@@ -382,6 +546,21 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldDisabilityHelper: "40% या अधिक दिव्यांगता पर विशेष सहायता पेंशन व उपकरण उपलब्ध हैं",
     fieldYes: "हाँ (Yes)",
     fieldNo: "नहीं (No)",
+    presetTitle: "डेमो प्रोफाइल लोड करें",
+    presetSubtitle: "वास्तविक प्रोफाइल डेटा के साथ 1-क्लिक त्वरित परीक्षण",
+    presetReset: "डिफ़ॉल्ट पर रीसेट करें",
+    presetActive: "प्रीसेट सक्रिय",
+    presetClear: "प्रीसेट हटाएं",
+    viewModeWizard: "मार्गदर्शित चरण",
+    viewModeAll: "सभी प्रश्न एक साथ",
+    validationErrorState: "कृपया अपना निवास राज्य या केंद्र शासित प्रदेश चुनें।",
+    validationErrorAge: "कृपया 0 से 110 वर्ष के बीच एक मान्य आयु दर्ज करें।",
+    validationErrorIncome: "कृपया मान्य वार्षिक आय दर्ज करें (₹0 या अधिक)।",
+    fieldAgeDirectInput: "सीधे आयु दर्ज करें",
+    fieldIncomeDirectInput: "सीधे आय दर्ज करें (₹)",
+    fieldAdditionalInfo: "अतिरिक्त जनसांख्यिकीय विवरण (वैकल्पिक)",
+    fieldOccupation: "वर्तमान व्यवसाय",
+    fieldEducation: "उच्चतम शिक्षा स्तर",
 
     wizardSummaryTitle: "आपकी प्रोफ़ाइल का सारांश",
     wizardSummarySubtitle: "हमारा 9-नियम इंजन इन विवरणों के आधार पर योजनाओं की गणना करेगा",
@@ -401,18 +580,85 @@ export const translations: Record<Language, TranslationDictionary> = {
     filterScopeAll: "सभी योजनाएं",
     filterScopeCentral: "केवल केंद्रीय",
     filterScopeState: "केवल राज्य",
+    filterLifeStage: "जीवन चरण",
+    filterLifeStageAll: "सभी जीवन चरण",
     sortLabel: "क्रमबद्ध करें",
     sortHighestMatch: "उच्चतम पात्रता स्कोर",
     sortNameAsc: "योजना का नाम (A-Z)",
+    sortMinistryAsc: "मंत्रालय (A-Z)",
     searchInResults: "कीवर्ड द्वारा फ़िल्टर करें...",
     cardMatchScore: "पात्रता",
     cardWhyYouQualify: "आप क्यों पात्र हैं:",
     cardKeyBenefits: "मुख्य लाभ:",
     cardViewDetails: "योजना का पूर्ण विवरण",
+    cardApplyOfficial: "आधिकारिक पोर्टल पर आवेदन करें",
     emptyResultsTitle: "चयनित फ़िल्टर के लिए कोई योजना नहीं मिली",
-    emptyResultsDesc: "वर्तमान में आपकी फ़िल्टर शर्तों से कोई योजना मेल नहीं खाती। कृपया फ़िल्टर रीसेट करें या विज़ार्ड में प्रोफ़ाइल बदलें।",
+    emptyResultsDesc: "वर्तमान में आपकी फ़िल्टर शर्तों से कोई योजना मेल नहीं खाती। कृपया फ़िल्टर रीसेट करें या प्रोफ़ाइल बदलें।",
     emptyResetFilters: "सभी फ़िल्टर रीसेट करें",
-    emptyBackToWizard: "विज़ार्ड में प्रोफ़ाइल बदलें",
+    emptyBackToWizard: "खोज फ़ॉर्म में प्रोफ़ाइल बदलें",
+    resultsProfileSummary: "सक्रिय जनसांख्यिकीय प्रोफ़ाइल",
+    toastBookmarkSaved: "योजना आपकी सहेजी गई सूची में जोड़ी गई!",
+    toastBookmarkRemoved: "योजना सहेजी गई सूची से हटाई गई",
+
+    // Scheme Detail Page
+    detailBackToResults: "परिणामों पर वापस जाएं",
+    detailNodalMinistry: "नोडल मंत्रालय",
+    detailNodalDepartment: "विभाग",
+    detailKeyAttributes: "पात्रता संक्षिप्त विवरण",
+    detailAgeLimit: "आयु सीमा",
+    detailGender: "लिंग",
+    detailCaste: "जाति / सामाजिक श्रेणी",
+    detailIncomeLimit: "वार्षिक आय सीमा",
+    detailNoIncomeLimit: "कोई अधिकतम आय सीमा नहीं",
+    detailResidence: "निवास क्षेत्र",
+    detailBplPriority: "बीपीएल प्राथमिकता",
+    detailDisabilityPriority: "दिव्यांगता (PwD) प्राथमिकता",
+    detailLifeStageTags: "जीवन चरण",
+    detailBenefitsTitle: "विस्तृत लाभ एवं वित्तीय सहायता",
+    detailEligibilityTitle: "आधिकारिक पात्रता दिशानिर्देश",
+    detailDocumentsTitle: "आवश्यक दस्तावेजों की चेकलिस्ट",
+    detailDocsChecklistHelp: "आवेदन करने से पहले अपने उपलब्ध दस्तावेजों पर सही का निशान लगाएं:",
+    detailDocReady: "तैयार",
+    detailDocPending: "शेष",
+    detailApplicationProcessTitle: "आवेदन की प्रक्रिया",
+    detailOfficialPortalCTA: "आधिकारिक पोर्टल पर आवेदन करें",
+    detailOfficialWebsite: "आधिकारिक वेबसाइट",
+    detailSchemeNotFound: "योजना नहीं मिली",
+    detailSchemeNotFoundDesc: "अनुरोधित सरकारी योजना हमारे राष्ट्रीय कैटलॉग में नहीं मिली।",
+
+    // AI Explanation Component
+    aiExplainTitle: "व्यक्तिगत एआई पात्रता स्पष्टीकरण",
+    aiExplainSubtitle: "जेमिनी एआई द्वारा संचालित — जटिल सरकारी नियमों का आपकी सरल भाषा में स्पष्टीकरण",
+    aiExplainLangToggle: "स्पष्टीकरण की भाषा",
+    aiExplainTriggerBtn: "मेरी पात्रता एआई से समझें",
+    aiExplainLoadingTitle: "जेमिनी एआई द्वारा आपकी प्रोफ़ाइल का विश्लेषण किया जा रहा है...",
+    aiExplainLoadingDesc: "आपकी आयु, निवास और जीवन चरण के आधार पर सरल भाषा में व्याख्या तैयार हो रही है।",
+    aiExplainSummaryTitle: "सरल भाषा में पात्रता सारांश",
+    aiExplainBenefitsTitle: "आपको मिलने वाले मुख्य लाभ",
+    aiExplainDocsTitle: "आपके लिए आवश्यक दस्तावेज",
+    aiExplainNextStepsTitle: "आवेदन करने के अगले चरण",
+    aiExplainDisclaimerTitle: "आधिकारिक सलाह सूचना",
+    aiExplainGeminiBadge: "जेमिनी 2.5 फ्लैश द्वारा उत्पन्न",
+    aiExplainFallbackBadge: "सत्यापित प्रशासनिक सलाह",
+
+    // Bookmarks Page & Dashboard
+    bookmarksTitle: "मेरी सहेजी गई योजनाएं",
+    bookmarksSubtitle: "अपनी पसंदीदा योजनाओं और सहेजी गई प्रोफ़ाइल को प्रबंधित करें",
+    bookmarksAuthPromptTitle: "अपनी सहेजी गई योजनाएं देखने के लिए साइन इन करें",
+    bookmarksAuthPromptDesc: "सभी डिवाइसों पर अपनी पात्र योजनाओं और प्रोफ़ाइल को सुरक्षित रखने के लिए साइन इन करें।",
+    bookmarksQuickSignIn: "त्वरित डेमो प्रोफ़ाइल लॉगिन:",
+    bookmarksCustomSignIn: "या ईमेल द्वारा लॉगिन करें:",
+    bookmarksSignInBtn: "लॉगिन करें और सहेजी गई योजनाएं देखें",
+    bookmarksRemoveBtn: "सहेजी गई सूची से हटाएं",
+    bookmarksProfileCardTitle: "सहेजी गई जनसांख्यिकीय प्रोफ़ाइल",
+    bookmarksProfileCardDesc: "पात्रता की त्वरित व्यक्तिगत गणना हेतु उपयोग की जाने वाली प्रोफ़ाइल",
+    bookmarksFindWithProfile: "मेरी प्रोफ़ाइल से योजनाएं खोजें",
+    bookmarksRefineProfile: "प्रोफ़ाइल अपडेट करें",
+    bookmarksEmptyTitle: "अभी तक कोई योजना सहेजी नहीं गई है",
+    bookmarksEmptyDesc: "अपनी पात्रता जांचने के लिए योजनाओं का अन्वेषण करें और उन्हें यहाँ सहेजें।",
+    bookmarksExploreBtn: "सरकारी योजनाएं खोजें",
+    bookmarksSearchPlaceholder: "सहेजी गई योजनाओं में खोजें...",
+    bookmarksCountBadge: "सहेजी गई योजनाएं",
 
     footerDisclaimer: "अस्वीकरण: योजना द्वार एक सूचनात्मक मंच है, सरकारी एजेंसी नहीं। पात्रता व लाभ की अंतिम पुष्टि संबंधित आधिकारिक सरकारी पोर्टल पर की जानी चाहिए।",
     footerRights: "© 2026 योजना द्वार। भारतीय महिला कल्याण और डिजिटल समावेशन के लिए समर्पित।",

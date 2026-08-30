@@ -60,6 +60,23 @@ export interface DemoPersona {
   profile: ProfileInput;
 }
 
+export interface ExplainRequest {
+  scheme_id: string;
+  profile: ProfileInput;
+  language: string; // 'en' or 'hi'
+}
+
+export interface ExplainResponse {
+  scheme_id: string;
+  language: string;
+  summary: string;
+  key_benefits: string[];
+  documents_required: string[];
+  next_steps: string;
+  disclaimer: string;
+  is_fallback: boolean;
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export async function matchSchemes(profile: ProfileInput): Promise<MatchResponse> {
@@ -98,6 +115,23 @@ export async function getSchemeById(schemeId: string): Promise<SchemeMatchResult
   if (!response.ok) {
     throw new Error(`Failed to fetch scheme details for ${schemeId} (${response.status})`);
   }
+  return response.json();
+}
+
+export async function explainSchemeEligibility(request: ExplainRequest): Promise<ExplainResponse> {
+  const response = await fetch(`${API_BASE_URL}/explain`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`AI explanation request failed (${response.status}): ${errorBody}`);
+  }
+
   return response.json();
 }
 
@@ -214,3 +248,92 @@ export function toggleLocalBookmark(schemeId: string): boolean {
   window.dispatchEvent(new Event('yojana_bookmarks_updated'));
   return isSaved;
 }
+
+// ----------------------------------------------------------------------------
+// Backend User Profile & Bookmarks API (Ticket 5.3 & 6.7)
+// ----------------------------------------------------------------------------
+
+export async function fetchUserBookmarks(token: string): Promise<SchemeMatchResult[]> {
+  const response = await fetch(`${API_BASE_URL}/user/bookmarks`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user bookmarks (${response.status})`);
+  }
+
+  const data = await response.json();
+  // data.bookmarks contains enriched bookmark items
+  return (data.bookmarks || []).map((b: any) => b.scheme || {
+    scheme_id: b.scheme_id,
+    name: b.metadata?.name || b.scheme_id,
+    category: b.metadata?.category || 'General',
+    ministry: b.metadata?.ministry || 'Government of India',
+    benefits: 'Verified government entitlement',
+    state: 'All India',
+    match_score: 95
+  });
+}
+
+export async function addUserBookmark(schemeId: string, token: string): Promise<boolean> {
+  const response = await fetch(`${API_BASE_URL}/user/bookmarks`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ scheme_id: schemeId }),
+  });
+
+  return response.ok;
+}
+
+export async function removeUserBookmark(schemeId: string, token: string): Promise<boolean> {
+  const response = await fetch(`${API_BASE_URL}/user/bookmarks/${encodeURIComponent(schemeId)}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  return response.ok;
+}
+
+export async function fetchUserProfile(token: string): Promise<ProfileInput | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user/profile`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.profile || null;
+    }
+  } catch (err) {
+    console.warn("Could not fetch remote user profile:", err);
+  }
+  return null;
+}
+
+export async function saveUserProfile(profile: ProfileInput, token: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/user/profile`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ profile_id: 'default', profile }),
+    });
+
+    return response.ok;
+  } catch (err) {
+    console.warn("Failed to save remote profile:", err);
+    return false;
+  }
+}
+

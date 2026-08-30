@@ -24,7 +24,7 @@ export const Home: React.FC = () => {
     if (searchQuery.trim()) {
       navigate(`/results?q=${encodeURIComponent(searchQuery.trim())}`);
     } else {
-      navigate('/wizard');
+      navigate('/find');
     }
   };
 
@@ -254,7 +254,7 @@ export const Home: React.FC = () => {
               </div>
 
               <button
-                onClick={() => navigate(`/wizard?persona=${persona.id}`)}
+                onClick={() => navigate(`/find?persona=${persona.id}`)}
                 className="w-full py-2.5 px-4 rounded-xl border border-saffron-500 text-saffron-700 hover:bg-saffron-500 hover:text-white text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 group"
               >
                 <span>{t('personaMatchMe')}</span>
@@ -308,7 +308,7 @@ export const Home: React.FC = () => {
             </p>
           </div>
           <button
-            onClick={() => navigate('/wizard')}
+            onClick={() => navigate('/find')}
             className="flex-shrink-0 px-8 py-4 rounded-2xl bg-white text-saffron-700 hover:bg-cream-100 font-bold text-base shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-2"
           >
             <span>{t('heroStartWizard')}</span>

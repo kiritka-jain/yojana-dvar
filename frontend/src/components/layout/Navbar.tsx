@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 import { 
   Globe, 
   Bookmark, 
@@ -8,11 +9,13 @@ import {
   Menu, 
   X, 
   Sparkles,
-  User
+  User,
+  LogOut
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { language, toggleLanguage, t } = useLanguage();
+  const { currentUser, isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -61,9 +64,9 @@ export const Navbar: React.FC = () => {
             </Link>
 
             <Link
-              to="/wizard"
+              to="/find"
               className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                isActive('/wizard') || isActive('/results')
+                isActive('/find') || isActive('/wizard') || isActive('/results')
                   ? 'bg-forest-100/80 text-forest-800 font-semibold' 
                   : 'text-charcoal-700 hover:text-forest-700 hover:bg-cream-200'
               }`}
@@ -115,9 +118,40 @@ export const Navbar: React.FC = () => {
               </span>
             </button>
 
+            {/* User Auth Status Pill */}
+            {isAuthenticated && currentUser ? (
+              <div className="hidden sm:inline-flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-saffron-50 border border-saffron-200 text-xs">
+                {currentUser.avatarUrl ? (
+                  <img src={currentUser.avatarUrl} alt="" className="w-5 h-5 rounded-full" />
+                ) : (
+                  <User className="w-3.5 h-3.5 text-saffron-700" />
+                )}
+                <span className="font-semibold text-charcoal-800 max-w-[100px] truncate">
+                  {currentUser.displayName}
+                </span>
+                <button
+                  type="button"
+                  onClick={logout}
+                  title={t('navSignOut')}
+                  aria-label="Sign out"
+                  className="p-1 rounded-full text-charcoal-400 hover:text-red-600 hover:bg-white transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/bookmarks"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-cream-300 hover:border-saffron-300 text-xs font-semibold text-charcoal-700 hover:bg-cream-100 transition-colors"
+              >
+                <User className="w-3.5 h-3.5 text-saffron-600" />
+                <span>{t('navSignIn')}</span>
+              </Link>
+            )}
+
             {/* CTA Button */}
             <Link
-              to="/wizard"
+              to="/find"
               className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-saffron-500 hover:bg-saffron-600 text-white text-xs lg:text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
             >
               <Sparkles className="w-4 h-4" />
@@ -149,10 +183,10 @@ export const Navbar: React.FC = () => {
             </Link>
 
             <Link
-              to="/wizard"
+              to="/find"
               onClick={() => setMobileMenuOpen(false)}
               className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
-                isActive('/wizard') ? 'bg-forest-100 text-forest-900 font-semibold' : 'text-charcoal-800'
+                isActive('/find') || isActive('/wizard') ? 'bg-forest-100 text-forest-900 font-semibold' : 'text-charcoal-800'
               }`}
             >
               {t('navFindSchemes')}
