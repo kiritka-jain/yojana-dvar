@@ -39,8 +39,12 @@ class EligibilityMatcher:
         # 2. Gender Rule Check
         scheme_gender = str(scheme.get("gender", "Female")).strip().lower()
         user_gender = profile.gender.strip().lower()
-        if scheme_gender not in ["all", "female", "women"] and scheme_gender != user_gender:
-            return False, 0, []
+        if scheme_gender not in ["all", "all india"]:
+            if scheme_gender in ["female", "women"]:
+                if user_gender not in ["female", "women"]:
+                    return False, 0, []
+            elif scheme_gender != user_gender:
+                return False, 0, []
 
         # 3. Age Bounds Check
         age_min = int(scheme.get("age_min", 0))

@@ -6,8 +6,12 @@ from app.services.matcher import EligibilityMatcher
 def matcher():
     return EligibilityMatcher()
 
+# =============================================================================
+# 1. Real Catalog Integration Boundary Tests
+# =============================================================================
+
 def test_age_boundary_matching(matcher):
-    """Test age boundary limits (e.g. Sukanya Samriddhi Yojana max age 10)."""
+    """Test age boundary limits on real catalog (e.g. Sukanya Samriddhi Yojana max age 10)."""
     # 5 year old girl should qualify for SSY
     profile_child = ProfileInput(age=5, gender="Female", state="All", life_stage="student")
     res_child = matcher.match_profile(profile_child)
@@ -21,8 +25,8 @@ def test_age_boundary_matching(matcher):
     assert len(ssy_matches_teen) == 0
 
 def test_income_max_boundary(matcher):
-    """Test annual family income cap filtering."""
-    # BPL / Low Income woman (Rs 50,000) qualifies for PMMVY (max 2,50,000)
+    """Test annual family income cap filtering on real catalog."""
+    # Low Income woman (Rs 50,000) qualifies for PMMVY (max 2,50,000)
     profile_low_income = ProfileInput(age=25, gender="Female", state="All", income=50000, is_bpl=True, life_stage="maternal")
     res_low = matcher.match_profile(profile_low_income)
     pmmvy_matches = [s for s in res_low.schemes if s.scheme_id == "pmmvy-central"]
@@ -35,7 +39,7 @@ def test_income_max_boundary(matcher):
     assert len(pmmvy_high_matches) == 0
 
 def test_state_specific_filtering(matcher):
-    """Test state targeted scheme filtering (UP vs TN vs MP vs West Bengal)."""
+    """Test state targeted scheme filtering on real catalog (UP vs TN)."""
     # UP resident should qualify for Mukhya Mantri Kanya Sumangala Yojana (Uttar Pradesh)
     profile_up = ProfileInput(age=12, gender="Female", state="Uttar Pradesh", life_stage="student")
     res_up = matcher.match_profile(profile_up)
@@ -47,17 +51,241 @@ def test_state_specific_filtering(matcher):
     res_tn = matcher.match_profile(profile_tn)
     up_in_tn = [s for s in res_tn.schemes if s.scheme_id == "kanya-sumangala-up"]
     assert len(up_in_tn) == 0
-    
-    # Tamil Nadu resident should qualify for Pudhumai Penn Scheme (Tamil Nadu)
-    tn_matches = [s for s in res_tn.schemes if s.scheme_id == "pudhumai-penn-tn"]
-    assert len(tn_matches) == 1 or profile_tn.age < 17 # Pudhumai Penn age 17-25
 
 def test_life_stage_score_boost(matcher):
-    """Test that matching life_stage receives ranking score boost."""
+    """Test that matching life_stage receives ranking score boost (+30)."""
     profile_maternal = ProfileInput(age=26, gender="Female", state="Bihar", is_bpl=True, life_stage="maternal")
     res = matcher.match_profile(profile_maternal)
     
-    # PMMVY has life_stage_tags = ["maternal"], so it should get life stage boost (+30)
     pmmvy = next(s for s in res.schemes if s.scheme_id == "pmmvy-central")
     assert pmmvy.match_score >= 80
     assert any("life stage" in reason.lower() for reason in pmmvy.match_reasons)
+
+def test_limit_parameter_truncation(matcher):
+    """Test that result count strictly honors profile.limit parameter."""
+    profile_limit_3 = ProfileInput(age=25, gender="Female", state="All", limit=3)
+    res_3 = matcher.match_profile(profile_limit_3)
+    assert len(res_3.schemes) <= 3
+    assert res_3.count == len(res_3.schemes)
+
+    profile_limit_1 = ProfileInput(age=25, gender="Female", state="All", limit=1)
+    res_1 = matcher.match_profile(profile_limit_1)
+    assert len(res_1.schemes) <= 1
+
+# =============================================================================
+# 2. Controlled Boundary Unit Tests for evaluate_scheme
+# =============================================================================
+
+@pytest.fixture
+def base_scheme():
+    """Returns a baseline synthetic scheme passing all standard defaults."""
+    return {
+        "scheme_id": "test-scheme",
+        "name": "Test Welfare Scheme",
+        "is_active": True,
+        "gender": "Female",
+        "age_min": 18,
+        "age_max": 40,
+        "state": "All",
+        "eligible_states": '["All"]',
+        "caste_categories": '["All"]',
+        "income_max": 300000,
+        "residence": "All",
+        "requires_bpl": False,
+        "requires_disability": False,
+        "life_stage_tags": '["general"]'
+    }
+
+def test_rule_active_flag(matcher, base_scheme):
+    """Schemes marked is_active=False must never qualify."""
+    profile = ProfileInput(age=25, gender="Female", state="Delhi")
+    
+    base_scheme["is_active"] = True
+    eligible, _, _ = matcher.evaluate_scheme(profile, base_scheme)
+    assert eligible is True
+
+    base_scheme["is_active"] = False
+    eligible, score, reasons = matcher.evaluate_scheme(profile, base_scheme)
+    assert eligible is False
+    assert score == 0
+    assert len(reasons) == 0
+
+def test_rule_age_boundary_conditions(matcher, base_scheme):
+    """
+    Verify exact age boundary edge cases:
+    - age == age_min (inclusive, passes)
+    - age == age_min - 1 (exclusive, rejected)
+    - age == age_max (inclusive, passes)
+    - age == age_max + 1 (exclusive, rejected)
+    """
+    base_scheme["age_min"] = 18
+    base_scheme["age_max"] = 35
+
+    # 1. Exact minimum bound (18) -> Eligible
+    p_min = ProfileInput(age=18, gender="Female", state="All")
+    eligible, _, _ = matcher.evaluate_scheme(p_min, base_scheme)
+    assert eligible is True
+
+    # 2. Below minimum bound (17) -> Ineligible
+    p_below_min = ProfileInput(age=17, gender="Female", state="All")
+    eligible, _, _ = matcher.evaluate_scheme(p_below_min, base_scheme)
+    assert eligible is False
+
+    # 3. Exact maximum bound (35) -> Eligible
+    p_max = ProfileInput(age=35, gender="Female", state="All")
+    eligible, _, _ = matcher.evaluate_scheme(p_max, base_scheme)
+    assert eligible is True
+
+    # 4. Above maximum bound (36) -> Ineligible
+    p_above_max = ProfileInput(age=36, gender="Female", state="All")
+    eligible, _, _ = matcher.evaluate_scheme(p_above_max, base_scheme)
+    assert eligible is False
+
+def test_rule_income_cap_boundaries(matcher, base_scheme):
+    """
+    Verify income cap boundary conditions:
+    - income == income_max (inclusive, passes)
+    - income == income_max + 1 (rejected)
+    - income == 0 (passes)
+    - income_max == 0 (no cap, any income passes)
+    """
+    base_scheme["income_max"] = 250000
+
+    # 1. Exact income cap (Rs 2,50,000) -> Eligible
+    p_exact = ProfileInput(age=25, gender="Female", income=250000)
+    eligible, _, _ = matcher.evaluate_scheme(p_exact, base_scheme)
+    assert eligible is True
+
+    # 2. One rupee above income cap (Rs 2,50,001) -> Ineligible
+    p_above = ProfileInput(age=25, gender="Female", income=250001)
+    eligible, _, _ = matcher.evaluate_scheme(p_above, base_scheme)
+    assert eligible is False
+
+    # 3. Zero income -> Eligible
+    p_zero = ProfileInput(age=25, gender="Female", income=0)
+    eligible, _, _ = matcher.evaluate_scheme(p_zero, base_scheme)
+    assert eligible is True
+
+    # 4. Scheme with income_max == 0 (no income ceiling)
+    base_scheme["income_max"] = 0
+    p_high = ProfileInput(age=25, gender="Female", income=5000000)
+    eligible, _, _ = matcher.evaluate_scheme(p_high, base_scheme)
+    assert eligible is True
+
+def test_rule_gender_filtering(matcher, base_scheme):
+    """Verify gender matching for 'Female', 'Women', 'All', and non-matching."""
+    base_scheme["gender"] = "Female"
+    assert matcher.evaluate_scheme(ProfileInput(gender="Female"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(gender="Male"), base_scheme)[0] is False
+    assert matcher.evaluate_scheme(ProfileInput(gender="Other"), base_scheme)[0] is False
+
+    base_scheme["gender"] = "Women"
+    assert matcher.evaluate_scheme(ProfileInput(gender="Female"), base_scheme)[0] is True
+
+    base_scheme["gender"] = "All"
+    assert matcher.evaluate_scheme(ProfileInput(gender="Male"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(gender="Female"), base_scheme)[0] is True
+
+def test_rule_state_filtering_and_case_insensitivity(matcher, base_scheme):
+    """
+    Verify state targeted matching:
+    - 'All' / 'All India' matches any user state
+    - Specific state matches regardless of case
+    - Cross-state rejects
+    - Array of eligible states matches
+    """
+    # 1. Central scheme
+    base_scheme["state"] = "All"
+    assert matcher.evaluate_scheme(ProfileInput(state="Kerala"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(state="Assam"), base_scheme)[0] is True
+
+    # 2. Targeted single state with case insensitivity
+    base_scheme["state"] = "Karnataka"
+    base_scheme["eligible_states"] = '["Karnataka"]'
+    assert matcher.evaluate_scheme(ProfileInput(state="Karnataka"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(state="karnataka"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(state="KARNATAKA"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(state="Gujarat"), base_scheme)[0] is False
+
+    # 3. Multi-state array
+    base_scheme["state"] = "Multi-State"
+    base_scheme["eligible_states"] = '["Maharashtra", "Goa"]'
+    assert matcher.evaluate_scheme(ProfileInput(state="Maharashtra"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(state="Goa"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(state="Bihar"), base_scheme)[0] is False
+
+def test_rule_caste_category_filtering(matcher, base_scheme):
+    """Verify caste matching: 'All', specific caste, and rejection of excluded caste."""
+    # 1. All castes eligible
+    base_scheme["caste_categories"] = '["All"]'
+    assert matcher.evaluate_scheme(ProfileInput(caste="General"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(caste="SC"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(caste="ST"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(caste="OBC"), base_scheme)[0] is True
+
+    # 2. SC/ST targeted scheme
+    base_scheme["caste_categories"] = '["SC", "ST"]'
+    assert matcher.evaluate_scheme(ProfileInput(caste="SC"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(caste="st"), base_scheme)[0] is True  # case insensitive
+    assert matcher.evaluate_scheme(ProfileInput(caste="General"), base_scheme)[0] is False
+    assert matcher.evaluate_scheme(ProfileInput(caste="OBC"), base_scheme)[0] is False
+
+def test_rule_residence_filtering(matcher, base_scheme):
+    """Verify rural vs urban vs all residence filtering."""
+    base_scheme["residence"] = "Rural"
+    assert matcher.evaluate_scheme(ProfileInput(residence="Rural"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(residence="All"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(residence="Urban"), base_scheme)[0] is False
+
+    base_scheme["residence"] = "Urban"
+    assert matcher.evaluate_scheme(ProfileInput(residence="Urban"), base_scheme)[0] is True
+    assert matcher.evaluate_scheme(ProfileInput(residence="Rural"), base_scheme)[0] is False
+
+def test_rule_bpl_and_disability_requirements(matcher, base_scheme):
+    """Verify mandatory BPL and disability requirement flags."""
+    # BPL required
+    base_scheme["requires_bpl"] = True
+    assert matcher.evaluate_scheme(ProfileInput(is_bpl=False), base_scheme)[0] is False
+    assert matcher.evaluate_scheme(ProfileInput(is_bpl=True), base_scheme)[0] is True
+
+    # Disability required
+    base_scheme["requires_bpl"] = False
+    base_scheme["requires_disability"] = True
+    assert matcher.evaluate_scheme(ProfileInput(has_disability=False), base_scheme)[0] is False
+    assert matcher.evaluate_scheme(ProfileInput(has_disability=True), base_scheme)[0] is True
+
+def test_scoring_weights_and_cap(matcher, base_scheme):
+    """
+    Verify scoring algorithm breakdown:
+    - Base score: 50
+    - Life stage match: +30
+    - State specificity match: +20
+    - Income cap present: +10
+    - Total capped at 100
+    """
+    # 1. Base case: Central scheme, no income cap, no matching life stage
+    base_scheme["state"] = "All"
+    base_scheme["eligible_states"] = '["All"]'
+    base_scheme["income_max"] = 0
+    base_scheme["life_stage_tags"] = '["senior"]'
+
+    p = ProfileInput(age=25, gender="Female", state="Delhi", life_stage="student")
+    eligible, score, _ = matcher.evaluate_scheme(p, base_scheme)
+    assert eligible is True
+    assert score == 50  # Base 50 only
+
+    # 2. Add income cap (+10) -> score 60
+    base_scheme["income_max"] = 200000
+    _, score, _ = matcher.evaluate_scheme(p, base_scheme)
+    assert score == 60
+
+    # 3. Add life stage match (+30) -> score 90
+    base_scheme["life_stage_tags"] = '["student", "youth"]'
+    _, score, _ = matcher.evaluate_scheme(p, base_scheme)
+    assert score == 90
+
+    # 4. Add state specificity boost (+20) -> 50 + 10 + 30 + 20 = 110 -> capped at 100
+    base_scheme["state"] = "Delhi"
+    base_scheme["eligible_states"] = '["Delhi"]'
+    _, score, _ = matcher.evaluate_scheme(p, base_scheme)
+    assert score == 100

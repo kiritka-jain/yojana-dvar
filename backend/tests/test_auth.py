@@ -18,9 +18,10 @@ def test_auth_me_invalid_token():
     Verify invalid bearer token returns 401.
     """
     headers = {"Authorization": "Bearer invalid.jwt.token"}
-    response = client.get("/auth/me", headers=headers)
-    assert response.status_code == 401
-    assert "Invalid or expired" in response.json()["detail"]
+    with patch("firebase_admin.auth.verify_id_token", side_effect=Exception("Invalid token signature")):
+        response = client.get("/auth/me", headers=headers)
+        assert response.status_code == 401
+        assert "Invalid or expired" in response.json()["detail"]
 
 def test_auth_me_dev_authenticated_user():
     """
