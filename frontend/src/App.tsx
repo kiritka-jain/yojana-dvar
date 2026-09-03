@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
+import { BottomNav } from './components/layout/BottomNav';
 import { Footer } from './components/layout/Footer';
 
 import { Home } from './pages/Home';
@@ -18,7 +19,7 @@ export const App: React.FC = () => {
     <AuthProvider>
       <LanguageProvider>
         <Router>
-        <div className="flex flex-col min-h-screen bg-[#fdfbf7] text-[#1c1917]">
+        <div className="flex flex-col min-h-screen bg-[#fdfbf7] text-[#1c1917] pb-16 md:pb-0">
           <Navbar />
           
           <main className="flex-1">
@@ -37,6 +38,7 @@ export const App: React.FC = () => {
           </main>
 
           <Footer />
+          <BottomNav />
         </div>
       </Router>
       </LanguageProvider>

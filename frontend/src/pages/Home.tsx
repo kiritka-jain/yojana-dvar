@@ -180,36 +180,36 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. Key Metrics Showcase */}
+      {/* 2. Key Trust & Accessibility Badges */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-2xl p-6 border border-saffron-100 shadow-card flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-saffron-50 text-saffron-600 flex items-center justify-center font-bold text-xl">
-              100+
+            <div className="w-12 h-12 rounded-xl bg-saffron-50 text-saffron-600 flex items-center justify-center font-bold text-xl flex-shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-saffron-600" />
             </div>
             <div>
-              <h3 className="font-bold text-charcoal-900 text-base">{t('statTotalSchemes')}</h3>
-              <p className="text-xs text-charcoal-500 mt-0.5">{t('statTotalSchemesSub')}</p>
+              <h3 className="font-bold text-charcoal-900 text-base">{t('statFreeAccess')}</h3>
+              <p className="text-xs text-charcoal-500 mt-0.5">{t('statFreeAccessSub')}</p>
             </div>
           </div>
 
           <div className="bg-white rounded-2xl p-6 border border-forest-100 shadow-card flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-forest-50 text-forest-600 flex items-center justify-center font-bold text-xl">
-              DBT
+            <div className="w-12 h-12 rounded-xl bg-forest-50 text-forest-600 flex items-center justify-center font-bold text-xl flex-shrink-0">
+              <ShieldCheck className="w-6 h-6 text-forest-600" />
             </div>
             <div>
-              <h3 className="font-bold text-charcoal-900 text-base">{t('statDirectBenefits')}</h3>
-              <p className="text-xs text-charcoal-500 mt-0.5">{t('statDirectBenefitsSub')}</p>
+              <h3 className="font-bold text-charcoal-900 text-base">{t('statGovtSchemes')}</h3>
+              <p className="text-xs text-charcoal-500 mt-0.5">{t('statGovtSchemesSub')}</p>
             </div>
           </div>
 
           <div className="bg-white rounded-2xl p-6 border border-amber-100 shadow-card flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xl">
-              &lt;1s
+            <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xl flex-shrink-0">
+              <Sparkles className="w-6 h-6 text-amber-600" />
             </div>
             <div>
-              <h3 className="font-bold text-charcoal-900 text-base">{t('statFastMatching')}</h3>
-              <p className="text-xs text-charcoal-500 mt-0.5">{t('statFastMatchingSub')}</p>
+              <h3 className="font-bold text-charcoal-900 text-base">{t('statNoAadhaar')}</h3>
+              <p className="text-xs text-charcoal-500 mt-0.5">{t('statNoAadhaarSub')}</p>
             </div>
           </div>
         </div>

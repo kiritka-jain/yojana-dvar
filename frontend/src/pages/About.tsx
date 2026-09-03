@@ -6,7 +6,7 @@ import {
   Sparkles, 
   ExternalLink, 
   Database, 
-  Cpu, 
+  CheckCircle2,
   Lock, 
   Eye, 
   FileText, 
@@ -20,11 +20,11 @@ export const About: React.FC = () => {
 
   const PILLARS = [
     {
-      icon: <Cpu className="w-6 h-6 text-saffron-600" />,
-      title: language === 'hi' ? '9-नियम निर्णायक इंजन' : 'Deterministic 9-Rule Engine',
+      icon: <CheckCircle2 className="w-6 h-6 text-saffron-600" />,
+      title: language === 'hi' ? 'सत्यापित पात्रता मिलान' : 'Verified Eligibility Matching',
       desc: language === 'hi'
-        ? 'आयु, आय, जाति, राज्य, और जीवन चरण के आधार पर बिना किसी मतिभ्रम (hallucination) के सटीक पात्रता गणना।'
-        : 'Predictable, zero-hallucination entitlement evaluation based on strictly verified administrative rules.'
+        ? 'आयु, आय, श्रेणी, राज्य और जीवन परिस्थिति के अनुसार आधिकारिक सरकारी नियमों पर आधारित सटीक पात्रता जांच।'
+        : 'Accurate entitlement evaluation based on strictly verified administrative criteria and official guidelines.'
     },
     {
       icon: <Sparkles className="w-6 h-6 text-emerald-600" />,
