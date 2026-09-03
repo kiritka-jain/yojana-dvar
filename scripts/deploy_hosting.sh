@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Configuration
-FIREBASE_PROJECT_ID="${FIREBASE_PROJECT_ID:-${GCP_PROJECT_ID:-yojana-dvar}}"
+FIREBASE_PROJECT_ID="${FIREBASE_PROJECT_ID:-${GCP_PROJECT_ID:-yojana-dvar-9a23b}}"
 VITE_API_BASE_URL="${VITE_API_BASE_URL:-${API_BASE_URL:-}}"
 
 echo "=================================================================="

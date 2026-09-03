@@ -27,6 +27,7 @@ yarn-error.log*
 dist/
 build/
 .vite/
+.firebase/
 
 # IDE & OS
 .DS_Store
