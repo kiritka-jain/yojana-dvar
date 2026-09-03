@@ -26,11 +26,13 @@ echo ""
 # 1. Check if Firebase CLI is available
 FIREBASE_CMD="firebase"
 if ! command -v firebase &> /dev/null; then
-    if npx -y firebase-tools --version &> /dev/null; then
-        FIREBASE_CMD="npx -y firebase-tools"
+    if [ -f "${ROOT_DIR}/frontend/node_modules/.bin/firebase" ]; then
+        FIREBASE_CMD="${ROOT_DIR}/frontend/node_modules/.bin/firebase"
+    elif npx --no-install firebase-tools --version &> /dev/null; then
+        FIREBASE_CMD="npx firebase-tools"
     else
         echo "❌ Error: Firebase CLI is not installed."
-        echo "   Install it via npm: npm install -g firebase-tools"
+        echo "   Install it via npm: npm install -g firebase-tools (or run cd frontend && npm install)"
         echo "   Then authenticate: firebase login"
         exit 1
     fi
