@@ -303,8 +303,8 @@ export const Home: React.FC = () => {
             </h2>
             <p className="text-sm sm:text-base text-saffron-100 leading-relaxed">
               {language === 'hi'
-                ? 'सरल 4-चरणीय विज़ार्ड पूरा करें और 1 मिनट के भीतर अपनी पात्र योजनाओं की सूची पाएं।'
-                : 'Take our 4-step interactive wizard and unlock direct welfare benefits designed for you.'}
+                ? 'केवल 3 सरल प्रश्नों के उत्तर दें और 1 मिनट में अपनी पात्र योजनाओं की सूची पाएं।'
+                : 'Answer 3 simple questions to discover all direct welfare benefits designed for you.'}
             </p>
           </div>
           <button

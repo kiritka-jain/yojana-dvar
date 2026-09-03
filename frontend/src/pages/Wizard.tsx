@@ -373,87 +373,106 @@ export const Wizard: React.FC = () => {
             </div>
 
             {/* Field: Age (Numeric Stepper Counter + 4 Clear Milestone Tiles) */}
-            <div className="space-y-3 p-5 rounded-2xl bg-cream-50/60 border border-cream-200">
-              <label 
-                htmlFor={ageInputId} 
-                className="block text-sm font-semibold text-charcoal-900"
-              >
-                <User className="w-4 h-4 inline mr-1 text-saffron-600" />
-                {t('fieldAge')} <span className="text-red-500">*</span>
-              </label>
+            <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-cream-50/70 border border-saffron-200/80 shadow-xs">
+              <div className="flex items-center justify-between">
+                <label 
+                  htmlFor={ageInputId} 
+                  className="block text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5"
+                >
+                  <User className="w-4 h-4 text-saffron-600" />
+                  <span>{t('fieldAge')}</span>
+                  <span className="text-red-500 font-bold">*</span>
+                </label>
+                <span className="text-xs text-charcoal-500 font-medium">
+                  {language === 'hi' ? 'बटन दबाएं या उम्र लिखें' : 'Tap +/- or type below'}
+                </span>
+              </div>
 
-              {/* Stepper with Large + and - Buttons */}
-              <div className="flex items-center justify-center gap-4 py-2">
+              {/* Stepper with Large 56px+ Touch Target + and - Buttons */}
+              <div className="flex items-center justify-center gap-3 sm:gap-5 py-2">
                 <button
                   type="button"
+                  disabled={profile.age <= 0}
                   onClick={() => adjustAge(-1)}
-                  aria-label="Decrease age"
-                  className="w-12 h-12 rounded-2xl bg-white border-2 border-cream-300 text-charcoal-700 hover:border-saffron-400 hover:bg-saffron-50 active:scale-95 flex items-center justify-center text-xl font-bold shadow-xs transition-all"
+                  aria-label={language === 'hi' ? 'आयु कम करें' : 'Decrease age'}
+                  className="w-14 h-14 sm:w-16 sm:h-16 min-w-[56px] min-h-[56px] rounded-2xl bg-white border-2 border-cream-300 text-charcoal-800 hover:border-saffron-500 hover:bg-saffron-50 active:scale-90 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center font-black shadow-sm transition-all duration-150 group focus:outline-none focus:ring-2 focus:ring-saffron-400"
                 >
-                  <Minus className="w-5 h-5" />
+                  <Minus className="w-6 h-6 stroke-[3] group-hover:text-saffron-700 transition-colors" />
                 </button>
 
-                <div className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-2xl border-2 border-saffron-400 shadow-sm">
+                <div className="flex items-center justify-center gap-2 bg-white px-6 py-3 rounded-2xl border-2 border-saffron-500 shadow-md focus-within:ring-4 focus-within:ring-saffron-200 transition-all">
                   <input
                     id={ageInputId}
                     type="number"
                     min="0"
                     max="100"
-                    value={profile.age}
-                    aria-label="Enter age"
+                    value={profile.age === 0 ? '' : profile.age}
+                    placeholder="0"
+                    role="spinbutton"
+                    aria-valuenow={profile.age}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={language === 'hi' ? 'आयु (वर्ष में)' : 'Age in years'}
                     onChange={(e) => {
-                      const val = parseInt(e.target.value) || 0;
+                      const raw = e.target.value;
+                      const val = raw === '' ? 0 : Math.min(100, Math.max(0, parseInt(raw) || 0));
                       setProfile({ ...profile, age: val });
                       const err = validateField('age', val);
                       setErrors((prev) => ({ ...prev, age: err }));
                     }}
-                    className="w-16 text-center text-2xl font-black text-charcoal-900 focus:outline-none"
+                    className="w-16 sm:w-20 text-center text-3xl sm:text-4xl font-black text-charcoal-900 focus:outline-none bg-transparent"
                   />
-                  <span className="text-sm font-bold text-saffron-800">
+                  <span className="text-sm sm:text-base font-extrabold text-saffron-700 select-none">
                     {language === 'hi' ? 'वर्ष' : 'Yrs'}
                   </span>
                 </div>
 
                 <button
                   type="button"
+                  disabled={profile.age >= 100}
                   onClick={() => adjustAge(1)}
-                  aria-label="Increase age"
-                  className="w-12 h-12 rounded-2xl bg-white border-2 border-cream-300 text-charcoal-700 hover:border-saffron-400 hover:bg-saffron-50 active:scale-95 flex items-center justify-center text-xl font-bold shadow-xs transition-all"
+                  aria-label={language === 'hi' ? 'आयु बढ़ाएं' : 'Increase age'}
+                  className="w-14 h-14 sm:w-16 sm:h-16 min-w-[56px] min-h-[56px] rounded-2xl bg-white border-2 border-cream-300 text-charcoal-800 hover:border-saffron-500 hover:bg-saffron-50 active:scale-90 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center font-black shadow-sm transition-all duration-150 group focus:outline-none focus:ring-2 focus:ring-saffron-400"
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-6 h-6 stroke-[3] group-hover:text-saffron-700 transition-colors" />
                 </button>
               </div>
 
-              {/* 4 Large Age Milestone Tiles */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+              {/* 4 Large Visual Age Milestone Tiles */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                 {[
-                  { label: t('ageTierChild'), age: 8, icon: '👧' },
-                  { label: t('ageTierStudent'), age: 20, icon: '👩‍🎓' },
-                  { label: t('ageTierAdult'), age: 32, icon: '👩' },
-                  { label: t('ageTierSenior'), age: 62, icon: '👵' },
-                ].map((tier) => (
-                  <button
-                    key={tier.age}
-                    type="button"
-                    onClick={() => {
-                      setProfile({ ...profile, age: tier.age });
-                      setErrors((prev) => ({ ...prev, age: undefined }));
-                    }}
-                    className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-1 ${
-                      Math.abs(profile.age - tier.age) <= 6
-                        ? 'bg-saffron-500 text-white font-bold border-saffron-500 shadow-xs'
-                        : 'bg-white text-charcoal-700 border-cream-300 hover:bg-cream-100'
-                    }`}
-                  >
-                    <span className="text-lg">{tier.icon}</span>
-                    <span className="text-xs font-semibold">{tier.label}</span>
-                  </button>
-                ))}
+                  { id: 'child', label: t('ageTierChild'), range: [0, 17], defaultAge: 10, icon: '👧' },
+                  { id: 'student', label: t('ageTierStudent'), range: [18, 25], defaultAge: 20, icon: '👩‍🎓' },
+                  { id: 'adult', label: t('ageTierAdult'), range: [26, 59], defaultAge: 35, icon: '👩' },
+                  { id: 'senior', label: t('ageTierSenior'), range: [60, 100], defaultAge: 65, icon: '👵' },
+                ].map((tier) => {
+                  const isActive = profile.age >= tier.range[0] && profile.age <= tier.range[1];
+                  return (
+                    <button
+                      key={tier.id}
+                      type="button"
+                      onClick={() => {
+                        setProfile({ ...profile, age: tier.defaultAge });
+                        setErrors((prev) => ({ ...prev, age: undefined }));
+                      }}
+                      className={`min-h-[72px] sm:min-h-[80px] p-3 sm:p-3.5 rounded-2xl border-2 text-center transition-all duration-200 flex flex-col items-center justify-center gap-1 active:scale-95 ${
+                        isActive
+                          ? 'bg-saffron-500 text-white font-bold border-saffron-500 shadow-md ring-4 ring-saffron-200 scale-102'
+                          : 'bg-white text-charcoal-700 border-cream-300 hover:border-saffron-400 hover:bg-saffron-50/40 shadow-xs'
+                      }`}
+                    >
+                      <span className="text-2xl sm:text-3xl filter drop-shadow-xs">{tier.icon}</span>
+                      <span className={`text-xs font-bold leading-tight ${isActive ? 'text-white' : 'text-charcoal-800'}`}>
+                        {tier.label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
               {errors.age && (
-                <p role="alert" className="text-xs text-red-600 font-medium flex items-center gap-1">
-                  <AlertCircle className="w-3.5 h-3.5" />
+                <p role="alert" className="text-xs text-red-600 font-semibold flex items-center gap-1.5 pt-1">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{errors.age}</span>
                 </p>
               )}

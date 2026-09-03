@@ -75,8 +75,6 @@ export interface TranslationDictionary {
   wizardStep2Subtitle: string;
   wizardStep3Title: string;
   wizardStep3Subtitle: string;
-  wizardStep4Title: string;
-  wizardStep4Subtitle: string;
 
   // Wizard Form Fields
   fieldState: string;
@@ -123,25 +121,13 @@ export interface TranslationDictionary {
   fieldDisabilityHelper: string;
   fieldYes: string;
   fieldNo: string;
-  presetTitle: string;
-  presetSubtitle: string;
-  presetReset: string;
-  presetActive: string;
-  presetClear: string;
-  viewModeWizard: string;
-  viewModeAll: string;
   validationErrorState: string;
   validationErrorAge: string;
   validationErrorIncome: string;
-  fieldAgeDirectInput: string;
-  fieldIncomeDirectInput: string;
-  fieldAdditionalInfo: string;
   fieldOccupation: string;
   fieldEducation: string;
 
-  // Wizard Review & Submit
-  wizardSummaryTitle: string;
-  wizardSummarySubtitle: string;
+  // Wizard Submit & Actions
   wizardEdit: string;
   wizardSubmitBtn: string;
   wizardMatchingLoading: string;
@@ -339,8 +325,6 @@ export const translations: Record<Language, TranslationDictionary> = {
     wizardStep2Subtitle: "Social category and family income tier",
     wizardStep3Title: "Life Stage & Status",
     wizardStep3Subtitle: "Current stage of life, ration card, and priority status",
-    wizardStep4Title: "Matched Results",
-    wizardStep4Subtitle: "Your calculated government entitlements",
 
     fieldState: "Select Your State / UT",
     fieldStatePlaceholder: "-- Choose your State --",
@@ -362,10 +346,10 @@ export const translations: Record<Language, TranslationDictionary> = {
     incomeTierMidDesc: "Modest household income",
     incomeTierHigh: "Above ₹3 Lakh / Year",
     incomeTierHighDesc: "Salaried or established enterprise",
-    ageTierChild: "Child (0–17 Yrs)",
-    ageTierStudent: "Student (18–25 Yrs)",
-    ageTierAdult: "Adult (26–59 Yrs)",
-    ageTierSenior: "Senior (60+ Yrs)",
+    ageTierChild: "Girl Child (0–17 Yrs)",
+    ageTierStudent: "Young Woman / Student (18–25 Yrs)",
+    ageTierAdult: "Adult Woman (26–59 Yrs)",
+    ageTierSenior: "Senior Citizen (60+ Yrs)",
 
     fieldResidence: "Residence Area",
     fieldResidenceRural: "Rural (गाँव / Village)",
@@ -386,24 +370,12 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldDisabilityHelper: "Special pensions and assistive grants are available for 40%+ disability",
     fieldYes: "Yes (हाँ)",
     fieldNo: "No (नहीं)",
-    presetTitle: "Load Demo Persona",
-    presetSubtitle: "Instant 1-click test with real persona data",
-    presetReset: "Reset to Default",
-    presetActive: "Preset Active",
-    presetClear: "Clear Preset",
-    viewModeWizard: "Guided Steps",
-    viewModeAll: "All-in-One Form",
     validationErrorState: "Please select your state or UT of residence.",
     validationErrorAge: "Please enter a valid age between 0 and 110 years.",
     validationErrorIncome: "Please select your family income tier.",
-    fieldAgeDirectInput: "Direct Age Input",
-    fieldIncomeDirectInput: "Direct Income Input (₹)",
-    fieldAdditionalInfo: "Additional Demographic Details (Optional)",
     fieldOccupation: "Current Occupation",
     fieldEducation: "Highest Education Level",
 
-    wizardSummaryTitle: "Summary of Your Profile",
-    wizardSummarySubtitle: "Your matched entitlements calculated instantly",
     wizardEdit: "Edit",
     wizardSubmitBtn: "Find My Schemes",
     wizardMatchingLoading: "Finding all welfare schemes you qualify for...",
@@ -598,8 +570,6 @@ export const translations: Record<Language, TranslationDictionary> = {
     wizardStep2Subtitle: "सामाजिक श्रेणी और पारिवारिक आय",
     wizardStep3Title: "आपकी स्थिति व राशन कार्ड",
     wizardStep3Subtitle: "जीवन चरण, बीपीएल राशन कार्ड और प्राथमिकता",
-    wizardStep4Title: "आपकी योजनाएं",
-    wizardStep4Subtitle: "आपकी पात्र कल्याणकारी योजनाएं",
 
     fieldState: "अपना राज्य / केंद्रशासित प्रदेश चुनें",
     fieldStatePlaceholder: "-- अपना राज्य चुनें --",
@@ -622,9 +592,9 @@ export const translations: Record<Language, TranslationDictionary> = {
     incomeTierHigh: "₹3 लाख से अधिक (सालाना)",
     incomeTierHighDesc: "वेतनभोगी या स्थापित व्यवसाय",
     ageTierChild: "बालिका (0–17 वर्ष)",
-    ageTierStudent: "छात्रा (18–25 वर्ष)",
+    ageTierStudent: "युवती / छात्रा (18–25 वर्ष)",
     ageTierAdult: "वयस्क महिला (26–59 वर्ष)",
-    ageTierSenior: "वरिष्ठ (60+ वर्ष)",
+    ageTierSenior: "वरिष्ठ नागरिक (60+ वर्ष)",
 
     fieldResidence: "निवास क्षेत्र",
     fieldResidenceRural: "ग्रामीण (गाँव / Rural)",
@@ -645,24 +615,12 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldDisabilityHelper: "40% या अधिक दिव्यांगता पर विशेष सहायता पेंशन व उपकरण उपलब्ध हैं",
     fieldYes: "हाँ (Yes)",
     fieldNo: "नहीं (No)",
-    presetTitle: "डेमो प्रोफाइल लोड करें",
-    presetSubtitle: "वास्तविक प्रोफाइल डेटा के साथ 1-क्लिक त्वरित परीक्षण",
-    presetReset: "डिफ़ॉल्ट पर रीसेट करें",
-    presetActive: "प्रीसेट सक्रिय",
-    presetClear: "प्रीसेट हटाएं",
-    viewModeWizard: "मार्गदर्शित चरण",
-    viewModeAll: "सभी प्रश्न एक साथ",
     validationErrorState: "कृपया अपना निवास राज्य या केंद्र शासित प्रदेश चुनें।",
     validationErrorAge: "कृपया 0 से 110 वर्ष के बीच एक मान्य आयु दर्ज करें।",
     validationErrorIncome: "कृपया अपनी पारिवारिक आय श्रेणी चुनें।",
-    fieldAgeDirectInput: "सीधे आयु दर्ज करें",
-    fieldIncomeDirectInput: "सीधे आय दर्ज करें (₹)",
-    fieldAdditionalInfo: "अतिरिक्त विवरण (वैकल्पिक)",
     fieldOccupation: "वर्तमान व्यवसाय",
     fieldEducation: "उच्चतम शिक्षा स्तर",
 
-    wizardSummaryTitle: "आपकी प्रोफ़ाइल का सारांश",
-    wizardSummarySubtitle: "इन विवरणों के आधार पर योजनाओं की गणना की गई है",
     wizardEdit: "बदलें",
     wizardSubmitBtn: "मेरी पात्र योजनाएं देखें",
     wizardMatchingLoading: "आपकी पात्र योजनाओं की सूची तैयार की जा रही है...",
