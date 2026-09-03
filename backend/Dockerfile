@@ -19,5 +19,5 @@ COPY . .
 # Expose port
 EXPOSE 8000
 
-# Run FastAPI app with Uvicorn
-CMD exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT}
+# Run FastAPI app with Uvicorn (proper signal handling)
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

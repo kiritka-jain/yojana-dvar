@@ -5,8 +5,28 @@ import uuid
 from typing import List, Dict, Any, Tuple
 from app.models.profile import ProfileInput, SchemeMatchResult, MatchResponse
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-PROCESSED_CATALOG_PATH = os.path.join(BASE_DIR, "data", "processed", "schemes_women.json")
+def _find_catalog_path() -> str:
+    """Dynamically resolves the path to schemes_women.json across dev and container environments."""
+    env_path = os.getenv("SCHEMES_CATALOG_PATH")
+    if env_path and os.path.exists(env_path):
+        return env_path
+        
+    current_file = os.path.abspath(__file__)
+    # 1. Inside backend root (e.g. /app/data/processed/schemes_women.json in Docker)
+    backend_root = os.path.dirname(os.path.dirname(os.path.dirname(current_file)))
+    candidate_1 = os.path.join(backend_root, "data", "processed", "schemes_women.json")
+    if os.path.exists(candidate_1):
+        return candidate_1
+
+    # 2. Inside repo root: data/processed/schemes_women.json
+    repo_root = os.path.dirname(backend_root)
+    candidate_2 = os.path.join(repo_root, "data", "processed", "schemes_women.json")
+    if os.path.exists(candidate_2):
+        return candidate_2
+
+    return candidate_1
+
+PROCESSED_CATALOG_PATH = _find_catalog_path()
 
 class EligibilityMatcher:
     """Deterministic rule-based eligibility match engine for Yojana Dvar."""

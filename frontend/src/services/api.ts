@@ -77,7 +77,7 @@ export interface ExplainResponse {
   is_fallback: boolean;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export async function matchSchemes(profile: ProfileInput): Promise<MatchResponse> {
   const response = await fetch(`${API_BASE_URL}/match`, {
