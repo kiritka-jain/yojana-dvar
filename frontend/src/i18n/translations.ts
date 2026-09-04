@@ -208,6 +208,16 @@ export interface TranslationDictionary {
   detailDocReady: string;
   detailDocPending: string;
   detailApplicationProcessTitle: string;
+  detailApplyStep1Title: string;
+  detailApplyStep1Desc: string;
+  detailApplyStep2Title: string;
+  detailApplyStep2Desc: string;
+  detailApplyStep3Title: string;
+  detailApplyStep3Desc: string;
+  detailCscCenterTitle: string;
+  detailCscCenterDesc: string;
+  detailDocsAllReady: string;
+  detailDocsMissingTip: string;
   detailOfficialPortalCTA: string;
   detailOfficialWebsite: string;
   detailSchemeNotFound: string;
@@ -474,11 +484,21 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailDocsChecklistHelp: "Mark the documents you have ready before visiting CSC or Anganwadi:",
     detailDocReady: "Ready",
     detailDocPending: "Pending",
-    detailApplicationProcessTitle: "How & Where to Apply",
-    detailOfficialPortalCTA: "Apply Online (Official Portal)",
+    detailApplicationProcessTitle: "How and Where to Apply",
+    detailApplyStep1Title: "1. Check Eligibility & Prepare Documents",
+    detailApplyStep1Desc: "Verify your profile against eligibility criteria and keep checked documents ready.",
+    detailApplyStep2Title: "2. Submit Online or Visit Nearest Citizen Center",
+    detailApplyStep2Desc: "Apply on the official government portal, or visit a nearby CSC / Anganwadi center.",
+    detailApplyStep3Title: "3. Track Application & Receive DBT Benefits",
+    detailApplyStep3Desc: "Save your application acknowledgement number to track status and receive funds directly in your bank account.",
+    detailCscCenterTitle: "💡 Offline Assistance & Form Filing Support",
+    detailCscCenterDesc: "If you need help filling out online forms or scanning documents, visit your nearest Common Service Center (CSC), Anganwadi Kendra, or Gram Panchayat office.",
+    detailDocsAllReady: "All Documents Ready!",
+    detailDocsMissingTip: "Missing some documents? You can apply for income, caste, and domicile certificates at your nearest Tehsil office or CSC center.",
+    detailOfficialPortalCTA: "Apply on Official Government Portal",
     detailOfficialWebsite: "Official Ministry Website",
     detailSchemeNotFound: "Scheme Not Found",
-    detailSchemeNotFoundDesc: "The requested welfare scheme could not be located.",
+    detailSchemeNotFoundDesc: "The requested welfare scheme could not be found in our database.",
 
     // AI Explanation Component
     aiExplainTitle: "Plain-Language Summary",
@@ -487,7 +507,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     aiExplainTriggerBtn: "Explain in Simple Words",
     aiExplainLoadingTitle: "Generating simple summary...",
     aiExplainLoadingDesc: "Translating official guidelines into clear, simple language.",
-    aiExplainSummaryTitle: "Summary in Plain Words",
+    aiExplainSummaryTitle: "Quick Summary (योजना का सार)",
     aiExplainBenefitsTitle: "What You Will Receive",
     aiExplainDocsTitle: "Documents You Need",
     aiExplainNextStepsTitle: "How to Proceed",
@@ -715,8 +735,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     toastBookmarkRemoved: "योजना सहेजी गई सूची से हटाई गई",
 
     // Scheme Detail Page (myScheme 4-Tab Architecture)
-    detailTabBenefits: "फायदे (Benefits)",
-    detailTabEligibility: "पात्रता (Eligibility)",
+    detailTabBenefits: "क्या मिलेगा (Benefits)",
+    detailTabEligibility: "कौन पात्र है (Eligibility)",
     detailTabDocuments: "जरूरी कागजात (Documents)",
     detailTabHowToApply: "आवेदन कैसे करें (How to Apply)",
     detailBackToResults: "योजनाओं पर वापस जाएं",
@@ -732,13 +752,23 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailBplPriority: "बीपीएल प्राथमिकता",
     detailDisabilityPriority: "दिव्यांगता प्राथमिकता",
     detailLifeStageTags: "जीवन चरण",
-    detailBenefitsTitle: "वित्तीय व कल्याणकारी लाभ",
-    detailEligibilityTitle: "कौन आवेदन कर सकता है",
-    detailDocumentsTitle: "जरूरी दस्तावेजों की सूची",
+    detailBenefitsTitle: "क्या मिलेगा (वित्तीय व कल्याणकारी लाभ)",
+    detailEligibilityTitle: "कौन पात्र है (पात्रता शर्तें)",
+    detailDocumentsTitle: "जरूरी कागजात की चेकलिस्ट",
     detailDocsChecklistHelp: "आवेदन करने से पहले अपने उपलब्ध दस्तावेजों पर सही का निशान लगाएं:",
     detailDocReady: "तैयार",
     detailDocPending: "शेष",
-    detailApplicationProcessTitle: "आवेदन कैसे और कहाँ करें",
+    detailApplicationProcessTitle: "आवेदन कैसे करें (चरणबद्ध प्रक्रिया)",
+    detailApplyStep1Title: "1. पात्रता जांचें और कागजात तैयार रखें",
+    detailApplyStep1Desc: "जांचें कि आप सभी पात्रता शर्तों को पूरा करते हैं और जरूरी पहचान/आय दस्तावेज तैयार हैं।",
+    detailApplyStep2Title: "2. ऑनलाइन आवेदन करें या सीएससी केंद्र जाएं",
+    detailApplyStep2Desc: "सीधे सरकारी पोर्टल पर फॉर्म भरें या नजदीकी जन सेवा केंद्र (CSC) / आंगनवाड़ी केंद्र जाएं।",
+    detailApplyStep3Title: "3. आवेदन रसीद संभालें व लाभ प्राप्त करें",
+    detailApplyStep3Desc: "आवेदन संख्या सुरक्षित रखें ताकि स्थिति ट्रैक कर सकें और डीबीटी (DBT) लाभ सीधे बैंक खाते में पहुंचे।",
+    detailCscCenterTitle: "💡 नजदीकी सहायता व ऑफलाइन आवेदन केंद्र",
+    detailCscCenterDesc: "यदि ऑनलाइन आवेदन या दस्तावेज अपलोड में कठिनाई हो, तो अपने नजदीकी जन सेवा केंद्र (CSC), आंगनवाड़ी केंद्र या ग्राम पंचायत कार्यालय में कागजात ले जाएं।",
+    detailDocsAllReady: "सभी जरूरी कागजात तैयार हैं!",
+    detailDocsMissingTip: "कागजात पूरे नहीं हैं? आप आय, जाति व निवास प्रमाण पत्र नजदीकी तहसील या जन सेवा केंद्र से बनवा सकते हैं।",
     detailOfficialPortalCTA: "आधिकारिक पोर्टल पर ऑनलाइन आवेदन करें",
     detailOfficialWebsite: "मंत्रालय की आधिकारिक वेबसाइट",
     detailSchemeNotFound: "योजना नहीं मिली",
@@ -751,7 +781,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     aiExplainTriggerBtn: "सरल भाषा में समझें",
     aiExplainLoadingTitle: "सरल भाषा में सारांश तैयार हो रहा है...",
     aiExplainLoadingDesc: "आपकी आयु और स्थिति के अनुसार मुख्य लाभ निकाले जा रहे हैं।",
-    aiExplainSummaryTitle: "सरल भाषा में सारांश",
+    aiExplainSummaryTitle: "इस योजना का सार (Quick Summary)",
     aiExplainBenefitsTitle: "आपको क्या-क्या मिलेगा",
     aiExplainDocsTitle: "आपके लिए जरूरी कागजात",
     aiExplainNextStepsTitle: "आगे क्या करना है",

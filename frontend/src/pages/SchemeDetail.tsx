@@ -27,7 +27,14 @@ import {
   Globe, 
   UserCheck,
   X,
-  BookmarkCheck
+  BookmarkCheck,
+  Calendar,
+  IndianRupee,
+  MapPin,
+  Tag,
+  ShieldCheck,
+  HelpCircle,
+  FileText
 } from 'lucide-react';
 
 const DEFAULT_PROFILE: ProfileInput = {
@@ -49,6 +56,16 @@ function parseDocuments(docString?: string): string[] {
     .split(/[,;\n]+/)
     .map((d) => d.trim())
     .filter((d) => d.length > 2);
+}
+
+function parseEligibilityPoints(eligibilityText?: string): string[] {
+  if (!eligibilityText) return [];
+  // Split on bullets, semicolons, or sentence delimiters
+  const points = eligibilityText
+    .split(/(?:•|\n|;|\.\s+)/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 5);
+  return points.length > 0 ? points : [eligibilityText];
 }
 
 export const SchemeDetail: React.FC = () => {
@@ -88,23 +105,48 @@ export const SchemeDetail: React.FC = () => {
         setScheme(data);
         setBookmarked(isLocalBookmarked(data.scheme_id));
         setLoading(false);
-
-        // Auto-fetch plain-language AI summary
-        setExplainLoading(true);
-        explainSchemeEligibility({
-          scheme_id: data.scheme_id,
-          profile: activeProfile,
-          language: siteLanguage
-        })
-          .then((res) => setExplanation(res))
-          .catch(() => {})
-          .finally(() => setExplainLoading(false));
       })
       .catch((err) => {
         setError(err.message || 'Scheme not found');
         setLoading(false);
       });
-  }, [id, siteLanguage]);
+  }, [id]);
+
+  // Auto-fetch plain-language AI summary on scheme load and on language change
+  useEffect(() => {
+    if (!scheme) return;
+    setExplainLoading(true);
+
+    explainSchemeEligibility({
+      scheme_id: scheme.scheme_id,
+      profile: activeProfile,
+      language: siteLanguage
+    })
+      .then((res) => {
+        if (res?.summary) {
+          setExplanation(res);
+        }
+      })
+      .catch((err) => {
+        console.warn("Auto-summary fetch fallback applied:", err);
+      })
+      .finally(() => {
+        setExplainLoading(false);
+      });
+  }, [scheme?.scheme_id, siteLanguage]);
+
+  // Resilient fallback summary text if API is offline or generating
+  const displaySummaryText = useMemo(() => {
+    if (explanation?.summary && explanation.summary.trim().length > 0) {
+      return explanation.summary;
+    }
+    if (!scheme) return '';
+
+    if (siteLanguage === 'hi') {
+      return `${scheme.name} के अंतर्गत पात्र नागरिकों को ${scheme.benefits} प्रदान किया जाता है। यह योजना विशेष रूप से लक्षित लाभार्थियों को सामाजिक व आर्थिक सुरक्षा देने के लिए शुरू की गई है।`;
+    }
+    return `Under ${scheme.name}, eligible beneficiaries receive ${scheme.benefits}. This initiative directly provides financial assistance and welfare support.`;
+  }, [scheme, explanation?.summary, siteLanguage]);
 
   // Bookmark Toggle
   const handleBookmarkToggle = () => {
@@ -131,6 +173,15 @@ export const SchemeDetail: React.FC = () => {
   const readyDocsCount = useMemo(() => {
     return documentsList.filter((doc) => !!checkedDocs[doc]).length;
   }, [documentsList, checkedDocs]);
+
+  const docProgressPercentage = useMemo(() => {
+    if (documentsList.length === 0) return 100;
+    return Math.round((readyDocsCount / documentsList.length) * 100);
+  }, [documentsList, readyDocsCount]);
+
+  const eligibilityPoints = useMemo(() => {
+    return parseEligibilityPoints(scheme?.eligibility_text);
+  }, [scheme?.eligibility_text]);
 
   // Loading Skeleton State
   if (loading) {
@@ -222,14 +273,20 @@ export const SchemeDetail: React.FC = () => {
         {/* Badges Row */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 ring-1 ring-emerald-200 shadow-2xs">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-forest-50 text-forest-800 border border-forest-300 ring-1 ring-forest-200/50 shadow-2xs">
+              <CheckCircle2 className="w-3.5 h-3.5 text-forest-600" />
               <span>{t('badgeEligible')}</span>
             </span>
 
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-cream-100 text-charcoal-800 border border-cream-200">
-              {isCentral ? t('tagCentral') : `${scheme.state} ${t('tagState')}`}
+              {isCentral ? `🏛️ ${t('tagCentral')}` : `📍 ${scheme.state} ${t('tagState')}`}
             </span>
+
+            {scheme.category && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-saffron-50 text-saffron-800 border border-saffron-200">
+                🌱 {scheme.category}
+              </span>
+            )}
           </div>
 
           <button
@@ -257,22 +314,28 @@ export const SchemeDetail: React.FC = () => {
           </p>
         </div>
 
-        {/* Plain-Language AI Summary Box (Auto-rendered) */}
-        {explainLoading ? (
-          <div className="p-4 rounded-2xl bg-saffron-50/50 border border-saffron-200 animate-pulse flex items-center gap-3">
-            <Loader2 className="w-4 h-4 text-saffron-600 animate-spin" />
-            <span className="text-xs text-saffron-900 font-medium">
-              {siteLanguage === 'hi' ? 'सरल भाषा में सारांश तैयार हो रहा है...' : 'Generating plain-language summary...'}
-            </span>
+        {/* Plain-Language AI Summary Box (Auto-rendered, No User Clicks, Zero Model Jargon) */}
+        {explainLoading && !explanation?.summary ? (
+          <div className="p-4 sm:p-5 rounded-2xl bg-saffron-50/70 border border-saffron-200 animate-pulse flex items-center gap-3">
+            <Loader2 className="w-4 h-4 text-saffron-600 animate-spin flex-shrink-0" />
+            <div className="space-y-1">
+              <span className="text-xs font-bold text-saffron-900 block flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-saffron-600" />
+                <span>{t('aiExplainSummaryTitle')}</span>
+              </span>
+              <span className="text-xs text-saffron-800/90 font-medium">
+                {siteLanguage === 'hi' ? 'सरल भाषा में मुख्य लाभ तैयार हो रहे हैं...' : 'Generating easy-to-read summary...'}
+              </span>
+            </div>
           </div>
-        ) : explanation?.summary ? (
-          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-saffron-50/70 via-cream-50 to-saffron-50/70 border border-saffron-200 space-y-1.5">
+        ) : displaySummaryText ? (
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-saffron-50/80 via-cream-50 to-saffron-50/80 border border-saffron-200 space-y-1.5 shadow-2xs">
             <h2 className="text-xs font-bold text-saffron-900 uppercase tracking-wide flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-saffron-600" />
               <span>{t('aiExplainSummaryTitle')}</span>
             </h2>
             <p className="text-xs sm:text-sm text-charcoal-900 leading-relaxed font-medium">
-              {explanation.summary}
+              {displaySummaryText}
             </p>
           </div>
         ) : null}
@@ -280,136 +343,240 @@ export const SchemeDetail: React.FC = () => {
       </div>
 
       {/* 2. myScheme 4-TAB NAVIGATION */}
-      <div className="flex items-center gap-1.5 border-b border-cream-300 pb-1 overflow-x-auto scrollbar-none">
+      <div 
+        role="tablist"
+        aria-label="Scheme Details Navigation"
+        className="flex items-center gap-2 border-b border-cream-300 pb-1 overflow-x-auto scrollbar-none scroll-smooth touch-pan-x"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
         {[
           { id: 'benefits', label: t('detailTabBenefits'), icon: <Gift className="w-4 h-4" /> },
           { id: 'eligibility', label: t('detailTabEligibility'), icon: <UserCheck className="w-4 h-4" /> },
           { id: 'documents', label: t('detailTabDocuments'), icon: <CheckSquare className="w-4 h-4" /> },
           { id: 'apply', label: t('detailTabHowToApply'), icon: <Globe className="w-4 h-4" /> },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
-              activeTab === tab.id
-                ? 'bg-saffron-500 text-white shadow-md'
-                : 'text-charcoal-600 hover:text-charcoal-900 hover:bg-cream-100'
-            }`}
-          >
-            <span>{tab.icon}</span>
-            <span>{tab.label}</span>
-          </button>
-        ))}
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={isActive}
+              type="button"
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-2 px-4 sm:px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
+                isActive
+                  ? 'bg-saffron-500 text-white shadow-md scale-102 ring-2 ring-saffron-500/20'
+                  : 'text-charcoal-600 hover:text-charcoal-900 hover:bg-cream-100 bg-white/70 border border-cream-200/80'
+              }`}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* 3. TAB CONTENT PANELS */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-cream-300 shadow-card">
         
-        {/* TAB 1: BENEFITS */}
+        {/* ========================================================================= */}
+        {/* TAB 1: क्या मिलेगा (BENEFITS) */}
+        {/* ========================================================================= */}
         {activeTab === 'benefits' && (
           <div className="space-y-6 animate-fadeIn">
             <div className="flex items-center gap-2 border-b border-cream-200 pb-3">
-              <Gift className="w-5 h-5 text-forest-600" />
+              <Gift className="w-5 h-5 text-forest-600 flex-shrink-0" />
               <h2 className="text-lg sm:text-xl font-bold text-charcoal-900">
                 {t('detailBenefitsTitle')}
               </h2>
             </div>
 
-            <div className="p-5 rounded-2xl bg-forest-50/70 border border-forest-200 text-sm sm:text-base text-forest-950 leading-relaxed font-medium">
-              {scheme.benefits}
+            {/* Highlight Benefits Box */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-forest-50 border border-forest-200/90 text-forest-950 space-y-3 shadow-xs">
+              <div className="flex items-center gap-2 text-xs font-bold text-forest-800 uppercase tracking-wider">
+                <ShieldCheck className="w-4 h-4 text-forest-600" />
+                <span>{siteLanguage === 'hi' ? 'मुख्य सहायता व वित्तीय लाभ' : 'Key Assistance & Financial Grants'}</span>
+              </div>
+              <p className="text-sm sm:text-base leading-relaxed font-semibold text-forest-900">
+                {scheme.benefits}
+              </p>
             </div>
 
+            {/* AI Summarized Benefit Highlights */}
             {explanation?.key_benefits && explanation.key_benefits.length > 0 && (
-              <div className="space-y-3 pt-2">
-                <h3 className="text-xs sm:text-sm font-bold text-charcoal-800 uppercase tracking-wide">
-                  {t('aiExplainBenefitsTitle')}:
+              <div className="space-y-3 pt-1">
+                <h3 className="text-xs sm:text-sm font-bold text-charcoal-800 uppercase tracking-wide flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-saffron-600" />
+                  <span>{t('aiExplainBenefitsTitle')}:</span>
                 </h3>
-                <ul className="space-y-2.5">
-                  {explanation.key_benefits.map((b, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-charcoal-800">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {explanation.key_benefits.map((benefit, idx) => (
+                    <div 
+                      key={idx} 
+                      className="p-3.5 rounded-2xl bg-cream-50/90 border border-cream-200 flex items-start gap-2.5 text-xs sm:text-sm text-charcoal-800"
+                    >
                       <CheckCircle2 className="w-4 h-4 text-forest-600 flex-shrink-0 mt-0.5" />
-                      <span className="leading-relaxed">{b}</span>
-                    </li>
+                      <span className="leading-relaxed font-medium">{benefit}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
+              </div>
+            )}
+
+            {/* Beneficiary Target Note */}
+            {scheme.beneficiary_type && (
+              <div className="p-4 rounded-2xl bg-cream-100/70 border border-cream-200 flex items-center gap-3 text-xs sm:text-sm text-charcoal-700">
+                <Tag className="w-4 h-4 text-saffron-600 flex-shrink-0" />
+                <span>
+                  <strong className="text-charcoal-900">{siteLanguage === 'hi' ? 'लक्षित लाभार्थी:' : 'Target Beneficiaries:'}</strong> {scheme.beneficiary_type}
+                </span>
               </div>
             )}
           </div>
         )}
 
-        {/* TAB 2: ELIGIBILITY */}
+        {/* ========================================================================= */}
+        {/* TAB 2: कौन पात्र है (ELIGIBILITY) */}
+        {/* ========================================================================= */}
         {activeTab === 'eligibility' && (
           <div className="space-y-6 animate-fadeIn">
             <div className="flex items-center gap-2 border-b border-cream-200 pb-3">
-              <UserCheck className="w-5 h-5 text-saffron-600" />
+              <UserCheck className="w-5 h-5 text-saffron-600 flex-shrink-0" />
               <h2 className="text-lg sm:text-xl font-bold text-charcoal-900">
                 {t('detailEligibilityTitle')}
               </h2>
             </div>
 
-            {/* Snapshot Attributes Grid */}
+            {/* Snapshot 4-Grid Attributes */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs sm:text-sm">
-              <div className="p-3.5 rounded-2xl bg-cream-50/80 border border-cream-200">
-                <span className="text-charcoal-500 block text-xs mb-0.5">{t('detailAgeLimit')}</span>
-                <span className="font-bold text-charcoal-900">
+              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 space-y-1">
+                <div className="flex items-center gap-1.5 text-charcoal-500 text-xs">
+                  <Calendar className="w-3.5 h-3.5 text-saffron-600" />
+                  <span>{t('detailAgeLimit')}</span>
+                </div>
+                <div className="font-bold text-charcoal-900 text-sm">
                   {scheme.age_min ?? 0} – {scheme.age_max ?? 100} {siteLanguage === 'hi' ? 'वर्ष' : 'Yrs'}
-                </span>
+                </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-cream-50/80 border border-cream-200">
-                <span className="text-charcoal-500 block text-xs mb-0.5">{t('detailIncomeLimit')}</span>
-                <span className="font-bold text-forest-700">
+              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 space-y-1">
+                <div className="flex items-center gap-1.5 text-charcoal-500 text-xs">
+                  <IndianRupee className="w-3.5 h-3.5 text-forest-600" />
+                  <span>{t('detailIncomeLimit')}</span>
+                </div>
+                <div className="font-bold text-forest-700 text-sm">
                   {scheme.income_max && scheme.income_max > 0 
                     ? `≤ ₹${scheme.income_max.toLocaleString('en-IN')}` 
                     : t('detailNoIncomeLimit')}
-                </span>
+                </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-cream-50/80 border border-cream-200">
-                <span className="text-charcoal-500 block text-xs mb-0.5">{t('detailCaste')}</span>
-                <span className="font-bold text-charcoal-900 line-clamp-1">
-                  {scheme.caste_categories || 'All'}
-                </span>
+              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 space-y-1">
+                <div className="flex items-center gap-1.5 text-charcoal-500 text-xs">
+                  <Tag className="w-3.5 h-3.5 text-saffron-600" />
+                  <span>{t('detailCaste')}</span>
+                </div>
+                <div className="font-bold text-charcoal-900 text-sm line-clamp-1">
+                  {scheme.caste_categories || (siteLanguage === 'hi' ? 'सभी वर्ग' : 'All Categories')}
+                </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-cream-50/80 border border-cream-200">
-                <span className="text-charcoal-500 block text-xs mb-0.5">{t('detailResidence')}</span>
-                <span className="font-bold text-charcoal-900">
-                  {scheme.residence || 'All'}
-                </span>
+              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 space-y-1">
+                <div className="flex items-center gap-1.5 text-charcoal-500 text-xs">
+                  <MapPin className="w-3.5 h-3.5 text-saffron-600" />
+                  <span>{t('detailResidence')}</span>
+                </div>
+                <div className="font-bold text-charcoal-900 text-sm">
+                  {scheme.residence || (siteLanguage === 'hi' ? 'ग्रामीण व शहरी' : 'Rural & Urban')}
+                </div>
               </div>
             </div>
 
-            {/* Official Criteria Text */}
-            <div className="p-4 rounded-2xl bg-cream-50/50 border border-cream-200 text-xs sm:text-sm text-charcoal-800 leading-relaxed">
-              <p>{scheme.eligibility_text}</p>
+            {/* Special Eligibility Priority Badges */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              {scheme.requires_bpl && (
+                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-700" />
+                  <span>{siteLanguage === 'hi' ? 'बीपीएल / अंत्योदय कार्ड धारक प्राथमिकता' : 'BPL / Antyodaya Priority'}</span>
+                </span>
+              )}
+              {scheme.requires_disability && (
+                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-blue-100 text-blue-900 border border-blue-300 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-700" />
+                  <span>{siteLanguage === 'hi' ? 'दिव्यांग (PwD) सहायता' : 'PwD Priority'}</span>
+                </span>
+              )}
+              {scheme.gender && (
+                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-cream-100 text-charcoal-800 border border-cream-300">
+                  {siteLanguage === 'hi' ? 'लिंग:' : 'Gender:'} {scheme.gender}
+                </span>
+              )}
+            </div>
+
+            {/* Structured Criteria Breakdown */}
+            <div className="space-y-3 pt-2">
+              <h3 className="text-xs sm:text-sm font-bold text-charcoal-800 uppercase tracking-wide">
+                {siteLanguage === 'hi' ? 'विस्तृत पात्रता विवरण:' : 'Detailed Eligibility Criteria:'}
+              </h3>
+              <div className="space-y-2.5">
+                {eligibilityPoints.map((point, idx) => (
+                  <div 
+                    key={idx} 
+                    className="p-3.5 rounded-2xl bg-cream-50/80 border border-cream-200 flex items-start gap-3 text-xs sm:text-sm text-charcoal-800 leading-relaxed"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-saffron-600 flex-shrink-0 mt-0.5" />
+                    <span>{point}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        {/* TAB 3: REQUIRED DOCUMENTS */}
+        {/* ========================================================================= */}
+        {/* TAB 3: जरूरी कागजात (DOCUMENTS CHECKLIST) */}
+        {/* ========================================================================= */}
         {activeTab === 'documents' && (
-          <div className="space-y-5 animate-fadeIn">
+          <div className="space-y-6 animate-fadeIn">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cream-200 pb-3">
               <div className="flex items-center gap-2">
-                <CheckSquare className="w-5 h-5 text-saffron-600" />
+                <CheckSquare className="w-5 h-5 text-saffron-600 flex-shrink-0" />
                 <h2 className="text-lg sm:text-xl font-bold text-charcoal-900">
                   {t('detailDocumentsTitle')}
                 </h2>
               </div>
               
               {documentsList.length > 0 && (
-                <span className="text-xs font-bold px-3 py-1 rounded-full bg-saffron-50 text-saffron-800 border border-saffron-200">
-                  {readyDocsCount} / {documentsList.length} {t('detailDocReady')} ({Math.round((readyDocsCount / documentsList.length) * 100)}%)
+                <span className={`text-xs font-bold px-3.5 py-1 rounded-full border transition-all ${
+                  readyDocsCount === documentsList.length
+                    ? 'bg-forest-100 text-forest-900 border-forest-300'
+                    : 'bg-saffron-50 text-saffron-900 border-saffron-200'
+                }`}>
+                  {readyDocsCount} / {documentsList.length} {t('detailDocReady')} ({docProgressPercentage}%)
                 </span>
               )}
             </div>
 
-            <p className="text-xs sm:text-sm text-charcoal-600">
-              {t('detailDocsChecklistHelp')}
-            </p>
+            {/* Live Document Preparation Progress Bar */}
+            {documentsList.length > 0 && (
+              <div className="space-y-2">
+                <div className="w-full h-2.5 bg-cream-200 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full transition-all duration-300 rounded-full ${
+                      docProgressPercentage === 100 ? 'bg-forest-500' : 'bg-saffron-500'
+                    }`}
+                    style={{ width: `${docProgressPercentage}%` }}
+                  />
+                </div>
+                <p className="text-xs text-charcoal-600">
+                  {docProgressPercentage === 100 
+                    ? t('detailDocsAllReady') 
+                    : t('detailDocsChecklistHelp')}
+                </p>
+              </div>
+            )}
 
+            {/* Interactive Document Checklist Items */}
             {documentsList.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {documentsList.map((doc, idx) => {
@@ -419,10 +586,10 @@ export const SchemeDetail: React.FC = () => {
                       key={idx}
                       type="button"
                       onClick={() => toggleDocCheck(doc)}
-                      className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all ${
+                      className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all duration-200 ${
                         isChecked
-                          ? 'bg-forest-50/80 border-forest-300 text-forest-950 font-semibold'
-                          : 'bg-white border-cream-300 text-charcoal-700 hover:bg-cream-50'
+                          ? 'bg-forest-50/90 border-forest-300 text-forest-950 font-semibold shadow-2xs ring-1 ring-forest-300/50'
+                          : 'bg-white border-cream-300 text-charcoal-700 hover:bg-cream-50 hover:border-cream-400'
                       }`}
                     >
                       {isChecked ? (
@@ -430,48 +597,113 @@ export const SchemeDetail: React.FC = () => {
                       ) : (
                         <Square className="w-5 h-5 text-charcoal-400 flex-shrink-0 mt-0.5" />
                       )}
-                      <span className="text-xs sm:text-sm leading-snug">{doc}</span>
+                      <div className="space-y-0.5">
+                        <span className="text-xs sm:text-sm leading-snug block">{doc}</span>
+                        <span className="text-[10px] text-charcoal-500 block">
+                          {isChecked ? `✓ ${t('detailDocReady')}` : `○ ${t('detailDocPending')}`}
+                        </span>
+                      </div>
                     </button>
                   );
                 })}
               </div>
             ) : (
-              <p className="text-xs sm:text-sm text-charcoal-500 italic">
-                {siteLanguage === 'hi' ? 'सामान्य पहचान पत्र (आधार / वोटर आईडी / निवास प्रमाण पत्र)' : 'Standard identity and address documents required.'}
-              </p>
+              <div className="p-4 rounded-2xl bg-cream-50 border border-cream-200 flex items-center gap-3 text-xs sm:text-sm text-charcoal-600">
+                <FileText className="w-5 h-5 text-saffron-600 flex-shrink-0" />
+                <span>
+                  {siteLanguage === 'hi' 
+                    ? 'सामान्य पहचान पत्र (आधार कार्ड / वोटर आईडी / बैंक पासबुक / निवास प्रमाण पत्र) साथ रखें।' 
+                    : 'Standard identity and residence documents (Aadhaar, Voter ID, Bank Passbook) required.'}
+                </span>
+              </div>
             )}
+
+            {/* Helpful advice for obtaining missing certificates */}
+            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-xs sm:text-sm text-amber-950 flex items-start gap-3">
+              <HelpCircle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
+              <span>{t('detailDocsMissingTip')}</span>
+            </div>
           </div>
         )}
 
-        {/* TAB 4: HOW TO APPLY */}
+        {/* ========================================================================= */}
+        {/* TAB 4: आवेदन कैसे करें (HOW TO APPLY) */}
+        {/* ========================================================================= */}
         {activeTab === 'apply' && (
           <div className="space-y-6 animate-fadeIn">
             <div className="flex items-center gap-2 border-b border-cream-200 pb-3">
-              <Globe className="w-5 h-5 text-saffron-600" />
+              <Globe className="w-5 h-5 text-saffron-600 flex-shrink-0" />
               <h2 className="text-lg sm:text-xl font-bold text-charcoal-900">
                 {t('detailApplicationProcessTitle')}
               </h2>
             </div>
 
+            {/* 3-Step Guided Process Cards */}
+            <div className="space-y-3">
+              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 flex items-start gap-3.5">
+                <div className="w-7 h-7 rounded-xl bg-saffron-100 text-saffron-800 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                  1
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs sm:text-sm font-bold text-charcoal-900">
+                    {t('detailApplyStep1Title')}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
+                    {t('detailApplyStep1Desc')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 flex items-start gap-3.5">
+                <div className="w-7 h-7 rounded-xl bg-saffron-100 text-saffron-800 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                  2
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs sm:text-sm font-bold text-charcoal-900">
+                    {t('detailApplyStep2Title')}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
+                    {t('detailApplyStep2Desc')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 flex items-start gap-3.5">
+                <div className="w-7 h-7 rounded-xl bg-saffron-100 text-saffron-800 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                  3
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs sm:text-sm font-bold text-charcoal-900">
+                    {t('detailApplyStep3Title')}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
+                    {t('detailApplyStep3Desc')}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Official Instructions if present */}
             {scheme.application_process && (
-              <div className="p-4 rounded-2xl bg-cream-50/70 border border-cream-200 text-xs sm:text-sm text-charcoal-800 leading-relaxed">
+              <div className="p-4 rounded-2xl bg-cream-100/70 border border-cream-200 text-xs sm:text-sm text-charcoal-800 leading-relaxed space-y-1">
+                <span className="font-bold block text-charcoal-900">
+                  {siteLanguage === 'hi' ? 'आधिकारिक निर्देश:' : 'Official Guidelines:'}
+                </span>
                 <p>{scheme.application_process}</p>
               </div>
             )}
 
-            {/* Offline Assistance Note for Rural Citizens */}
-            <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 text-xs sm:text-sm text-blue-950 space-y-1">
-              <span className="font-bold block">
-                {siteLanguage === 'hi' ? '💡 नजदीकी सहायता केंद्र:' : '💡 Nearest Assistance Center:'}
+            {/* Offline Assistance Box (CSC / Anganwadi / Panchayat Kendra) */}
+            <div className="p-5 rounded-2xl bg-blue-50/80 border border-blue-200 text-xs sm:text-sm text-blue-950 space-y-1.5 shadow-2xs">
+              <span className="font-bold text-sm text-blue-900 block flex items-center gap-2">
+                <span>{t('detailCscCenterTitle')}</span>
               </span>
-              <p>
-                {siteLanguage === 'hi' 
-                  ? 'यदि ऑनलाइन आवेदन में कठिनाई हो, तो अपने नजदीकी जन सेवा केंद्र (CSC), आंगनवाड़ी केंद्र या ग्राम पंचायत कार्यालय में कागजात ले जाएं।' 
-                  : 'If you need help applying, visit your nearest Common Service Center (CSC), Anganwadi, or Gram Panchayat office.'}
+              <p className="leading-relaxed text-blue-900/90">
+                {t('detailCscCenterDesc')}
               </p>
             </div>
 
-            {/* Official Link CTA */}
+            {/* Official Link Action Buttons */}
             <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
               {scheme.apply_url && (
                 <a
@@ -507,3 +739,4 @@ export const SchemeDetail: React.FC = () => {
 };
 
 export default SchemeDetail;
+
