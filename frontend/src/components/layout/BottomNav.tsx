@@ -1,60 +1,132 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { Home, Search, Bookmark } from 'lucide-react';
+import { getLocalBookmarks } from '../../services/api';
 
 export const BottomNav: React.FC = () => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const location = useLocation();
+  const [bookmarkCount, setBookmarkCount] = useState<number>(0);
 
-  const isActive = (path: string) => {
-    if (path === '/') return location.pathname === '/';
-    if (path === '/find') return location.pathname === '/find' || location.pathname === '/wizard' || location.pathname === '/results';
-    if (path === '/bookmarks') return location.pathname === '/bookmarks';
+  // Sync bookmark count from local storage
+  useEffect(() => {
+    const updateCount = () => {
+      const items = getLocalBookmarks();
+      setBookmarkCount(items.length);
+    };
+
+    updateCount();
+    window.addEventListener('yojana_bookmarks_updated', updateCount);
+    window.addEventListener('storage', updateCount);
+
+    return () => {
+      window.removeEventListener('yojana_bookmarks_updated', updateCount);
+      window.removeEventListener('storage', updateCount);
+    };
+  }, []);
+
+  const isTabActive = (tab: 'home' | 'find' | 'bookmarks') => {
+    const path = location.pathname;
+    if (tab === 'home') {
+      return path === '/';
+    }
+    if (tab === 'find') {
+      return path === '/find' || path === '/wizard' || path === '/results';
+    }
+    if (tab === 'bookmarks') {
+      return path === '/bookmarks';
+    }
     return false;
   };
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-cream-300 px-4 py-2 shadow-2xl flex items-center justify-around">
-      {/* Home Tab */}
-      <Link
-        to="/"
-        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all ${
-          isActive('/') 
-            ? 'text-saffron-700 font-extrabold' 
-            : 'text-charcoal-500 hover:text-charcoal-900'
-        }`}
-      >
-        <Home className={`w-5 h-5 ${isActive('/') ? 'text-saffron-600 stroke-[2.5]' : ''}`} />
-        <span className="text-[11px] font-medium">{t('navHome')}</span>
-      </Link>
+    <nav
+      aria-label={language === 'hi' ? 'मोबाइल नेविगेशन बार' : 'Mobile Bottom Navigation'}
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-[#f1ebd8] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-1.5 px-3"
+    >
+      <div className="max-w-md mx-auto grid grid-cols-3 gap-1 items-center">
+        {/* Tab 1: Home / मुख्य पृष्ठ */}
+        <Link
+          to="/"
+          aria-current={isTabActive('home') ? 'page' : undefined}
+          className={`flex flex-col items-center justify-center min-h-[48px] py-1.5 px-2 rounded-xl transition-all duration-200 active:scale-95 ${
+            isTabActive('home')
+              ? 'bg-amber-50/80 text-[#c2410c] font-bold'
+              : 'text-[#78716c] hover:text-[#1c1917] hover:bg-cream-100/50'
+          }`}
+        >
+          <div className="relative flex items-center justify-center">
+            <Home
+              className={`w-5 h-5 transition-transform duration-200 ${
+                isTabActive('home')
+                  ? 'text-[#c2410c] stroke-[2.5] scale-110'
+                  : 'text-[#78716c] stroke-[1.8]'
+              }`}
+            />
+          </div>
+          <span className="text-[11px] leading-tight mt-1 font-semibold tracking-tight">
+            {language === 'hi' ? 'होम' : 'Home'}
+          </span>
+        </Link>
 
-      {/* Find Schemes Tab */}
-      <Link
-        to="/find"
-        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all ${
-          isActive('/find') 
-            ? 'text-saffron-700 font-extrabold' 
-            : 'text-charcoal-500 hover:text-charcoal-900'
-        }`}
-      >
-        <Search className={`w-5 h-5 ${isActive('/find') ? 'text-saffron-600 stroke-[2.5]' : ''}`} />
-        <span className="text-[11px] font-medium">{language === 'hi' ? 'योजना खोजें' : 'Find Schemes'}</span>
-      </Link>
+        {/* Tab 2: Find Schemes / योजना खोजें */}
+        <Link
+          to="/find"
+          aria-current={isTabActive('find') ? 'page' : undefined}
+          className={`flex flex-col items-center justify-center min-h-[48px] py-1.5 px-2 rounded-xl transition-all duration-200 active:scale-95 ${
+            isTabActive('find')
+              ? 'bg-amber-50/80 text-[#c2410c] font-bold'
+              : 'text-[#78716c] hover:text-[#1c1917] hover:bg-cream-100/50'
+          }`}
+        >
+          <div className="relative flex items-center justify-center">
+            <Search
+              className={`w-5 h-5 transition-transform duration-200 ${
+                isTabActive('find')
+                  ? 'text-[#c2410c] stroke-[2.5] scale-110'
+                  : 'text-[#78716c] stroke-[1.8]'
+              }`}
+            />
+          </div>
+          <span className="text-[11px] leading-tight mt-1 font-semibold tracking-tight">
+            {language === 'hi' ? 'योजना खोजें' : 'Find Schemes'}
+          </span>
+        </Link>
 
-      {/* Saved Bookmarks Tab */}
-      <Link
-        to="/bookmarks"
-        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all ${
-          isActive('/bookmarks') 
-            ? 'text-saffron-700 font-extrabold' 
-            : 'text-charcoal-500 hover:text-charcoal-900'
-        }`}
-      >
-        <Bookmark className={`w-5 h-5 ${isActive('/bookmarks') ? 'text-saffron-600 stroke-[2.5] fill-saffron-100' : ''}`} />
-        <span className="text-[11px] font-medium">{language === 'hi' ? 'सहेजी गई' : 'Saved'}</span>
-      </Link>
-    </div>
+        {/* Tab 3: Saved / सहेजी गई */}
+        <Link
+          to="/bookmarks"
+          aria-current={isTabActive('bookmarks') ? 'page' : undefined}
+          className={`flex flex-col items-center justify-center min-h-[48px] py-1.5 px-2 rounded-xl transition-all duration-200 active:scale-95 relative ${
+            isTabActive('bookmarks')
+              ? 'bg-amber-50/80 text-[#c2410c] font-bold'
+              : 'text-[#78716c] hover:text-[#1c1917] hover:bg-cream-100/50'
+          }`}
+        >
+          <div className="relative flex items-center justify-center">
+            <Bookmark
+              className={`w-5 h-5 transition-transform duration-200 ${
+                isTabActive('bookmarks')
+                  ? 'text-[#c2410c] stroke-[2.5] fill-amber-100 scale-110'
+                  : 'text-[#78716c] stroke-[1.8]'
+              }`}
+            />
+            {bookmarkCount > 0 && (
+              <span
+                className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-[#c2410c] text-white text-[10px] font-bold flex items-center justify-center shadow-sm"
+                aria-label={`${bookmarkCount} ${language === 'hi' ? 'सहेजी गई योजनाएं' : 'saved schemes'}`}
+              >
+                {bookmarkCount > 9 ? '9+' : bookmarkCount}
+              </span>
+            )}
+          </div>
+          <span className="text-[11px] leading-tight mt-1 font-semibold tracking-tight">
+            {language === 'hi' ? 'सहेजी गई' : 'Saved'}
+          </span>
+        </Link>
+      </div>
+    </nav>
   );
 };
 

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
-  const { language, toggleLanguage, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { currentUser, isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -101,22 +101,43 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* Right Action: High-Visibility Language Switcher + User Info */}
-          <div className="flex items-center gap-3">
-            {/* Language Switcher Pill */}
-            <button
-              onClick={toggleLanguage}
-              aria-label="Toggle language between Hindi and English"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl border-2 border-saffron-300 bg-white hover:bg-saffron-50 text-xs font-bold text-charcoal-800 shadow-sm transition-all duration-200 hover:scale-105 active:scale-95"
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* High-Visibility Segmented Language Switcher */}
+            <div 
+              role="group" 
+              aria-label="Language selection"
+              className="inline-flex items-center p-1 rounded-full bg-cream-200/90 border-2 border-saffron-300 shadow-sm"
             >
-              <Globe className="w-4 h-4 text-saffron-600 flex-shrink-0" />
-              <span className={language === 'en' ? 'text-saffron-700 font-extrabold' : 'text-charcoal-400 font-medium'}>
-                English
-              </span>
-              <span className="text-charcoal-300">|</span>
-              <span className={language === 'hi' ? 'text-forest-700 font-extrabold text-sm' : 'text-charcoal-400 font-medium'}>
+              <div className="hidden xs:flex items-center pl-1.5 pr-1 text-saffron-700">
+                <Globe className="w-3.5 h-3.5" aria-hidden="true" />
+              </div>
+              <button
+                type="button"
+                onClick={() => setLanguage('hi')}
+                aria-pressed={language === 'hi'}
+                aria-label="हिंदी भाषा चुनें (Hindi)"
+                className={`px-3 py-1 sm:py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                  language === 'hi'
+                    ? 'bg-gradient-to-r from-saffron-500 to-saffron-600 text-white shadow-sm font-black scale-100'
+                    : 'text-charcoal-700 hover:text-charcoal-900 hover:bg-cream-100/80 font-semibold'
+                }`}
+              >
                 हिंदी
-              </span>
-            </button>
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage('en')}
+                aria-pressed={language === 'en'}
+                aria-label="Select English language"
+                className={`px-3 py-1 sm:py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                  language === 'en'
+                    ? 'bg-gradient-to-r from-saffron-500 to-saffron-600 text-white shadow-sm font-black scale-100'
+                    : 'text-charcoal-700 hover:text-charcoal-900 hover:bg-cream-100/80 font-semibold'
+                }`}
+              >
+                English
+              </button>
+            </div>
 
             {/* User Auth Status Pill */}
             {isAuthenticated && currentUser ? (
@@ -171,46 +192,87 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-saffron-100 py-4 px-2 space-y-2 animate-fadeIn bg-cream-100/95 backdrop-blur-md rounded-b-xl shadow-lg">
-            <Link
-              to="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
-                isActive('/') ? 'bg-saffron-100 text-saffron-900 font-semibold' : 'text-charcoal-800'
-              }`}
-            >
-              {t('navHome')}
-            </Link>
+          <div className="md:hidden border-t border-saffron-100 py-4 px-2 space-y-3 animate-fadeIn bg-cream-100/95 backdrop-blur-md rounded-b-xl shadow-lg">
+            <div className="space-y-1">
+              <Link
+                to="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
+                  isActive('/') ? 'bg-saffron-100 text-saffron-900 font-semibold' : 'text-charcoal-800'
+                }`}
+              >
+                {t('navHome')}
+              </Link>
 
-            <Link
-              to="/find"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
-                isActive('/find') || isActive('/wizard') ? 'bg-forest-100 text-forest-900 font-semibold' : 'text-charcoal-800'
-              }`}
-            >
-              {t('navFindSchemes')}
-            </Link>
+              <Link
+                to="/find"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
+                  isActive('/find') || isActive('/wizard') ? 'bg-forest-100 text-forest-900 font-semibold' : 'text-charcoal-800'
+                }`}
+              >
+                {t('navFindSchemes')}
+              </Link>
 
-            <Link
-              to="/bookmarks"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
-                isActive('/bookmarks') ? 'bg-saffron-100 text-saffron-900 font-semibold' : 'text-charcoal-800'
-              }`}
-            >
-              {t('navBookmarks')}
-            </Link>
+              <Link
+                to="/bookmarks"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
+                  isActive('/bookmarks') ? 'bg-saffron-100 text-saffron-900 font-semibold' : 'text-charcoal-800'
+                }`}
+              >
+                {t('navBookmarks')}
+              </Link>
 
-            <Link
-              to="/profile"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
-                isActive('/profile') ? 'bg-saffron-100 text-saffron-900 font-semibold' : 'text-charcoal-800'
-              }`}
-            >
-              {t('navProfile')}
-            </Link>
+              <Link
+                to="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
+                  isActive('/profile') ? 'bg-saffron-100 text-saffron-900 font-semibold' : 'text-charcoal-800'
+                }`}
+              >
+                {t('navProfile')}
+              </Link>
+            </div>
+
+            {/* Language Switcher in Mobile Drawer */}
+            <div className="pt-2 border-t border-cream-300 px-2">
+              <p className="text-xs font-bold text-charcoal-600 mb-2">
+                {language === 'hi' ? 'भाषा चुनें (Select Language):' : 'Select Language (भाषा चुनें):'}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLanguage('hi');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`py-2 px-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-all ${
+                    language === 'hi'
+                      ? 'bg-saffron-500 text-white border-saffron-600 shadow-sm font-black'
+                      : 'bg-white text-charcoal-700 border-cream-300 hover:bg-cream-50'
+                  }`}
+                >
+                  <span>हिंदी</span>
+                  {language === 'hi' && <span>✓</span>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLanguage('en');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`py-2 px-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-all ${
+                    language === 'en'
+                      ? 'bg-saffron-500 text-white border-saffron-600 shadow-sm font-black'
+                      : 'bg-white text-charcoal-700 border-cream-300 hover:bg-cream-50'
+                  }`}
+                >
+                  <span>English</span>
+                  {language === 'en' && <span>✓</span>}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
