@@ -4,8 +4,16 @@ from app.main import app
 client = TestClient(app)
 
 # =============================================================================
-# 1. Health Endpoints Tests (/health, /api/v1/health)
+# 1. Root & Health Endpoints Tests (/, /health, /api/v1/health)
 # =============================================================================
+
+def test_root_endpoint():
+    """Verify GET / returns HTTP 200 with app info and docs link."""
+    response = client.get("/")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "online"
+    assert "docs_url" in data
 
 def test_health_endpoint():
     """Verify GET /health returns HTTP 200 with status, version, uptime, and timestamp."""

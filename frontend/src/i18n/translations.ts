@@ -154,6 +154,11 @@ export interface TranslationDictionary {
   resultsRefineProfile: string;
   filterAllCategories: string;
   filterCategory: string;
+  filterCategoryAll: string;
+  filterCategoryEducation: string;
+  filterCategoryMaternity: string;
+  filterCategoryBusiness: string;
+  filterCategoryPension: string;
   filterScope: string;
   filterScopeAll: string;
   filterScopeCentral: string;
@@ -416,6 +421,11 @@ export const translations: Record<Language, TranslationDictionary> = {
     resultsRefineProfile: "Change Profile",
     filterAllCategories: "All Schemes",
     filterCategory: "Category",
+    filterCategoryAll: "🌸 All Schemes",
+    filterCategoryEducation: "🎓 Education",
+    filterCategoryMaternity: "🤱 Maternity & Nutrition",
+    filterCategoryBusiness: "💼 Business & SHG",
+    filterCategoryPension: "👵 Pension & Support",
     filterScope: "Scope",
     filterScopeAll: "All",
     filterScopeCentral: "Central",
@@ -675,6 +685,11 @@ export const translations: Record<Language, TranslationDictionary> = {
     resultsRefineProfile: "प्रोफ़ाइल बदलें",
     filterAllCategories: "सभी योजनाएं",
     filterCategory: "श्रेणी",
+    filterCategoryAll: "🌸 सभी योजनाएं",
+    filterCategoryEducation: "🎓 शिक्षा (Education)",
+    filterCategoryMaternity: "🤱 मातृत्व व पोषण (Maternity)",
+    filterCategoryBusiness: "💼 व्यवसाय व SHG (Business)",
+    filterCategoryPension: "👵 पेंशन व सहायता (Pension)",
     filterScope: "दायरा",
     filterScopeAll: "सभी",
     filterScopeCentral: "केंद्रीय",

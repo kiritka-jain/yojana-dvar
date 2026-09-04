@@ -64,6 +64,18 @@ app.include_router(auth_router, prefix="/api/v1", include_in_schema=False)
 app.include_router(user_router)
 app.include_router(user_router, prefix="/api/v1", include_in_schema=False)
 
+@app.get("/", tags=["Root"])
+async def root():
+    """Root landing endpoint for the API service."""
+    return {
+        "app": settings.APP_NAME,
+        "version": settings.VERSION,
+        "status": "online",
+        "docs_url": "/docs",
+        "health_url": "/health",
+        "frontend_url": "http://localhost:5173"
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
