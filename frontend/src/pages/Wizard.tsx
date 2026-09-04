@@ -545,63 +545,102 @@ export const Wizard: React.FC = () => {
               </div>
             </div>
 
-            {/* Field: Annual Family Income (4 Clear Tiers) */}
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-semibold text-charcoal-900 flex items-center gap-1">
+            {/* Field: Annual Family Income (4 Plain-Language Tiers) */}
+            <div className="space-y-3.5 p-5 sm:p-6 rounded-3xl bg-cream-50/70 border border-forest-200/80 shadow-xs">
+              <div className="flex items-center justify-between">
+                <label className="block text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5">
                   <IndianRupee className="w-4 h-4 text-forest-600" />
                   <span>{t('fieldIncome')}</span>
+                  <span className="text-red-500 font-bold">*</span>
                 </label>
-                <p className="text-xs text-charcoal-500 mt-0.5">
+                <span className="text-xs text-charcoal-500 font-medium hidden sm:block">
                   {t('fieldIncomeHelper')}
-                </p>
+                </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {[
                   {
+                    id: 'bpl',
                     val: 0,
+                    isBpl: true,
                     title: t('incomeTierBpl'),
                     desc: t('incomeTierBplDesc'),
-                    icon: '🏷️'
+                    icon: '🏷️',
+                    isActive: (p: typeof profile) => p.income === 0 || (p.is_bpl && p.income <= 50000),
                   },
                   {
-                    val: 120000,
+                    id: 'low',
+                    val: 100000,
+                    isBpl: false,
                     title: t('incomeTierLow'),
                     desc: t('incomeTierLowDesc'),
-                    icon: '🌾'
+                    icon: '🌾',
+                    isActive: (p: typeof profile) => p.income > 0 && p.income <= 150000 && !p.is_bpl,
                   },
                   {
-                    val: 250000,
+                    id: 'mid',
+                    val: 220000,
+                    isBpl: false,
                     title: t('incomeTierMid'),
                     desc: t('incomeTierMidDesc'),
-                    icon: '💼'
+                    icon: '💼',
+                    isActive: (p: typeof profile) => p.income > 150000 && p.income <= 300000,
                   },
                   {
+                    id: 'high',
                     val: 500000,
+                    isBpl: false,
                     title: t('incomeTierHigh'),
                     desc: t('incomeTierHighDesc'),
-                    icon: '🏢'
+                    icon: '🏢',
+                    isActive: (p: typeof profile) => p.income > 300000,
                   }
-                ].map((tier) => (
-                  <button
-                    key={tier.val}
-                    type="button"
-                    onClick={() => setProfile({ ...profile, income: tier.val, is_bpl: tier.val === 0 ? true : profile.is_bpl })}
-                    className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all ${
-                      profile.income === tier.val
-                        ? 'border-forest-500 bg-forest-50/80 text-forest-950 font-bold ring-2 ring-forest-200 shadow-sm'
-                        : 'border-cream-300 bg-white hover:bg-cream-50 text-charcoal-700'
-                    }`}
-                  >
-                    <span className="text-2xl mt-0.5">{tier.icon}</span>
-                    <div>
-                      <span className="text-sm font-bold block">{tier.title}</span>
-                      <span className="text-xs text-charcoal-500 font-normal">{tier.desc}</span>
-                    </div>
-                  </button>
-                ))}
+                ].map((tier) => {
+                  const selected = tier.isActive(profile);
+                  return (
+                    <button
+                      key={tier.id}
+                      type="button"
+                      onClick={() => {
+                        setProfile({ 
+                          ...profile, 
+                          income: tier.val, 
+                          is_bpl: tier.isBpl ? true : (tier.val === 0 ? true : profile.is_bpl && profile.income === 0 ? false : profile.is_bpl) 
+                        });
+                        setErrors((prev) => ({ ...prev, income: undefined }));
+                      }}
+                      className={`min-h-[80px] p-4 sm:p-4.5 rounded-2xl border-2 text-left flex items-start justify-between gap-3 transition-all duration-200 active:scale-98 group focus:outline-none focus:ring-2 focus:ring-forest-500 ${
+                        selected
+                          ? 'border-forest-600 bg-forest-50/90 text-forest-950 font-bold ring-4 ring-forest-100 shadow-md'
+                          : 'border-cream-300 bg-white hover:border-forest-400 hover:bg-cream-50 text-charcoal-700 shadow-xs'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl sm:text-3xl mt-0.5 filter drop-shadow-xs">{tier.icon}</span>
+                        <div>
+                          <span className={`text-sm sm:text-base font-extrabold block leading-tight ${selected ? 'text-forest-950' : 'text-charcoal-900'}`}>
+                            {tier.title}
+                          </span>
+                          <span className={`text-xs mt-1 block font-medium leading-relaxed ${selected ? 'text-forest-800' : 'text-charcoal-500'}`}>
+                            {tier.desc}
+                          </span>
+                        </div>
+                      </div>
+                      {selected && (
+                        <CheckCircle2 className="w-5 h-5 text-forest-700 flex-shrink-0 mt-0.5" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+
+              {errors.income && (
+                <p role="alert" className="text-xs text-red-600 font-semibold flex items-center gap-1.5 pt-1">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>{errors.income}</span>
+                </p>
+              )}
             </div>
 
             {/* Field: Residence Area */}
@@ -708,116 +747,179 @@ export const Wizard: React.FC = () => {
               </div>
             </div>
 
-            {/* Field: BPL Card Toggle */}
-            <div className="p-4 rounded-2xl border border-cream-300 bg-cream-50/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Field: BPL Card Visual Option Cards */}
+            <div className="space-y-3 p-5 sm:p-6 rounded-3xl bg-cream-50/70 border border-saffron-200/80 shadow-xs">
               <div>
-                <h3 className="text-sm font-semibold text-charcoal-900">
-                  {t('fieldBpl')}
+                <h3 className="text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5">
+                  <span>💳</span>
+                  <span>{t('fieldBpl')}</span>
                 </h3>
-                <p className="text-xs text-charcoal-500 mt-0.5">
+                <p className="text-xs text-charcoal-500 mt-0.5 leading-relaxed">
                   {t('fieldBplHelper')}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setProfile({ ...profile, is_bpl: false })}
-                  className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all ${
-                    !profile.is_bpl 
-                      ? 'bg-charcoal-800 text-white border-charcoal-800 shadow-xs' 
-                      : 'bg-white text-charcoal-600 border-cream-300 hover:bg-cream-100'
-                  }`}
-                >
-                  {t('fieldNo')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setProfile({ ...profile, is_bpl: true })}
-                  className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all ${
-                    profile.is_bpl 
-                      ? 'bg-saffron-500 text-white border-saffron-500 shadow-xs ring-2 ring-saffron-200' 
-                      : 'bg-white text-charcoal-600 border-cream-300 hover:bg-cream-100'
-                  }`}
-                >
-                  {t('fieldYes')}
-                </button>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {[
+                  {
+                    isBpl: true,
+                    title: t('bplYesTitle'),
+                    desc: t('bplYesDesc'),
+                    icon: '💳'
+                  },
+                  {
+                    isBpl: false,
+                    title: t('bplNoTitle'),
+                    desc: t('bplNoDesc'),
+                    icon: '⚪'
+                  }
+                ].map((opt) => {
+                  const isSelected = profile.is_bpl === opt.isBpl;
+                  return (
+                    <button
+                      key={String(opt.isBpl)}
+                      type="button"
+                      onClick={() => setProfile({ ...profile, is_bpl: opt.isBpl })}
+                      className={`min-h-[72px] p-4 rounded-2xl border-2 text-left flex items-start justify-between gap-3 transition-all duration-200 active:scale-98 group focus:outline-none focus:ring-2 focus:ring-saffron-400 ${
+                        isSelected
+                          ? 'border-saffron-500 bg-saffron-50/90 text-saffron-950 font-bold ring-4 ring-saffron-200/80 shadow-md'
+                          : 'border-cream-300 bg-white hover:border-saffron-400 hover:bg-cream-50 text-charcoal-700 shadow-xs'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl mt-0.5 filter drop-shadow-xs">{opt.icon}</span>
+                        <div>
+                          <span className={`text-sm font-extrabold block leading-tight ${isSelected ? 'text-saffron-950' : 'text-charcoal-900'}`}>
+                            {opt.title}
+                          </span>
+                          <span className={`text-xs mt-0.5 block font-medium leading-relaxed ${isSelected ? 'text-saffron-800' : 'text-charcoal-500'}`}>
+                            {opt.desc}
+                          </span>
+                        </div>
+                      </div>
+                      {isSelected && (
+                        <CheckCircle2 className="w-5 h-5 text-saffron-700 flex-shrink-0 mt-0.5" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Field: Disability Toggle */}
-            <div className="p-4 rounded-2xl border border-cream-300 bg-cream-50/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Field: Disability (PwD) Visual Option Cards */}
+            <div className="space-y-3 p-5 sm:p-6 rounded-3xl bg-cream-50/70 border border-saffron-200/80 shadow-xs">
               <div>
-                <h3 className="text-sm font-semibold text-charcoal-900">
-                  {t('fieldDisability')}
+                <h3 className="text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5">
+                  <span>♿</span>
+                  <span>{t('fieldDisability')}</span>
                 </h3>
-                <p className="text-xs text-charcoal-500 mt-0.5">
+                <p className="text-xs text-charcoal-500 mt-0.5 leading-relaxed">
                   {t('fieldDisabilityHelper')}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setProfile({ ...profile, has_disability: false })}
-                  className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all ${
-                    !profile.has_disability 
-                      ? 'bg-charcoal-800 text-white border-charcoal-800 shadow-xs' 
-                      : 'bg-white text-charcoal-600 border-cream-300 hover:bg-cream-100'
-                  }`}
-                >
-                  {t('fieldNo')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setProfile({ ...profile, has_disability: true })}
-                  className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all ${
-                    profile.has_disability 
-                      ? 'bg-saffron-500 text-white border-saffron-500 shadow-xs ring-2 ring-saffron-200' 
-                      : 'bg-white text-charcoal-600 border-cream-300 hover:bg-cream-100'
-                  }`}
-                >
-                  {t('fieldYes')}
-                </button>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {[
+                  {
+                    hasDisability: true,
+                    title: t('disabilityYesTitle'),
+                    desc: t('disabilityYesDesc'),
+                    icon: '♿'
+                  },
+                  {
+                    hasDisability: false,
+                    title: t('disabilityNoTitle'),
+                    desc: t('disabilityNoDesc'),
+                    icon: '⚪'
+                  }
+                ].map((opt) => {
+                  const isSelected = profile.has_disability === opt.hasDisability;
+                  return (
+                    <button
+                      key={String(opt.hasDisability)}
+                      type="button"
+                      onClick={() => setProfile({ ...profile, has_disability: opt.hasDisability })}
+                      className={`min-h-[72px] p-4 rounded-2xl border-2 text-left flex items-start justify-between gap-3 transition-all duration-200 active:scale-98 group focus:outline-none focus:ring-2 focus:ring-saffron-400 ${
+                        isSelected
+                          ? 'border-saffron-500 bg-saffron-50/90 text-saffron-950 font-bold ring-4 ring-saffron-200/80 shadow-md'
+                          : 'border-cream-300 bg-white hover:border-saffron-400 hover:bg-cream-50 text-charcoal-700 shadow-xs'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl mt-0.5 filter drop-shadow-xs">{opt.icon}</span>
+                        <div>
+                          <span className={`text-sm font-extrabold block leading-tight ${isSelected ? 'text-saffron-950' : 'text-charcoal-900'}`}>
+                            {opt.title}
+                          </span>
+                          <span className={`text-xs mt-0.5 block font-medium leading-relaxed ${isSelected ? 'text-saffron-800' : 'text-charcoal-500'}`}>
+                            {opt.desc}
+                          </span>
+                        </div>
+                      </div>
+                      {isSelected && (
+                        <CheckCircle2 className="w-5 h-5 text-saffron-700 flex-shrink-0 mt-0.5" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Optional Details (Occupation / Education) */}
-            <div className="p-4 rounded-2xl border border-cream-200 bg-white grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-charcoal-700 flex items-center gap-1">
-                  <Briefcase className="w-3.5 h-3.5 text-forest-600" />
-                  {t('fieldOccupation')}
-                </label>
-                <select
-                  value={profile.occupation || ''}
-                  onChange={(e) => setProfile({ ...profile, occupation: e.target.value })}
-                  className="w-full p-3 rounded-xl border border-cream-300 bg-cream-50/50 text-charcoal-900 text-xs sm:text-sm focus:ring-2 focus:ring-saffron-500 focus:outline-none"
-                >
-                  <option value="">-- {language === 'hi' ? 'व्यवसाय चुनें' : 'Select Occupation'} --</option>
-                  {OCCUPATION_OPTIONS.map((occ) => (
-                    <option key={occ.value} value={occ.value}>
-                      {language === 'hi' ? occ.labelHi : occ.labelEn}
-                    </option>
-                  ))}
-                </select>
+            {/* Inlined Optional Details (Occupation / Education) */}
+            <div className="p-5 sm:p-6 rounded-3xl border border-cream-300 bg-white shadow-xs space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-saffron-600" />
+                    <span>{t('optionalDetailsTitle')}</span>
+                  </h3>
+                  <p className="text-xs text-charcoal-500 mt-0.5">
+                    {t('optionalDetailsSubtitle')}
+                  </p>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cream-200 text-charcoal-700">
+                  {language === 'hi' ? 'वैकल्पिक' : 'Optional'}
+                </span>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-charcoal-700 flex items-center gap-1">
-                  <GraduationCap className="w-3.5 h-3.5 text-saffron-600" />
-                  {t('fieldEducation')}
-                </label>
-                <select
-                  value={profile.education || ''}
-                  onChange={(e) => setProfile({ ...profile, education: e.target.value })}
-                  className="w-full p-3 rounded-xl border border-cream-300 bg-cream-50/50 text-charcoal-900 text-xs sm:text-sm focus:ring-2 focus:ring-saffron-500 focus:outline-none"
-                >
-                  <option value="">-- {language === 'hi' ? 'शिक्षा स्तर चुनें' : 'Select Education Level'} --</option>
-                  {EDUCATION_OPTIONS.map((edu) => (
-                    <option key={edu.value} value={edu.value}>
-                      {language === 'hi' ? edu.labelHi : edu.labelEn}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-charcoal-800 flex items-center gap-1">
+                    <Briefcase className="w-3.5 h-3.5 text-forest-600" />
+                    <span>{t('fieldOccupation')}</span>
+                  </label>
+                  <select
+                    value={profile.occupation || ''}
+                    onChange={(e) => setProfile({ ...profile, occupation: e.target.value })}
+                    className="w-full min-h-[48px] p-3 rounded-2xl border border-cream-300 bg-cream-50/60 text-charcoal-900 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-saffron-500 focus:outline-none transition-colors"
+                  >
+                    <option value="">-- {language === 'hi' ? 'व्यवसाय चुनें (वैकल्पिक)' : 'Select Occupation (Optional)'} --</option>
+                    {OCCUPATION_OPTIONS.map((occ) => (
+                      <option key={occ.value} value={occ.value}>
+                        {language === 'hi' ? occ.labelHi : occ.labelEn}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-charcoal-800 flex items-center gap-1">
+                    <GraduationCap className="w-3.5 h-3.5 text-saffron-600" />
+                    <span>{t('fieldEducation')}</span>
+                  </label>
+                  <select
+                    value={profile.education || ''}
+                    onChange={(e) => setProfile({ ...profile, education: e.target.value })}
+                    className="w-full min-h-[48px] p-3 rounded-2xl border border-cream-300 bg-cream-50/60 text-charcoal-900 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-saffron-500 focus:outline-none transition-colors"
+                  >
+                    <option value="">-- {language === 'hi' ? 'शिक्षा स्तर चुनें (वैकल्पिक)' : 'Select Education Level (Optional)'} --</option>
+                    {EDUCATION_OPTIONS.map((edu) => (
+                      <option key={edu.value} value={edu.value}>
+                        {language === 'hi' ? edu.labelHi : edu.labelEn}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 

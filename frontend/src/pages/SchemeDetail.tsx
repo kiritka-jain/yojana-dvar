@@ -222,9 +222,9 @@ export const SchemeDetail: React.FC = () => {
         {/* Badges Row */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 ring-1 ring-emerald-200 shadow-2xs">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{siteLanguage === 'hi' ? 'आप पात्र हैं' : 'You Qualify'}</span>
+              <span>{t('badgeEligible')}</span>
             </span>
 
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-cream-100 text-charcoal-800 border border-cream-200">

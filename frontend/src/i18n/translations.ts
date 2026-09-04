@@ -62,6 +62,8 @@ export interface TranslationDictionary {
   btnBookmark: string;
   btnBookmarked: string;
   tagEligible: string;
+  badgeEligible: string;
+  badgeEligibleShort: string;
   tagCentral: string;
   tagState: string;
 
@@ -117,8 +119,18 @@ export interface TranslationDictionary {
 
   fieldBpl: string;
   fieldBplHelper: string;
+  bplYesTitle: string;
+  bplYesDesc: string;
+  bplNoTitle: string;
+  bplNoDesc: string;
+
   fieldDisability: string;
   fieldDisabilityHelper: string;
+  disabilityYesTitle: string;
+  disabilityYesDesc: string;
+  disabilityNoTitle: string;
+  disabilityNoDesc: string;
+
   fieldYes: string;
   fieldNo: string;
   validationErrorState: string;
@@ -126,6 +138,8 @@ export interface TranslationDictionary {
   validationErrorIncome: string;
   fieldOccupation: string;
   fieldEducation: string;
+  optionalDetailsTitle: string;
+  optionalDetailsSubtitle: string;
 
   // Wizard Submit & Actions
   wizardEdit: string;
@@ -311,7 +325,9 @@ export const translations: Record<Language, TranslationDictionary> = {
     btnExplain: "Explain with AI",
     btnBookmark: "Bookmark",
     btnBookmarked: "Bookmarked",
-    tagEligible: "You are Eligible",
+    tagEligible: "✓ You Qualify",
+    badgeEligible: "✓ You Qualify",
+    badgeEligibleShort: "✓ Eligible",
     tagCentral: "Central Scheme",
     tagState: "State Scheme",
 
@@ -338,14 +354,14 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldCaste: "Social Category / Caste",
     fieldIncome: "Annual Household Income",
     fieldIncomeHelper: "Choose the income range closest to your family's annual earnings",
-    incomeTierBpl: "BPL / Ration Card Holder",
-    incomeTierBplDesc: "Antyodaya or BPL card holder / ₹0 Income",
-    incomeTierLow: "Under ₹1.5 Lakh / Year",
+    incomeTierBpl: "BPL / Ration Card (₹0)",
+    incomeTierBplDesc: "Antyodaya or BPL ration card / Zero income",
+    incomeTierLow: "Low Income (< ₹1.5 Lakh / Yr)",
     incomeTierLowDesc: "Small farmer, daily wage, or artisan",
-    incomeTierMid: "₹1.5 Lakh – ₹3 Lakh / Year",
+    incomeTierMid: "Middle Income (₹1.5L – ₹3L / Yr)",
     incomeTierMidDesc: "Modest household income",
-    incomeTierHigh: "Above ₹3 Lakh / Year",
-    incomeTierHighDesc: "Salaried or established enterprise",
+    incomeTierHigh: "Above ₹3 Lakh / Yr",
+    incomeTierHighDesc: "Salaried, business, or enterprise",
     ageTierChild: "Girl Child (0–17 Yrs)",
     ageTierStudent: "Young Woman / Student (18–25 Yrs)",
     ageTierAdult: "Adult Woman (26–59 Yrs)",
@@ -365,9 +381,19 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageGeneral: "General Citizen",
 
     fieldBpl: "Do you have a BPL or Antyodaya Ration Card?",
-    fieldBplHelper: "Many government schemes offer direct priority benefits to BPL card holders",
+    fieldBplHelper: "Direct priority welfare benefits for subsidized food, housing, and social grants",
+    bplYesTitle: "Yes, have Ration Card",
+    bplYesDesc: "Antyodaya or BPL card holder",
+    bplNoTitle: "No, Non-BPL / General",
+    bplNoDesc: "No BPL ration card",
+
     fieldDisability: "Do you have a recognized Disability (PwD)?",
-    fieldDisabilityHelper: "Special pensions and assistive grants are available for 40%+ disability",
+    fieldDisabilityHelper: "Special pensions and assistive equipment grants are available for 40%+ disability",
+    disabilityYesTitle: "Yes, PwD Certificate (40%+)",
+    disabilityYesDesc: "Eligible for disability grants & aids",
+    disabilityNoTitle: "No / Not Applicable",
+    disabilityNoDesc: "No recognized disability",
+
     fieldYes: "Yes (हाँ)",
     fieldNo: "No (नहीं)",
     validationErrorState: "Please select your state or UT of residence.",
@@ -375,6 +401,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     validationErrorIncome: "Please select your family income tier.",
     fieldOccupation: "Current Occupation",
     fieldEducation: "Highest Education Level",
+    optionalDetailsTitle: "Additional Profile Details (Optional)",
+    optionalDetailsSubtitle: "Helps discover tailored student scholarships & self-employment schemes",
 
     wizardEdit: "Edit",
     wizardSubmitBtn: "Find My Schemes",
@@ -556,7 +584,9 @@ export const translations: Record<Language, TranslationDictionary> = {
     btnExplain: "सरल भाषा में समझें",
     btnBookmark: "सहेजें",
     btnBookmarked: "सहेजा गया",
-    tagEligible: "आप पात्र हैं",
+    tagEligible: "✓ आप पात्र हैं",
+    badgeEligible: "✓ आप पात्र हैं",
+    badgeEligibleShort: "✓ पात्र",
     tagCentral: "केंद्रीय योजना",
     tagState: "राज्य योजना",
 
@@ -583,13 +613,13 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldCaste: "सामाजिक श्रेणी / जाति",
     fieldIncome: "वार्षिक पारिवारिक आय",
     fieldIncomeHelper: "अपने परिवार की कुल अनुमानित वार्षिक कमाई चुनें",
-    incomeTierBpl: "BPL / अंत्योदय राशन कार्ड",
-    incomeTierBplDesc: "राशन कार्ड धारक / शून्य आय",
-    incomeTierLow: "₹1.5 लाख से कम (सालाना)",
+    incomeTierBpl: "BPL / राशन कार्ड (शून्य आय)",
+    incomeTierBplDesc: "अंत्योदय या बीपीएल राशन कार्ड धारक",
+    incomeTierLow: "कम आय (₹1.5 लाख से कम)",
     incomeTierLowDesc: "छोटे किसान, दैनिक मजदूर या कारीगर",
-    incomeTierMid: "₹1.5 लाख से ₹3 लाख (सालाना)",
-    incomeTierMidDesc: "मध्यम आय वर्ग",
-    incomeTierHigh: "₹3 लाख से अधिक (सालाना)",
+    incomeTierMid: "मध्यम आय (₹1.5 लाख से ₹3 लाख)",
+    incomeTierMidDesc: "सामान्य पारिवारिक आय",
+    incomeTierHigh: "वार्षिक ₹3 लाख से अधिक",
     incomeTierHighDesc: "वेतनभोगी या स्थापित व्यवसाय",
     ageTierChild: "बालिका (0–17 वर्ष)",
     ageTierStudent: "युवती / छात्रा (18–25 वर्ष)",
@@ -610,9 +640,19 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageGeneral: "सामान्य नागरिक (General)",
 
     fieldBpl: "क्या आपके पास बीपीएल (BPL) या अंत्योदय राशन कार्ड है?",
-    fieldBplHelper: "बीपीएल परिवारों को कई सरकारी योजनाओं में सीधा लाभ मिलता है",
+    fieldBplHelper: "बीपीएल परिवारों को राशन, आवास और विशेष कल्याण योजनाओं में सीधा लाभ मिलता है",
+    bplYesTitle: "हाँ, राशन कार्ड है",
+    bplYesDesc: "BPL या अंत्योदय राशन कार्ड धारक",
+    bplNoTitle: "नहीं, सामान्य श्रेणी",
+    bplNoDesc: "बीपीएल राशन कार्ड नहीं है",
+
     fieldDisability: "क्या आप दिव्यांग (PwD) श्रेणी में आते हैं?",
-    fieldDisabilityHelper: "40% या अधिक दिव्यांगता पर विशेष सहायता पेंशन व उपकरण उपलब्ध हैं",
+    fieldDisabilityHelper: "40% या अधिक दिव्यांगता प्रमाण पत्र पर विशेष सहायता पेंशन व उपकरण उपलब्ध हैं",
+    disabilityYesTitle: "हाँ, दिव्यांगता प्रमाण पत्र है",
+    disabilityYesDesc: "40% या अधिक दिव्यांगता (PwD)",
+    disabilityNoTitle: "नहीं / लागू नहीं",
+    disabilityNoDesc: "सामान्य स्वास्थ्य स्थिति",
+
     fieldYes: "हाँ (Yes)",
     fieldNo: "नहीं (No)",
     validationErrorState: "कृपया अपना निवास राज्य या केंद्र शासित प्रदेश चुनें।",
@@ -620,6 +660,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     validationErrorIncome: "कृपया अपनी पारिवारिक आय श्रेणी चुनें।",
     fieldOccupation: "वर्तमान व्यवसाय",
     fieldEducation: "उच्चतम शिक्षा स्तर",
+    optionalDetailsTitle: "अतिरिक्त विवरण (वैकल्पिक)",
+    optionalDetailsSubtitle: "छात्रा व स्वरोजगार योजनाओं के सटीक मिलान के लिए",
 
     wizardEdit: "बदलें",
     wizardSubmitBtn: "मेरी पात्र योजनाएं देखें",

@@ -35,7 +35,7 @@ export function parseLifeStageTags(rawTags: any): string[] {
 }
 
 export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange }) => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [bookmarked, setBookmarked] = useState<boolean>(false);
 
@@ -67,7 +67,7 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
             {/* Binary Eligibility Badge */}
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 ring-1 ring-emerald-200 shadow-2xs">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{language === 'hi' ? '✓ आप पात्र हैं' : '✓ You Qualify'}</span>
+              <span>{t('badgeEligible')}</span>
             </span>
 
             {/* Scope Badge (Central vs State) */}
