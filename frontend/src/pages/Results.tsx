@@ -369,22 +369,22 @@ export const Results: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {/* Search box */}
           <div className="relative flex-1 sm:max-w-xs">
-            <Search className="w-4 h-4 text-charcoal-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-charcoal-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
               placeholder={t('searchInResults')}
-              className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-cream-50 rounded-2xl border border-cream-300 text-charcoal-900 placeholder:text-charcoal-400 focus:outline-none focus:ring-2 focus:ring-saffron-500 transition-all"
+              className="w-full min-h-[44px] pl-10 pr-10 py-2.5 text-xs sm:text-sm bg-cream-50 rounded-2xl border border-cream-300 text-charcoal-900 placeholder:text-charcoal-500 focus:outline-none focus:ring-2 focus:ring-saffron-500 transition-all font-medium"
             />
             {searchFilter && (
               <button
                 type="button"
                 onClick={() => setSearchFilter('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-charcoal-400 hover:text-charcoal-700 p-1 rounded-full hover:bg-cream-200 transition-colors"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] text-charcoal-500 hover:text-charcoal-900 p-1.5 rounded-full hover:bg-cream-200 transition-colors flex items-center justify-center"
                 aria-label="Clear search"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -398,10 +398,10 @@ export const Results: React.FC = () => {
                   key={sc}
                   type="button"
                   onClick={() => setSelectedScope(sc)}
-                  className={`flex-1 sm:flex-none px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  className={`flex-1 sm:flex-none min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                     isActive
-                      ? 'bg-white text-saffron-800 shadow-xs ring-1 ring-black/5'
-                      : 'text-charcoal-600 hover:text-charcoal-900'
+                      ? 'bg-white text-saffron-800 shadow-xs ring-1 ring-black/5 font-extrabold'
+                      : 'text-charcoal-700 hover:text-charcoal-900'
                   }`}
                 >
                   <span>
@@ -435,18 +435,18 @@ export const Results: React.FC = () => {
                   role="tab"
                   aria-selected={isSelected}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`group px-3.5 sm:px-4 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all duration-200 flex-shrink-0 flex items-center gap-2 ${
+                  className={`group min-h-[44px] sm:min-h-[48px] px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all duration-200 flex-shrink-0 flex items-center gap-2 ${
                     isSelected
-                      ? 'bg-saffron-500 text-white shadow-sm font-bold scale-102 ring-2 ring-saffron-500/30'
-                      : 'bg-cream-100/90 text-charcoal-700 hover:bg-cream-200 hover:text-charcoal-900 border border-cream-200/90 active:scale-98'
+                      ? 'bg-saffron-500 text-white shadow-sm font-black scale-102 ring-2 ring-saffron-500/30'
+                      : 'bg-cream-100/90 text-charcoal-800 hover:bg-cream-200 hover:text-charcoal-900 border border-cream-300 active:scale-98'
                   }`}
                 >
                   <span>{t(cat.labelKey)}</span>
                   <span
-                    className={`text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-full font-black tracking-tight transition-colors ${
+                    className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full font-black tracking-tight transition-colors ${
                       isSelected
                         ? 'bg-white/20 text-white'
-                        : 'bg-cream-200 text-charcoal-600 group-hover:bg-cream-300 group-hover:text-charcoal-800'
+                        : 'bg-cream-200 text-charcoal-700 group-hover:bg-cream-300 group-hover:text-charcoal-900'
                     }`}
                   >
                     {count}

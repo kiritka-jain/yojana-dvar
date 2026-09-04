@@ -43,13 +43,13 @@ export default {
           50: '#f6f6f6',
           100: '#e7e7e7',
           200: '#d1d1d1',
-          300: '#b0b0b0',
-          400: '#888888',
-          500: '#6d6d6d',
-          600: '#5d5d5d',
-          700: '#4f4f4f',
-          800: '#454545',
-          900: '#1c1917', // Dark charcoal text
+          300: '#a8a8a8',
+          400: '#6b6b6b', // AA contrast
+          500: '#545454', // AAA contrast 7.8:1+
+          600: '#3f3f3f', // High contrast 10.5:1
+          700: '#2e2e2e', // High contrast 13.5:1
+          800: '#22201e', // Ultra dark 15.5:1
+          900: '#161413', // Primary high-contrast text 17.5:1
         },
         gold: {
           DEFAULT: '#d97706',

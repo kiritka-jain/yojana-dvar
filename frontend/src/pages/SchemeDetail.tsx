@@ -293,10 +293,10 @@ export const SchemeDetail: React.FC = () => {
             type="button"
             onClick={handleBookmarkToggle}
             aria-label={bookmarked ? t('btnBookmarked') : t('btnBookmark')}
-            className={`p-2.5 rounded-2xl border transition-all ${
+            className={`min-w-[48px] min-h-[48px] p-2.5 rounded-2xl border transition-all flex items-center justify-center ${
               bookmarked 
                 ? 'bg-saffron-100 text-saffron-700 border-saffron-300 shadow-xs' 
-                : 'border-cream-300 text-charcoal-600 hover:bg-cream-100 hover:text-saffron-700'
+                : 'border-cream-300 text-charcoal-700 hover:bg-cream-100 hover:text-saffron-700'
             }`}
           >
             <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-saffron-500 text-saffron-600' : ''}`} />
@@ -308,7 +308,7 @@ export const SchemeDetail: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-charcoal-900 tracking-tight leading-tight">
             {scheme.name}
           </h1>
-          <p className="text-xs sm:text-sm text-charcoal-500 mt-1.5 flex items-center gap-1.5 font-medium">
+          <p className="text-xs sm:text-sm text-charcoal-700 mt-1.5 flex items-center gap-1.5 font-bold">
             <Building2 className="w-4 h-4 text-saffron-600 flex-shrink-0" />
             <span>{scheme.ministry}</span>
           </p>
@@ -318,23 +318,17 @@ export const SchemeDetail: React.FC = () => {
         {explainLoading && !explanation?.summary ? (
           <div className="p-4 sm:p-5 rounded-2xl bg-saffron-50/70 border border-saffron-200 animate-pulse flex items-center gap-3">
             <Loader2 className="w-4 h-4 text-saffron-600 animate-spin flex-shrink-0" />
-            <div className="space-y-1">
-              <span className="text-xs font-bold text-saffron-900 block flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-saffron-600" />
-                <span>{t('aiExplainSummaryTitle')}</span>
-              </span>
-              <span className="text-xs text-saffron-800/90 font-medium">
-                {siteLanguage === 'hi' ? 'सरल भाषा में मुख्य लाभ तैयार हो रहे हैं...' : 'Generating easy-to-read summary...'}
-              </span>
-            </div>
+            <span className="text-xs sm:text-sm font-medium text-saffron-900">
+              {siteLanguage === 'hi' ? 'सरल भाषा में मुख्य लाभ तैयार हो रहे हैं...' : 'Generating easy-to-read summary...'}
+            </span>
           </div>
         ) : displaySummaryText ? (
-          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-saffron-50/80 via-cream-50 to-saffron-50/80 border border-saffron-200 space-y-1.5 shadow-2xs">
-            <h2 className="text-xs font-bold text-saffron-900 uppercase tracking-wide flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-saffron-600" />
-              <span>{t('aiExplainSummaryTitle')}</span>
-            </h2>
-            <p className="text-xs sm:text-sm text-charcoal-900 leading-relaxed font-medium">
+          <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-saffron-50/90 via-amber-50/70 to-cream-50 border-2 border-saffron-300 shadow-sm space-y-2.5">
+            <div className="flex items-center gap-2 text-saffron-900 font-extrabold text-xs sm:text-sm">
+              <Sparkles className="w-4 h-4 text-saffron-600" />
+              <span>{siteLanguage === 'hi' ? 'इस योजना का सार (सरल भाषा में)' : 'Scheme Quick Summary'}</span>
+            </div>
+            <p className="text-xs sm:text-sm text-charcoal-800 leading-relaxed font-medium">
               {displaySummaryText}
             </p>
           </div>
@@ -363,10 +357,10 @@ export const SchemeDetail: React.FC = () => {
               aria-selected={isActive}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 sm:px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
+              className={`min-h-[48px] flex items-center gap-2 px-4 sm:px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
                 isActive
                   ? 'bg-saffron-500 text-white shadow-md scale-102 ring-2 ring-saffron-500/20'
-                  : 'text-charcoal-600 hover:text-charcoal-900 hover:bg-cream-100 bg-white/70 border border-cream-200/80'
+                  : 'text-charcoal-800 hover:text-charcoal-950 hover:bg-cream-100 bg-white border border-cream-300 font-bold'
               }`}
             >
               <span>{tab.icon}</span>

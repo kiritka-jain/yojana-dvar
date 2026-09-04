@@ -480,7 +480,7 @@ export const Wizard: React.FC = () => {
 
             {/* Field: Gender */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-charcoal-900">
+              <label className="block text-sm font-bold text-charcoal-900">
                 {t('fieldGender')}
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -493,10 +493,10 @@ export const Wizard: React.FC = () => {
                     key={g.val}
                     type="button"
                     onClick={() => setProfile({ ...profile, gender: g.val })}
-                    className={`py-3.5 px-3 rounded-2xl border text-xs sm:text-sm font-medium transition-all ${
+                    className={`min-h-[48px] py-3 px-3 rounded-2xl border text-xs sm:text-sm font-bold transition-all flex items-center justify-center ${
                       profile.gender === g.val
-                        ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 font-bold ring-2 ring-saffron-200 shadow-2xs'
-                        : 'border-cream-300 hover:bg-cream-100 text-charcoal-700'
+                        ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 ring-2 ring-saffron-300 shadow-2xs'
+                        : 'border-cream-300 hover:bg-cream-100 text-charcoal-800'
                     }`}
                   >
                     {g.label}
@@ -517,14 +517,14 @@ export const Wizard: React.FC = () => {
                 <span className="w-7 h-7 rounded-full bg-forest-100 text-forest-700 flex items-center justify-center text-xs font-bold">2</span>
                 {t('wizardStep2Title')}
               </h2>
-              <p className="text-xs text-charcoal-500 mt-0.5">
+              <p className="text-xs text-charcoal-700 mt-0.5 font-medium">
                 {t('wizardStep2Subtitle')}
               </p>
             </div>
 
             {/* Field: Caste Category */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-charcoal-900">
+              <label className="block text-sm font-bold text-charcoal-900">
                 {t('fieldCaste')}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
@@ -533,10 +533,10 @@ export const Wizard: React.FC = () => {
                     key={c}
                     type="button"
                     onClick={() => setProfile({ ...profile, caste: c })}
-                    className={`py-3.5 px-3 rounded-2xl border text-xs sm:text-sm font-medium transition-all ${
+                    className={`min-h-[48px] py-3 px-3 rounded-2xl border text-xs sm:text-sm font-bold transition-all flex items-center justify-center ${
                       profile.caste === c
-                        ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 font-bold ring-2 ring-saffron-200 shadow-2xs'
-                        : 'border-cream-300 hover:bg-cream-100 text-charcoal-700'
+                        ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 ring-2 ring-saffron-300 shadow-2xs'
+                        : 'border-cream-300 hover:bg-cream-100 text-charcoal-800'
                     }`}
                   >
                     {c}
@@ -645,7 +645,7 @@ export const Wizard: React.FC = () => {
 
             {/* Field: Residence Area */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-charcoal-900">
+              <label className="block text-sm font-bold text-charcoal-900">
                 {t('fieldResidence')}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -659,13 +659,13 @@ export const Wizard: React.FC = () => {
                     key={r.val}
                     type="button"
                     onClick={() => setProfile({ ...profile, residence: r.val })}
-                    className={`p-3 rounded-2xl border text-center transition-all ${
+                    className={`min-h-[64px] p-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center ${
                       profile.residence === r.val
-                        ? 'border-saffron-500 bg-saffron-50/80 text-saffron-900 font-bold ring-2 ring-saffron-200'
-                        : 'border-cream-300 hover:bg-cream-100 text-charcoal-700'
+                        ? 'border-saffron-500 bg-saffron-50/80 text-saffron-900 font-bold ring-2 ring-saffron-300'
+                        : 'border-cream-300 hover:bg-cream-100 text-charcoal-800 font-semibold'
                     }`}
                   >
-                    <div className="text-lg mb-0.5">{r.icon}</div>
+                    <div className="text-xl mb-0.5">{r.icon}</div>
                     <div className="text-xs sm:text-sm font-bold">{r.label}</div>
                   </button>
                 ))}
@@ -684,14 +684,14 @@ export const Wizard: React.FC = () => {
                 <span className="w-7 h-7 rounded-full bg-saffron-500 text-white flex items-center justify-center text-xs font-bold">3</span>
                 {t('wizardStep3Title')}
               </h2>
-              <p className="text-xs text-charcoal-500 mt-0.5">
+              <p className="text-xs text-charcoal-700 mt-0.5 font-medium">
                 {t('wizardStep3Subtitle')}
               </p>
             </div>
 
             {/* Field: Life Stage */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-charcoal-900">
+              <label className="block text-sm font-bold text-charcoal-900">
                 {t('fieldLifeStage')}
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -731,16 +731,16 @@ export const Wizard: React.FC = () => {
                     key={ls.val}
                     type="button"
                     onClick={() => setProfile({ ...profile, life_stage: ls.val })}
-                    className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all ${
+                    className={`min-h-[64px] p-4 rounded-2xl border text-left flex items-start gap-3 transition-all ${
                       profile.life_stage === ls.val
-                        ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 font-bold ring-2 ring-saffron-200 shadow-xs'
-                        : 'border-cream-300 bg-white hover:bg-cream-50 text-charcoal-700'
+                        ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 font-bold ring-2 ring-saffron-300 shadow-xs'
+                        : 'border-cream-300 bg-white hover:bg-cream-50 text-charcoal-800'
                     }`}
                   >
                     <span className="text-2xl mt-0.5">{ls.icon}</span>
                     <div>
-                      <span className="text-sm font-bold block">{ls.label}</span>
-                      <span className="text-xs text-charcoal-500 font-normal">{ls.hint}</span>
+                      <span className="text-sm font-bold block text-charcoal-900">{ls.label}</span>
+                      <span className="text-xs text-charcoal-600 font-medium">{ls.hint}</span>
                     </div>
                   </button>
                 ))}
@@ -932,7 +932,7 @@ export const Wizard: React.FC = () => {
             type="button"
             disabled={currentStep === 1 || loading}
             onClick={handlePrev}
-            className="px-5 py-3 rounded-2xl border border-cream-300 text-charcoal-700 hover:bg-cream-100 text-sm font-semibold transition-colors disabled:opacity-30 disabled:pointer-events-none flex items-center gap-2"
+            className="min-h-[48px] px-5 py-3 rounded-2xl border border-cream-300 text-charcoal-800 hover:bg-cream-100 text-sm font-bold transition-colors disabled:opacity-30 disabled:pointer-events-none flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>{t('btnBack')}</span>
@@ -942,7 +942,7 @@ export const Wizard: React.FC = () => {
             <button
               type="button"
               onClick={handleNext}
-              className="px-7 py-3 rounded-2xl bg-saffron-500 hover:bg-saffron-600 text-white text-sm sm:text-base font-bold shadow-md transition-all hover:scale-102 active:scale-98 flex items-center gap-2"
+              className="min-h-[48px] px-7 py-3 rounded-2xl bg-saffron-500 hover:bg-saffron-600 text-white text-sm sm:text-base font-extrabold shadow-md transition-all hover:scale-102 active:scale-98 flex items-center gap-2"
             >
               <span>{t('btnNext')}</span>
               <ArrowRight className="w-4 h-4" />
@@ -952,7 +952,7 @@ export const Wizard: React.FC = () => {
               type="button"
               disabled={loading}
               onClick={handleSubmit}
-              className="px-8 py-3.5 rounded-2xl bg-saffron-500 hover:bg-saffron-600 text-white text-sm sm:text-base font-extrabold shadow-lg transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
+              className="min-h-[48px] px-8 py-3.5 rounded-2xl bg-saffron-500 hover:bg-saffron-600 text-white text-sm sm:text-base font-black shadow-lg transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
             >
               {loading ? (
                 <>

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { 
-  Search, 
-  Mic, 
-  Sparkles, 
-  GraduationCap, 
-  HeartHandshake, 
-  Briefcase, 
-  Users, 
-  CheckCircle2, 
+import {
+  Search,
+  Mic,
+  Sparkles,
+  GraduationCap,
+  HeartHandshake,
+  Briefcase,
+  Users,
+  CheckCircle2,
   ArrowRight,
   ShieldCheck
 } from 'lucide-react';
@@ -27,51 +27,6 @@ export const Home: React.FC = () => {
       navigate('/find');
     }
   };
-
-  const demoPersonas = [
-    {
-      id: 'priya',
-      name: language === 'hi' ? 'प्रिया शर्मा' : 'Priya Sharma',
-      age: 19,
-      state: language === 'hi' ? 'कर्नाटक' : 'Karnataka',
-      caste: 'OBC',
-      lifeStage: 'student',
-      title: language === 'hi' ? '19 वर्ष • छात्रा (कर्नाटक)' : '19yo Student in Karnataka',
-      desc: language === 'hi' 
-        ? 'उच्च शिक्षा, तकनीकी छात्रवृत्ति और मुफ्त लैपटॉप योजनाओं की खोज।' 
-        : 'Seeking higher education scholarships, tuition waivers, and skill training.',
-      badge: language === 'hi' ? 'उच्च शिक्षा' : 'Higher Education',
-      color: 'border-blue-200 bg-blue-50/50 hover:border-blue-400'
-    },
-    {
-      id: 'sunita',
-      name: language === 'hi' ? 'सुनीता देवी' : 'Sunita Devi',
-      age: 26,
-      state: language === 'hi' ? 'बिहार' : 'Bihar',
-      caste: 'SC',
-      lifeStage: 'maternal',
-      title: language === 'hi' ? '26 वर्ष • गर्भवती माता (बिहार)' : '26yo Pregnant Mother in Bihar',
-      desc: language === 'hi'
-        ? 'मातृ वंदना (PMMVY) ₹5,000 नकद सहायता और पोषण किट के लिए उपयुक्त।'
-        : 'Eligible for PMMVY maternity aid, institutional delivery benefits, and nutrition.',
-      badge: language === 'hi' ? 'मातृत्व कल्याण' : 'Maternal Care',
-      color: 'border-saffron-200 bg-saffron-50/50 hover:border-saffron-400'
-    },
-    {
-      id: 'lakshmi',
-      name: language === 'hi' ? 'लक्ष्मी अम्मल' : 'Lakshmi Ammal',
-      age: 42,
-      state: language === 'hi' ? 'तमिलनाडु' : 'Tamil Nadu',
-      caste: 'General',
-      lifeStage: 'entrepreneur',
-      title: language === 'hi' ? '42 वर्ष • महिला उद्यमी (तमिलनाडु)' : '42yo Micro-Entrepreneur in TN',
-      desc: language === 'hi'
-        ? 'मुद्रा योजना बिना गारंटी ऋण, स्वयं सहायता समूह पूंजी और व्यवसाय विकास।'
-        : 'Seeking micro-enterprise funding, Mudra zero-collateral loan, and SHG capital.',
-      badge: language === 'hi' ? 'स्व-रोजगार' : 'Livelihood',
-      color: 'border-forest-200 bg-forest-50/50 hover:border-forest-400'
-    }
-  ];
 
   const lifeStages = [
     {
@@ -106,11 +61,11 @@ export const Home: React.FC = () => {
 
   return (
     <div className="space-y-16 sm:space-y-24">
-      
+
       {/* 1. Hero Section */}
       <section className="relative pt-8 pb-12 sm:pt-14 sm:pb-20 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6">
-          
+
           {/* Top Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-saffron-100/90 border border-saffron-300 text-saffron-900 text-xs sm:text-sm font-semibold mb-6 shadow-xs animate-bounce-subtle">
             <Sparkles className="w-4 h-4 text-saffron-600" />
@@ -130,7 +85,7 @@ export const Home: React.FC = () => {
           </p>
 
           {/* Search / Voice Bar */}
-          <form 
+          <form
             onSubmit={handleSearchSubmit}
             className="max-w-2xl mx-auto bg-white rounded-2xl shadow-card hover:shadow-card-hover border border-saffron-200 p-2 sm:p-2.5 flex items-center gap-2 transition-all duration-300"
           >
@@ -215,57 +170,7 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. 1-Click Demo Personas Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-charcoal-900 tracking-tight">
-            {t('personaTitle')}
-          </h2>
-          <p className="text-sm sm:text-base text-charcoal-600 mt-2">
-            {t('personaSubtitle')}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {demoPersonas.map((persona) => (
-            <div 
-              key={persona.id}
-              className={`rounded-2xl p-6 border ${persona.color} bg-white shadow-card hover:shadow-card-hover transition-all duration-200 flex flex-col justify-between`}
-            >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-cream-200 text-charcoal-800">
-                    {persona.badge}
-                  </span>
-                  <span className="text-xs font-medium text-charcoal-500">
-                    {persona.state}
-                  </span>
-                </div>
-
-                <h3 className="text-lg font-bold text-charcoal-900 mb-1">
-                  {persona.name}
-                </h3>
-                <p className="text-xs font-semibold text-saffron-700 mb-3">
-                  {persona.title}
-                </p>
-                <p className="text-sm text-charcoal-600 leading-relaxed mb-6">
-                  {persona.desc}
-                </p>
-              </div>
-
-              <button
-                onClick={() => navigate(`/find?persona=${persona.id}`)}
-                className="w-full py-2.5 px-4 rounded-xl border border-saffron-500 text-saffron-700 hover:bg-saffron-500 hover:text-white text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 group"
-              >
-                <span>{t('personaMatchMe')}</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. Life Stage Entitlements */}
+      {/* 3. Life Stage Entitlements */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold text-charcoal-900 tracking-tight">
@@ -294,7 +199,7 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. Big Call-to-Action Box */}
+      {/* 4. Big Call-to-Action Box */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl gradient-civic p-8 sm:p-12 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-3 max-w-xl text-center md:text-left">

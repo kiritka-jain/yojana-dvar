@@ -99,13 +99,13 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
             onClick={handleBookmarkClick}
             aria-label={bookmarked ? t('btnBookmarked') : t('btnBookmark')}
             title={bookmarked ? t('btnBookmarked') : t('btnBookmark')}
-            className={`p-2.5 rounded-xl transition-all duration-200 flex-shrink-0 ${
+            className={`min-w-[44px] min-h-[44px] sm:min-w-[48px] sm:min-h-[48px] p-2.5 rounded-xl transition-all duration-200 flex items-center justify-center flex-shrink-0 ${
               bookmarked 
                 ? 'bg-saffron-100 text-saffron-700 border border-saffron-300 scale-105 shadow-xs' 
-                : 'text-charcoal-400 hover:text-saffron-600 hover:bg-cream-100 border border-transparent'
+                : 'text-charcoal-600 hover:text-saffron-700 hover:bg-cream-100 border border-cream-200/60'
             }`}
           >
-            <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-saffron-500 text-saffron-600' : ''}`} />
+            <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-saffron-500 text-saffron-600' : 'text-charcoal-700'}`} />
           </button>
         </div>
 
@@ -117,7 +117,7 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
             {scheme.name}
           </h3>
 
-          <p className="text-xs text-charcoal-500 flex items-center gap-1.5 font-medium">
+          <p className="text-xs text-charcoal-700 flex items-center gap-1.5 font-semibold">
             <Building2 className="w-3.5 h-3.5 flex-shrink-0 text-saffron-600" />
             <span className="line-clamp-1">{scheme.ministry}</span>
           </p>
