@@ -145,6 +145,7 @@ export interface TranslationDictionary {
   validationErrorState: string;
   validationErrorAge: string;
   validationErrorIncome: string;
+  validationCorrectFields: string;
   fieldOccupation: string;
   fieldEducation: string;
   optionalDetailsTitle: string;
@@ -432,6 +433,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     validationErrorState: "Please select your state or UT of residence.",
     validationErrorAge: "Please enter a valid age between 0 and 110 years.",
     validationErrorIncome: "Please select your family income tier.",
+    validationCorrectFields: "Please correct the highlighted fields before proceeding.",
     fieldOccupation: "Current Occupation",
     fieldEducation: "Highest Education Level",
     optionalDetailsTitle: "Additional Profile Details (Optional)",
@@ -715,6 +717,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     validationErrorState: "कृपया अपना निवास राज्य या केंद्र शासित प्रदेश चुनें।",
     validationErrorAge: "कृपया 0 से 110 वर्ष के बीच एक मान्य आयु दर्ज करें।",
     validationErrorIncome: "कृपया अपनी पारिवारिक आय श्रेणी चुनें।",
+    validationCorrectFields: "कृपया आगे बढ़ने से पहले चिह्नित फ़ील्ड को ठीक करें।",
     fieldOccupation: "वर्तमान व्यवसाय",
     fieldEducation: "उच्चतम शिक्षा स्तर",
     optionalDetailsTitle: "अतिरिक्त विवरण (वैकल्पिक)",

@@ -173,11 +173,7 @@ export const Wizard: React.FC = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
-      setErrorMsg(
-        language === 'hi'
-          ? 'कृपया आगे बढ़ने से पहले चिह्नित फ़ील्ड को ठीक करें।'
-          : 'Please correct the highlighted fields before proceeding.'
-      );
+      setErrorMsg(t('validationCorrectFields'));
       return false;
     }
 
@@ -298,6 +294,14 @@ export const Wizard: React.FC = () => {
               </button>
             );
           })}
+        </div>
+
+        {/* Mobile-only Step Label Badge */}
+        <div className="sm:hidden text-center mt-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cream-200/90 border border-cream-300 text-charcoal-800 text-xs font-bold">
+            <span>{language === 'hi' ? `चरण ${currentStep} / 3:` : `Step ${currentStep} of 3:`}</span>
+            <span className="text-saffron-700">{stepsConfig[currentStep - 1].title}</span>
+          </span>
         </div>
       </div>
 
