@@ -127,8 +127,8 @@ export const Navbar: React.FC = () => {
               </button>
             </div>
 
-            {/* User Auth Status Pill */}
-            {isAuthenticated && currentUser ? (
+            {/* User Auth Status Pill (rendered only when authenticated) */}
+            {isAuthenticated && currentUser && (
               <div className="hidden sm:inline-flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-saffron-50 border border-saffron-200 text-xs">
                 <Link to="/profile" className="flex items-center gap-1.5 hover:text-saffron-700 transition-colors">
                   {currentUser.avatarUrl ? (
@@ -150,14 +150,6 @@ export const Navbar: React.FC = () => {
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
-            ) : (
-              <Link
-                to="/bookmarks"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-cream-300 hover:border-saffron-300 text-xs font-semibold text-charcoal-700 hover:bg-cream-100 transition-colors"
-              >
-                <User className="w-3.5 h-3.5 text-saffron-600" />
-                <span>{t('navSignIn')}</span>
-              </Link>
             )}
 
             {/* Mobile Hamburger Button */}
