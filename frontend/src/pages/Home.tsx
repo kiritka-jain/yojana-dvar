@@ -63,31 +63,32 @@ export const Home: React.FC = () => {
     <div className="space-y-16 sm:space-y-24">
 
       {/* 1. Hero Section */}
-      <section className="relative pt-8 pb-12 sm:pt-14 sm:pb-20 overflow-hidden">
+      <section className="relative pt-6 pb-10 sm:pt-12 sm:pb-16 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6">
 
           {/* Top Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-saffron-100/90 border border-saffron-300 text-saffron-900 text-xs sm:text-sm font-semibold mb-6 shadow-xs animate-bounce-subtle">
-            <Sparkles className="w-4 h-4 text-saffron-600" />
-            <span>Digital India • Women Empowerment Gateway</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-saffron-100/90 border border-saffron-300 text-saffron-900 text-xs sm:text-sm font-semibold mb-5 shadow-xs">
+            <Sparkles className="w-4 h-4 text-saffron-600 flex-shrink-0" />
+            <span>{t('heroBadge')}</span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-charcoal-900 tracking-tight leading-tight mb-6">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-charcoal-900 tracking-tight leading-tight mb-4">
             {t('heroTitle')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-saffron-600 to-terracotta">
               {t('heroHighlight')}
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-charcoal-700 max-w-2xl mx-auto mb-10 leading-relaxed">
+          {/* Simplified, High-Contrast Subtitle */}
+          <p className="text-base sm:text-lg text-charcoal-700 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
             {t('heroSubtitle')}
           </p>
 
           {/* Search / Voice Bar */}
           <form
             onSubmit={handleSearchSubmit}
-            className="max-w-2xl mx-auto bg-white rounded-2xl shadow-card hover:shadow-card-hover border border-saffron-200 p-2 sm:p-2.5 flex items-center gap-2 transition-all duration-300"
+            className="max-w-2xl mx-auto bg-white rounded-2xl shadow-card hover:shadow-card-hover border border-saffron-200 p-2 sm:p-2.5 flex items-center gap-2 transition-all duration-300 mb-4"
           >
             <div className="pl-3 text-charcoal-400">
               <Search className="w-5 h-5" />
@@ -103,35 +104,66 @@ export const Home: React.FC = () => {
               type="button"
               title={t('heroVoiceTooltip')}
               onClick={() => alert("Voice input listening... Speak scheme name or benefit.")}
-              className="p-2.5 rounded-xl text-saffron-600 hover:bg-saffron-50 transition-colors focus:outline-none"
+              className="p-2.5 rounded-xl text-saffron-600 hover:bg-saffron-50 transition-colors focus:outline-none cursor-pointer"
             >
               <Mic className="w-5 h-5" />
             </button>
             <button
               type="submit"
-              className="px-5 py-3 rounded-xl bg-saffron-500 hover:bg-saffron-600 text-white font-medium text-sm sm:text-base shadow-sm transition-all hover:scale-102 active:scale-98"
+              className="px-5 py-3 rounded-xl bg-saffron-500 hover:bg-saffron-600 text-white font-medium text-sm sm:text-base shadow-sm transition-all hover:scale-102 active:scale-98 cursor-pointer"
             >
               {t('heroSearchButton')}
             </button>
           </form>
 
-          {/* Secondary Quick Action */}
-          <div className="mt-8 flex flex-wrap justify-center items-center gap-4 text-xs sm:text-sm text-charcoal-600">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-forest-600" />
-              100% Free & Open Access
+          {/* 1-Tap Quick Category Chips */}
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto mb-4">
+            <span className="text-xs font-semibold text-charcoal-500 hidden sm:inline">
+              {t('heroQuickSearch')}
             </span>
-            <span className="text-charcoal-300">•</span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-forest-600" />
-              No Aadhaar Number Required to Explore
-            </span>
-            <span className="text-charcoal-300">•</span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-forest-600" />
-              Official Verification Portals
-            </span>
+            <button
+              type="button"
+              onClick={() => navigate('/results?category=education')}
+              className="px-3 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
+            >
+              {t('heroChipScholarship')}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/results?category=maternity')}
+              className="px-3 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
+            >
+              {t('heroChipMaternity')}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/results?category=business')}
+              className="px-3 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
+            >
+              {t('heroChipBusiness')}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/results?category=pension')}
+              className="px-3 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
+            >
+              {t('heroChipPension')}
+            </button>
           </div>
+
+          {/* Direct 1-Tap Wizard Link */}
+          <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-charcoal-600">
+            <span>{language === 'hi' ? 'या 3 प्रश्नों में पात्रता निकालें:' : 'Or check instant eligibility:'}</span>
+            <button
+              type="button"
+              onClick={() => navigate('/find')}
+              className="text-saffron-700 font-semibold hover:underline inline-flex items-center gap-1 cursor-pointer"
+            >
+              <span>{t('heroStartWizard')}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
         </div>
       </section>
 

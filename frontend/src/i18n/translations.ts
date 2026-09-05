@@ -13,6 +13,7 @@ export interface TranslationDictionary {
   navGuest: string;
 
   // Hero section
+  heroBadge: string;
   heroTitle: string;
   heroHighlight: string;
   heroSubtitle: string;
@@ -20,6 +21,11 @@ export interface TranslationDictionary {
   heroSearchButton: string;
   heroVoiceTooltip: string;
   heroStartWizard: string;
+  heroQuickSearch: string;
+  heroChipScholarship: string;
+  heroChipMaternity: string;
+  heroChipBusiness: string;
+  heroChipPension: string;
 
   // Key stats & Trust Badges
   statFreeAccess: string;
@@ -296,13 +302,19 @@ export const translations: Record<Language, TranslationDictionary> = {
     navSignOut: "Sign Out",
     navGuest: "Guest User",
 
-    heroTitle: "Empowering Every Woman With",
-    heroHighlight: "Her Rightful Entitlements",
-    heroSubtitle: "Discover central and state welfare schemes tailored to your age, life stage, state, and income in seconds. Voice-enabled, bilingual, and free.",
-    heroSearchPlaceholder: "Search by keyword, scheme name, or benefits...",
+    heroBadge: "Official Central & State Welfare Gateway",
+    heroTitle: "Find Government Schemes For",
+    heroHighlight: "Every Indian Woman",
+    heroSubtitle: "Discover eligible schemes for education, maternity, business, and pension in 1 minute. 100% free and secure.",
+    heroSearchPlaceholder: "Search scheme name (e.g. Sukanya, PMMVY, Mudra)...",
     heroSearchButton: "Search",
     heroVoiceTooltip: "Click to speak in Hindi or English",
     heroStartWizard: "Find My Eligible Schemes",
+    heroQuickSearch: "Popular Searches:",
+    heroChipScholarship: "🎓 Scholarships",
+    heroChipMaternity: "🤱 Maternity Aid",
+    heroChipBusiness: "💼 Business Loans",
+    heroChipPension: "👵 Pension",
 
     statFreeAccess: "100% Free & Open",
     statFreeAccessSub: "Zero application or processing fee",
@@ -570,13 +582,19 @@ export const translations: Record<Language, TranslationDictionary> = {
     navSignOut: "लॉग आउट",
     navGuest: "अतिथि उपयोगकर्ता",
 
+    heroBadge: "केंद्र व राज्य सरकार की आधिकारिक योजनाएं",
     heroTitle: "हर भारतीय महिला को मिले",
     heroHighlight: "उसका सरकारी अधिकार",
-    heroSubtitle: "अपनी आयु, राज्य, आय और जीवन परिस्थिति के अनुसार सभी सरकारी योजनाओं की तुरंत खोज करें। 100% निःशुल्क व सुरक्षित।",
-    heroSearchPlaceholder: "योजना का नाम, लाभ या कीवर्ड खोजें...",
+    heroSubtitle: "शिक्षा, मातृत्व, स्वरोजगार और पेंशन की सरकारी योजनाएं 1 मिनट में खोजें। 100% निःशुल्क और सुरक्षित।",
+    heroSearchPlaceholder: "योजना का नाम खोजें (जैसे सुकन्या, मातृत्व, मुद्रा)...",
     heroSearchButton: "खोजें",
     heroVoiceTooltip: "हिंदी या अंग्रेजी में बोलने के लिए क्लिक करें",
     heroStartWizard: "अपनी योजनाएं खोजें",
+    heroQuickSearch: "मुख्य योजनाएं:",
+    heroChipScholarship: "🎓 छात्रवृत्ति",
+    heroChipMaternity: "🤱 मातृत्व सहायता",
+    heroChipBusiness: "💼 व्यवसाय व ऋण",
+    heroChipPension: "👵 पेंशन",
 
     statFreeAccess: "100% नि:शुल्क सेवा",
     statFreeAccessSub: "कोई आवेदन शुल्क या बिचौलिया नहीं",
