@@ -86,18 +86,6 @@ export const Navbar: React.FC = () => {
               <Bookmark className="w-4 h-4 text-saffron-600" />
               {t('navBookmarks')}
             </Link>
-
-            <Link
-              to="/profile"
-              className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                isActive('/profile') 
-                  ? 'bg-saffron-100 text-saffron-800 font-bold' 
-                  : 'text-charcoal-700 hover:text-saffron-700 hover:bg-cream-100'
-              }`}
-            >
-              <User className="w-4 h-4 text-charcoal-500" />
-              {t('navProfile')}
-            </Link>
           </nav>
 
           {/* Right Action: High-Visibility Language Switcher + User Info */}
@@ -142,14 +130,16 @@ export const Navbar: React.FC = () => {
             {/* User Auth Status Pill */}
             {isAuthenticated && currentUser ? (
               <div className="hidden sm:inline-flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-saffron-50 border border-saffron-200 text-xs">
-                {currentUser.avatarUrl ? (
-                  <img src={currentUser.avatarUrl} alt="" className="w-5 h-5 rounded-full" />
-                ) : (
-                  <User className="w-3.5 h-3.5 text-saffron-700" />
-                )}
-                <span className="font-semibold text-charcoal-800 max-w-[100px] truncate">
-                  {currentUser.displayName}
-                </span>
+                <Link to="/profile" className="flex items-center gap-1.5 hover:text-saffron-700 transition-colors">
+                  {currentUser.avatarUrl ? (
+                    <img src={currentUser.avatarUrl} alt="" className="w-5 h-5 rounded-full" />
+                  ) : (
+                    <User className="w-3.5 h-3.5 text-saffron-700" />
+                  )}
+                  <span className="font-semibold text-charcoal-800 max-w-[100px] truncate">
+                    {currentUser.displayName}
+                  </span>
+                </Link>
                 <button
                   type="button"
                   onClick={logout}
@@ -222,16 +212,6 @@ export const Navbar: React.FC = () => {
                 }`}
               >
                 {t('navBookmarks')}
-              </Link>
-
-              <Link
-                to="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
-                  isActive('/profile') ? 'bg-saffron-100 text-saffron-900 font-semibold' : 'text-charcoal-800'
-                }`}
-              >
-                {t('navProfile')}
               </Link>
             </div>
 
