@@ -8,9 +8,8 @@ import {
   Search, 
   Menu, 
   X, 
-  Sparkles,
-  User,
-  LogOut
+  User, 
+  LogOut 
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -35,15 +34,9 @@ export const Navbar: React.FC = () => {
               <img src="/chakra.svg" alt="Yojana Dvar Emblem" className="w-full h-full object-contain" />
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-xl text-charcoal-900 tracking-tight">
-                  {language === 'hi' ? 'योजना द्वार' : 'Yojana Dvar'}
-                </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-forest-100 text-forest-800 border border-forest-200">
-                  <Sparkles className="w-3 h-3 mr-1 text-forest-600" />
-                  {language === 'hi' ? 'सरकारी सेवा' : 'Govt Portal'}
-                </span>
-              </div>
+              <span className="font-bold text-xl text-charcoal-900 tracking-tight">
+                {t('navBrand')}
+              </span>
               <p className="text-xs text-charcoal-500 font-medium hidden sm:block">
                 {t('navSubtitle')}
               </p>
