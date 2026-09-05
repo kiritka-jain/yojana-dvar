@@ -2,31 +2,44 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { fetchUserProfile } from '../services/api';
-import type { ProfileInput } from '../services/api';
+import { getLocalBookmarks } from '../services/api';
 import { 
   User, 
-  Shield, 
   CheckCircle2, 
   LogOut, 
-  Edit3, 
-  Sparkles, 
   Bookmark, 
-  ArrowRight 
+  Sparkles, 
+  ArrowRight,
+  Globe,
+  Trash2
 } from 'lucide-react';
 
 export const Profile: React.FC = () => {
   const { language, t } = useLanguage();
-  const { currentUser, token, isAuthenticated, logout } = useAuth();
-  const [profile, setProfile] = useState<ProfileInput | null>(null);
+  const { currentUser, isAuthenticated, logout } = useAuth();
+  const [bookmarkCount, setBookmarkCount] = useState<number>(0);
+  const [clearedNotice, setClearedNotice] = useState<boolean>(false);
 
   useEffect(() => {
-    if (token) {
-      fetchUserProfile(token).then((res) => {
-        if (res) setProfile(res);
-      });
-    }
-  }, [token]);
+    const updateCount = () => {
+      setBookmarkCount(getLocalBookmarks().length);
+    };
+    updateCount();
+    window.addEventListener('yojana_bookmarks_updated', updateCount);
+    window.addEventListener('storage', updateCount);
+    return () => {
+      window.removeEventListener('yojana_bookmarks_updated', updateCount);
+      window.removeEventListener('storage', updateCount);
+    };
+  }, []);
+
+  const handleClearLocalBookmarks = () => {
+    localStorage.removeItem('yojana_saved_bookmarks');
+    window.dispatchEvent(new Event('yojana_bookmarks_updated'));
+    setBookmarkCount(0);
+    setClearedNotice(true);
+    setTimeout(() => setClearedNotice(false), 3000);
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
@@ -39,23 +52,23 @@ export const Profile: React.FC = () => {
               <img 
                 src={currentUser.avatarUrl} 
                 alt="" 
-                className="w-16 h-16 rounded-2xl border-2 border-saffron-400 p-0.5 bg-saffron-50" 
+                className="w-16 h-16 rounded-2xl border-2 border-saffron-400 p-0.5 bg-saffron-50 flex-shrink-0" 
               />
             ) : (
-              <div className="w-16 h-16 rounded-2xl bg-saffron-100 border border-saffron-300 flex items-center justify-center text-saffron-800">
+              <div className="w-16 h-16 rounded-2xl bg-saffron-100 border border-saffron-300 flex items-center justify-center text-saffron-800 flex-shrink-0">
                 <User className="w-8 h-8" />
               </div>
             )}
             <div>
               <h1 className="text-2xl font-bold text-charcoal-900">
-                {currentUser?.displayName || (language === 'hi' ? 'अतिथि नागरिक' : 'Guest Citizen')}
+                {currentUser?.displayName || (language === 'hi' ? 'नागरिक सत्र' : 'Citizen Session')}
               </h1>
               <p className="text-xs text-charcoal-500 flex items-center gap-1.5 mt-0.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-forest-600" />
                 <span>
                   {isAuthenticated 
                     ? (language === 'hi' ? 'सत्यापित डिजिटल सत्र' : 'Verified Citizen Session')
-                    : (language === 'hi' ? 'अतिथि मोड (स्थानीय)' : 'Guest Mode (Local Session)')}
+                    : (language === 'hi' ? 'स्थानीय सुरक्षित सत्र' : 'Local Private Session')}
                 </span>
               </p>
             </div>
@@ -73,110 +86,67 @@ export const Profile: React.FC = () => {
           )}
         </div>
 
-        {/* Session Details */}
+        {/* Preferences & Session Stats */}
         <div className="space-y-3">
-          <div className="p-4 rounded-xl bg-cream-50 border border-cream-200 flex items-center justify-between text-xs sm:text-sm">
-            <span className="font-medium text-charcoal-700">
-              {language === 'hi' ? 'उपयोगकर्ता पहचान (UID)' : 'User ID (UID)'}
+          <div className="p-4 rounded-2xl bg-cream-50 border border-cream-200 flex items-center justify-between text-xs sm:text-sm">
+            <span className="font-medium text-charcoal-700 flex items-center gap-2">
+              <Globe className="w-4 h-4 text-saffron-600" />
+              <span>{language === 'hi' ? 'सक्रिय भाषा' : 'Interface Language'}</span>
             </span>
-            <span className="font-mono text-xs text-charcoal-600 bg-white px-2.5 py-1 rounded border border-cream-300">
-              {currentUser?.uid || 'guest-session-local'}
-            </span>
-          </div>
-
-          <div className="p-4 rounded-xl bg-cream-50 border border-cream-200 flex items-center justify-between text-xs sm:text-sm">
-            <span className="font-medium text-charcoal-700">
-              {language === 'hi' ? 'सक्रिय भाषा' : 'Interface Language'}
-            </span>
-            <span className="font-bold text-xs text-saffron-700 bg-white px-2.5 py-1 rounded border border-cream-300">
+            <span className="font-bold text-xs text-saffron-800 bg-white px-3 py-1 rounded-xl border border-cream-300">
               {language === 'hi' ? 'हिंदी (Hindi)' : 'English (EN)'}
             </span>
           </div>
 
-          {currentUser?.email && (
-            <div className="p-4 rounded-xl bg-cream-50 border border-cream-200 flex items-center justify-between text-xs sm:text-sm">
-              <span className="font-medium text-charcoal-700">Email</span>
-              <span className="text-xs text-charcoal-800 font-semibold bg-white px-2.5 py-1 rounded border border-cream-300">
-                {currentUser.email}
+          <div className="p-4 rounded-2xl bg-cream-50 border border-cream-200 flex items-center justify-between text-xs sm:text-sm">
+            <span className="font-medium text-charcoal-700 flex items-center gap-2">
+              <Bookmark className="w-4 h-4 text-saffron-600" />
+              <span>{language === 'hi' ? 'सहेजी गई योजनाएं' : 'Saved Schemes'}</span>
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-xs text-charcoal-800 bg-white px-3 py-1 rounded-xl border border-cream-300">
+                {bookmarkCount}
               </span>
+              {bookmarkCount > 0 && (
+                <Link
+                  to="/bookmarks"
+                  className="text-xs font-bold text-saffron-700 hover:text-saffron-800 hover:underline"
+                >
+                  {language === 'hi' ? 'देखें' : 'View'}
+                </Link>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Saved Profile Summary (if available) */}
-        {profile && (
-          <div className="p-5 rounded-2xl bg-cream-100/70 border border-saffron-200 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wide">
-                {language === 'hi' ? 'सहेजी गई जनसांख्यिकी' : 'Saved Demographics'}
-              </span>
-              <Link
-                to="/find"
-                state={{ profile }}
-                className="text-xs text-saffron-700 font-bold hover:underline inline-flex items-center gap-1"
-              >
-                <Edit3 className="w-3 h-3" />
-                <span>{language === 'hi' ? 'संपादित करें' : 'Edit'}</span>
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-              <div className="p-2 rounded bg-white border border-cream-200">
-                <span className="text-charcoal-400 block text-[10px]">State</span>
-                <span className="font-bold text-charcoal-900">{profile.state}</span>
-              </div>
-              <div className="p-2 rounded bg-white border border-cream-200">
-                <span className="text-charcoal-400 block text-[10px]">Age</span>
-                <span className="font-bold text-charcoal-900">{profile.age} Yrs</span>
-              </div>
-              <div className="p-2 rounded bg-white border border-cream-200">
-                <span className="text-charcoal-400 block text-[10px]">Caste</span>
-                <span className="font-bold text-charcoal-900">{profile.caste}</span>
-              </div>
-              <div className="p-2 rounded bg-white border border-cream-200">
-                <span className="text-charcoal-400 block text-[10px]">Income</span>
-                <span className="font-bold text-forest-700">₹{profile.income.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="p-2 rounded bg-white border border-cream-200">
-                <span className="text-charcoal-400 block text-[10px]">Life Stage</span>
-                <span className="font-bold text-charcoal-900 capitalize">{profile.life_stage}</span>
-              </div>
-              <div className="p-2 rounded bg-white border border-cream-200">
-                <span className="text-charcoal-400 block text-[10px]">Status</span>
-                <span className="font-bold text-charcoal-900">{profile.is_bpl ? 'BPL' : 'Non-BPL'}</span>
-              </div>
-            </div>
+        {/* Clear Notice Toast */}
+        {clearedNotice && (
+          <div className="p-3 rounded-xl bg-forest-50 border border-forest-200 text-forest-900 text-xs font-semibold">
+            {language === 'hi' ? 'सहेजी गई योजनाओं की सूची खाली कर दी गई है।' : 'Saved bookmarks list has been cleared.'}
           </div>
         )}
 
-        {/* Quick Actions */}
-        <div className="pt-2 flex flex-col sm:flex-row gap-3">
+        {/* Action Buttons */}
+        <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <Link
-            to="/bookmarks"
-            className="flex-1 py-3 rounded-xl bg-saffron-500 hover:bg-saffron-600 text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:scale-101 text-center inline-flex items-center justify-center gap-2"
+            to="/find"
+            className="flex-1 py-3 px-5 rounded-2xl bg-saffron-500 hover:bg-saffron-600 text-white font-bold text-xs sm:text-sm text-center shadow-sm transition-all hover:scale-101 active:scale-99 inline-flex items-center justify-center gap-2"
           >
-            <Bookmark className="w-4 h-4" />
-            <span>{language === 'hi' ? 'सहेजी गई योजनाएं देखें' : 'View Saved Bookmarks'}</span>
+            <Sparkles className="w-4 h-4" />
+            <span>{language === 'hi' ? 'पात्र योजनाएं खोजें' : 'Find Eligible Schemes'}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
 
-          <Link
-            to="/find"
-            className="flex-1 py-3 rounded-xl border border-cream-300 hover:bg-cream-100 text-charcoal-700 font-semibold text-xs sm:text-sm transition-colors text-center inline-flex items-center justify-center gap-2"
-          >
-            <Sparkles className="w-4 h-4 text-saffron-600" />
-            <span>{language === 'hi' ? 'योजना खोज फ़ॉर्म' : 'Discovery Wizard'}</span>
-          </Link>
-        </div>
-
-        {/* Privacy Advisory */}
-        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-950 flex items-start gap-2.5">
-          <Shield className="w-4 h-4 text-amber-700 mt-0.5 flex-shrink-0" />
-          <span className="leading-relaxed">
-            {language === 'hi'
-              ? 'आपकी जनसांख्यिकीय जानकारी केवल योजना पात्रता जांच के लिए उपयोग की जाती है और तीसरे पक्ष के साथ साझा नहीं की जाती।'
-              : 'Your demographic details are encrypted and solely utilized to evaluate welfare entitlement eligibility.'}
-          </span>
+          {bookmarkCount > 0 && (
+            <button
+              type="button"
+              onClick={handleClearLocalBookmarks}
+              className="py-3 px-4 rounded-2xl border border-cream-300 hover:border-red-300 hover:bg-red-50 text-charcoal-600 hover:text-red-700 font-semibold text-xs transition-colors inline-flex items-center justify-center gap-1.5"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>{language === 'hi' ? 'सहेजी गई सूची साफ़ करें' : 'Clear Saved List'}</span>
+            </button>
+          )}
         </div>
 
       </div>
