@@ -14,18 +14,18 @@
     "application_process": "Register online via the PMMVY Citizen Portal (pmmvy.wcd.gov.in) or offline at nearest Anganwadi Center / approved health facility (ASHA worker).",
     "apply_url": "https://pmmvy.wcd.gov.in/",
     "official_url": "https://pmmvy.wcd.gov.in/",
-    "age_min": 0,
-    "age_max": 100,
+    "age_min": 19,
+    "age_max": 45,
     "gender": "Female",
-    "caste_categories": "[\"All\"]",
+    "caste_categories": "[\"SC\", \"ST\"]",
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"All\"]",
-    "requires_bpl": false,
-    "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "requires_bpl": true,
+    "requires_disability": true,
+    "life_stage_tags": "[\"maternal\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.395839+00:00"
+    "updated_at": "2026-09-05T18:18:55.141963+00:00"
   },
   {
     "scheme_id": "sukanya-samriddhi-yojana",
@@ -43,7 +43,7 @@
     "apply_url": "https://www.indiapost.gov.in/Financial/Pages/Content/Sukanya-Samriddhi-Account.aspx",
     "official_url": "https://www.indiapost.gov.in/Financial/Pages/Content/Sukanya-Samriddhi-Account.aspx",
     "age_min": 0,
-    "age_max": 100,
+    "age_max": 10,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
     "income_max": 0,
@@ -51,9 +51,9 @@
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.395986+00:00"
+    "updated_at": "2026-09-05T18:18:55.142623+00:00"
   },
   {
     "scheme_id": "support-to-training-and-employment-programme-for-women",
@@ -70,18 +70,18 @@
     "application_process": "Apply through registered NGOs, State Women Development Corporations, or district skill development training centers.",
     "apply_url": "https://wcd.gov.in/schemes/support-training-and-employment-programme-women-step",
     "official_url": "https://wcd.gov.in/schemes/support-training-and-employment-programme-women-step",
-    "age_min": 0,
+    "age_min": 16,
     "age_max": 100,
     "gender": "Female",
-    "caste_categories": "[\"All\"]",
+    "caste_categories": "[\"SC\", \"ST\"]",
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396008+00:00"
+    "updated_at": "2026-09-05T18:18:55.142785+00:00"
   },
   {
     "scheme_id": "stand-up-india-scheme-for-women-entrepreneurs",
@@ -98,18 +98,18 @@
     "application_process": "Apply online at the Stand-Up Mitra portal (standupmitra.in) or directly visit any scheduled commercial bank branch.",
     "apply_url": "https://www.standupmitra.in/",
     "official_url": "https://www.standupmitra.in/",
-    "age_min": 0,
+    "age_min": 18,
     "age_max": 100,
     "gender": "Female",
-    "caste_categories": "[\"All\"]",
+    "caste_categories": "[\"SC\", \"ST\"]",
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396025+00:00"
+    "updated_at": "2026-09-05T18:18:55.142964+00:00"
   },
   {
     "scheme_id": "indira-gandhi-national-widow-pension-scheme",
@@ -126,18 +126,18 @@
     "application_process": "Apply through the local Gram Panchayat office, Block Development Office (BDO), or online on the NSAP Portal (nsap.nic.in).",
     "apply_url": "https://nsap.nic.in/",
     "official_url": "https://nsap.nic.in/",
-    "age_min": 0,
-    "age_max": 100,
+    "age_min": 40,
+    "age_max": 79,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"All\"]",
-    "requires_bpl": false,
+    "requires_bpl": true,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396040+00:00"
+    "updated_at": "2026-09-05T18:18:55.143100+00:00"
   },
   {
     "scheme_id": "pradhan-mantri-ujjwala-yojana",
@@ -154,18 +154,18 @@
     "application_process": "Submit application online via pmuy.gov.in or directly at any authorized LPG distributor (Indane, Bharatgas, HP Gas).",
     "apply_url": "https://www.pmuy.gov.in/",
     "official_url": "https://www.pmuy.gov.in/",
-    "age_min": 0,
+    "age_min": 18,
     "age_max": 100,
     "gender": "Female",
-    "caste_categories": "[\"All\"]",
+    "caste_categories": "[\"OBC\", \"SC\", \"ST\"]",
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"All\"]",
-    "requires_bpl": false,
+    "requires_bpl": true,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"entrepreneur\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396055+00:00"
+    "updated_at": "2026-09-05T18:18:55.143260+00:00"
   },
   {
     "scheme_id": "mahila-samman-savings-certificate",
@@ -193,7 +193,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396068+00:00"
+    "updated_at": "2026-09-05T18:18:55.143557+00:00"
   },
   {
     "scheme_id": "working-women-hostel-scheme",
@@ -211,17 +211,17 @@
     "apply_url": "https://wcd.nic.in/schemes/working-women-hostel",
     "official_url": "https://wcd.nic.in/schemes/working-women-hostel",
     "age_min": 0,
-    "age_max": 100,
+    "age_max": 8,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
-    "income_max": 0,
-    "residence": "All",
+    "income_max": 600000,
+    "residence": "Urban",
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"student\", \"senior\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396083+00:00"
+    "updated_at": "2026-09-05T18:18:55.143744+00:00"
   },
   {
     "scheme_id": "post-graduate-indira-gandhi-scholarship-for-single-girl-child",
@@ -239,7 +239,7 @@
     "apply_url": "https://scholarships.gov.in/",
     "official_url": "https://scholarships.gov.in/",
     "age_min": 0,
-    "age_max": 100,
+    "age_max": 30,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
     "income_max": 0,
@@ -247,9 +247,9 @@
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396113+00:00"
+    "updated_at": "2026-09-05T18:18:55.143945+00:00"
   },
   {
     "scheme_id": "pm-street-vendors-atmanirbhar-nidhi",
@@ -271,13 +271,13 @@
     "gender": "Female",
     "caste_categories": "[\"All\"]",
     "income_max": 0,
-    "residence": "All",
+    "residence": "Urban",
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396128+00:00"
+    "updated_at": "2026-09-05T18:18:55.144148+00:00"
   },
   {
     "scheme_id": "mukhya-mantri-kanya-sumangala-yojana",
@@ -298,14 +298,14 @@
     "age_max": 100,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
-    "income_max": 0,
+    "income_max": 300000,
     "residence": "All",
     "eligible_states": "[\"Uttar Pradesh\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396143+00:00"
+    "updated_at": "2026-09-05T18:18:55.144318+00:00"
   },
   {
     "scheme_id": "moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme",
@@ -331,9 +331,9 @@
     "eligible_states": "[\"Tamil Nadu\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396159+00:00"
+    "updated_at": "2026-09-05T18:18:55.144504+00:00"
   },
   {
     "scheme_id": "kanyashree-prakalpa",
@@ -350,18 +350,18 @@
     "application_process": "Collect and submit application form directly at the school or institution where the student is enrolled.",
     "apply_url": "https://wbkanyashree.gov.in/",
     "official_url": "https://wbkanyashree.gov.in/",
-    "age_min": 0,
-    "age_max": 100,
+    "age_min": 13,
+    "age_max": 19,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
-    "income_max": 0,
+    "income_max": 120000,
     "residence": "All",
     "eligible_states": "[\"West Bengal\"]",
     "requires_bpl": false,
-    "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "requires_disability": true,
+    "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396172+00:00"
+    "updated_at": "2026-09-05T18:18:55.144625+00:00"
   },
   {
     "scheme_id": "mukhyamantri-ladli-behna-yojana",
@@ -378,18 +378,18 @@
     "application_process": "Register at local Gram Panchayat, Ward Office camps, or online portal (cmladlibehna.mp.gov.in).",
     "apply_url": "https://cmladlibehna.mp.gov.in/",
     "official_url": "https://cmladlibehna.mp.gov.in/",
-    "age_min": 0,
-    "age_max": 100,
+    "age_min": 21,
+    "age_max": 60,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
-    "income_max": 0,
+    "income_max": 250000,
     "residence": "All",
     "eligible_states": "[\"Madhya Pradesh\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"senior\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396187+00:00"
+    "updated_at": "2026-09-05T18:18:55.144759+00:00"
   },
   {
     "scheme_id": "mukhyamantri-majhi-ladki-bahin-yojana",
@@ -406,18 +406,18 @@
     "application_process": "Apply online via the Nari Shakti Doot App or offline at Anganwadi centers, Setu Seva Kendras, and Gram Panchayats.",
     "apply_url": "https://ladakibahin.maharashtra.gov.in/",
     "official_url": "https://ladakibahin.maharashtra.gov.in/",
-    "age_min": 0,
-    "age_max": 100,
+    "age_min": 21,
+    "age_max": 65,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
-    "income_max": 0,
+    "income_max": 250000,
     "residence": "All",
     "eligible_states": "[\"Maharashtra\"]",
-    "requires_bpl": false,
+    "requires_bpl": true,
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396201+00:00"
+    "updated_at": "2026-09-05T18:18:55.144864+00:00"
   },
   {
     "scheme_id": "gruha-lakshmi-scheme",
@@ -441,11 +441,11 @@
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"Karnataka\"]",
-    "requires_bpl": false,
+    "requires_bpl": true,
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396214+00:00"
+    "updated_at": "2026-09-05T18:18:55.145058+00:00"
   },
   {
     "scheme_id": "mahalakshmi-scheme",
@@ -471,9 +471,9 @@
     "eligible_states": "[\"Telangana\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"entrepreneur\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396228+00:00"
+    "updated_at": "2026-09-05T18:18:55.145232+00:00"
   },
   {
     "scheme_id": "kudumbashree-women-empowerment-livelihood-mission",
@@ -499,9 +499,9 @@
     "eligible_states": "[\"Kerala\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396386+00:00"
+    "updated_at": "2026-09-05T18:18:55.145411+00:00"
   },
   {
     "scheme_id": "mukhyamantri-kanya-utthan-yojana",
@@ -527,9 +527,9 @@
     "eligible_states": "[\"Bihar\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396400+00:00"
+    "updated_at": "2026-09-05T18:18:55.145605+00:00"
   },
   {
     "scheme_id": "mukhyamantri-chiranjeevi-swasthya-bima-yojana",
@@ -553,11 +553,11 @@
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"Rajasthan\"]",
-    "requires_bpl": false,
+    "requires_bpl": true,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"maternal\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396414+00:00"
+    "updated_at": "2026-09-05T18:18:55.145807+00:00"
   },
   {
     "scheme_id": "mission-shakti-odisha",
@@ -583,9 +583,9 @@
     "eligible_states": "[\"Odisha\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396426+00:00"
+    "updated_at": "2026-09-05T18:18:55.145965+00:00"
   },
   {
     "scheme_id": "mukhyamantri-mahila-utkarsh-yojana",
@@ -602,8 +602,8 @@
     "application_process": "Register group at Municipal Corporation / District Urban Development Agency or Gram Panchayat Taluka office.",
     "apply_url": "https://wcd.gujarat.gov.in/",
     "official_url": "https://wcd.gujarat.gov.in/",
-    "age_min": 0,
-    "age_max": 100,
+    "age_min": 18,
+    "age_max": 59,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
     "income_max": 0,
@@ -611,9 +611,9 @@
     "eligible_states": "[\"Gujarat\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396439+00:00"
+    "updated_at": "2026-09-05T18:18:55.146096+00:00"
   },
   {
     "scheme_id": "ysr-cheyutha-scheme",
@@ -630,18 +630,18 @@
     "application_process": "Apply at local Village/Ward Secretariat (Grama/Ward Sachivalayam) or through Navasakam portal.",
     "apply_url": "https://navasakam.ap.gov.in/",
     "official_url": "https://navasakam.ap.gov.in/",
-    "age_min": 0,
-    "age_max": 100,
+    "age_min": 45,
+    "age_max": 60,
     "gender": "Female",
-    "caste_categories": "[\"All\"]",
+    "caste_categories": "[\"OBC\", \"SC\", \"ST\"]",
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"Andhra Pradesh\"]",
-    "requires_bpl": false,
+    "requires_bpl": true,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396452+00:00"
+    "updated_at": "2026-09-05T18:18:55.146223+00:00"
   },
   {
     "scheme_id": "orunodoi-20-scheme",
@@ -662,14 +662,14 @@
     "age_max": 100,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
-    "income_max": 0,
+    "income_max": 200000,
     "residence": "All",
     "eligible_states": "[\"Assam\"]",
-    "requires_bpl": false,
-    "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "requires_bpl": true,
+    "requires_disability": true,
+    "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396465+00:00"
+    "updated_at": "2026-09-05T18:18:55.146367+00:00"
   },
   {
     "scheme_id": "delhi-free-dtc-bus-travel-scheme",
@@ -697,7 +697,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396478+00:00"
+    "updated_at": "2026-09-05T18:18:55.146528+00:00"
   },
   {
     "scheme_id": "maiya-samman-yojana",
@@ -714,18 +714,18 @@
     "application_process": "Apply at special camps organized at Gram Panchayat and Ward levels or online at the official Jharkhand portal.",
     "apply_url": "https://mmmsy.jharkhand.gov.in/",
     "official_url": "https://mmmsy.jharkhand.gov.in/",
-    "age_min": 0,
-    "age_max": 100,
+    "age_min": 18,
+    "age_max": 50,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"Jharkhand\"]",
-    "requires_bpl": false,
+    "requires_bpl": true,
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396491+00:00"
+    "updated_at": "2026-09-05T18:18:55.146689+00:00"
   },
   {
     "scheme_id": "kanya-sumangala-mukhyamantri-kanya-vivah-yojana",
@@ -742,18 +742,18 @@
     "application_process": "Apply at District Women & Child Development Office or Block Project Officer office 30 days before scheduled mass marriage.",
     "apply_url": "https://wcd.cg.gov.in/",
     "official_url": "https://wcd.cg.gov.in/",
-    "age_min": 0,
+    "age_min": 18,
     "age_max": 100,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
     "income_max": 0,
     "residence": "All",
     "eligible_states": "[\"Chhattisgarh\"]",
-    "requires_bpl": false,
+    "requires_bpl": true,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"student\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396505+00:00"
+    "updated_at": "2026-09-05T18:18:55.146860+00:00"
   },
   {
     "scheme_id": "mukhyamantri-mahila-samman-yojana",
@@ -770,7 +770,7 @@
     "application_process": "Submit prescribed application at Gram Panchayat or Tehsil Welfare Office.",
     "apply_url": "https://himachal.nic.in/",
     "official_url": "https://himachal.nic.in/",
-    "age_min": 0,
+    "age_min": 18,
     "age_max": 100,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
@@ -779,9 +779,9 @@
     "eligible_states": "[\"Himachal Pradesh\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396524+00:00"
+    "updated_at": "2026-09-05T18:18:55.147002+00:00"
   },
   {
     "scheme_id": "gaura-devi-kanya-dhan-yojana",
@@ -801,15 +801,15 @@
     "age_min": 0,
     "age_max": 100,
     "gender": "Female",
-    "caste_categories": "[\"All\"]",
+    "caste_categories": "[\"General\", \"SC\", \"ST\"]",
     "income_max": 0,
-    "residence": "All",
+    "residence": "Rural",
     "eligible_states": "[\"Uttarakhand\"]",
-    "requires_bpl": false,
+    "requires_bpl": true,
     "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
+    "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396537+00:00"
+    "updated_at": "2026-09-05T18:18:55.147142+00:00"
   },
   {
     "scheme_id": "griha-aadhar-scheme",
@@ -826,18 +826,18 @@
     "application_process": "Submit physical form at Goa Citizen Service Centers (Grahak Seva Kendras) or Directorate of Women and Child Development, Panaji.",
     "apply_url": "https://dwcd.goa.gov.in/",
     "official_url": "https://dwcd.goa.gov.in/",
-    "age_min": 0,
+    "age_min": 15,
     "age_max": 100,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
-    "income_max": 0,
+    "income_max": 300000,
     "residence": "All",
     "eligible_states": "[\"Goa\"]",
     "requires_bpl": false,
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396550+00:00"
+    "updated_at": "2026-09-05T18:18:55.147255+00:00"
   },
   {
     "scheme_id": "pmmvy-central",
@@ -865,7 +865,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"maternal\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396718+00:00"
+    "updated_at": "2026-09-05T18:18:55.147368+00:00"
   },
   {
     "scheme_id": "ssy-central",
@@ -893,7 +893,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396736+00:00"
+    "updated_at": "2026-09-05T18:18:55.147423+00:00"
   },
   {
     "scheme_id": "step-central",
@@ -921,7 +921,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396749+00:00"
+    "updated_at": "2026-09-05T18:18:55.147482+00:00"
   },
   {
     "scheme_id": "standup-india-women",
@@ -949,7 +949,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396761+00:00"
+    "updated_at": "2026-09-05T18:18:55.147536+00:00"
   },
   {
     "scheme_id": "ignwps-pension",
@@ -977,7 +977,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396775+00:00"
+    "updated_at": "2026-09-05T18:18:55.147587+00:00"
   },
   {
     "scheme_id": "hf-scheme-001",
@@ -1003,9 +1003,9 @@
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"student\", \"single_girl_child\", \"higher_education\"]",
+    "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396935+00:00"
+    "updated_at": "2026-09-05T18:18:55.147681+00:00"
   },
   {
     "scheme_id": "hf-scheme-002",
@@ -1031,9 +1031,9 @@
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"financial_security\", \"savings\", \"all_women\"]",
+    "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396949+00:00"
+    "updated_at": "2026-09-05T18:18:55.147719+00:00"
   },
   {
     "scheme_id": "hf-scheme-003",
@@ -1059,8 +1059,8 @@
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"working_women\", \"housing\", \"entrepreneur\", \"urban\"]",
+    "life_stage_tags": "[\"student\", \"entrepreneur\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T17:39:19.396959+00:00"
+    "updated_at": "2026-09-05T18:18:55.147755+00:00"
   }
 ]

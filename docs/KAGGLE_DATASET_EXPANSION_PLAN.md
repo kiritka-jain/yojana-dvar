@@ -215,9 +215,9 @@ flowchart TD
 - [x] Ticket 1.1: Download & stage raw Kaggle CSV to data/raw/
 - [x] Ticket 1.2: Schema profile & audit
 - [x] Ticket 2.1: Implement Kaggle record parser in scripts/etl_load_schemes.py
-- [ ] Ticket 2.2: Implement Women-relevancy filter logic
-- [ ] Ticket 2.3: Implement life-stage classifier & tagging
-- [ ] Ticket 2.4: Implement eligibility constraints normalizer
+- [x] Ticket 2.2: Implement Women-relevancy filter logic
+- [x] Ticket 2.3: Implement life-stage classifier & tagging
+- [x] Ticket 2.4: Implement eligibility constraints normalizer
 - [ ] Ticket 3.1: Deduplicate & export data/processed/schemes_women.json
 - [ ] Ticket 3.2: Load into BigQuery schemes_women table
 - [ ] Ticket 3.3: Run dataset integrity tests

@@ -24,12 +24,176 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_RAW_DIR = os.path.join(BASE_DIR, "data", "raw")
 DATA_PROCESSED_DIR = os.path.join(BASE_DIR, "data", "processed")
 
-# Women Filter Keywords (Section 6.2)
+# Expanded Women Filter Keywords (Section 6.2 - English, Transliterated & Regional)
 WOMEN_KEYWORDS = [
-    "women", "woman", "girl", "mahila", "matru", "sukanya", "widow",
-    "stand-up", "kanya", "ladli", "maternal", "mother", "penn", "sakhi",
-    "female", "she", "daughter", "nari", "balika", "pregnant", "lactating"
+    "women", "woman", "girl", "girls", "female", "mahila", "matru", "matritva",
+    "sukanya", "widow", "widows", "vidhwa", "kanya", "ladli", "ladki", "maternal",
+    "maternity", "mother", "mothers", "penn", "sakhi", "she", "daughter", "daughters",
+    "nari", "balika", "pregnant", "pregnancy", "lactating", "lactation", "shg",
+    "self-help group", "self help group", "anganwadi", "asha", "samman", "poshan",
+    "pudhumai", "kudumbashree", "cheyutha", "orunodoi", "didi", "beti", "bahu",
+    "devi", "stree", "housewife", "homemaker", "housewives", "homemakers",
+    "single girl child", "bhagini", "ammaiyar", "majhi ladki", "ladli behna",
+    "stand-up india", "stand up india", "maharani", "sister", "sisters"
 ]
+
+# Devanagari Hindi Keywords
+DEVANAGARI_WOMEN_KEYWORDS = [
+    "महिला", "मातृ", "मातृत्व", "सुकन्या", "कन्या", "लाडली", "लाड़की", "नारी",
+    "बालिका", "विधवा", "बेटी", "दीदी", "स्त्री", "सखी", "गर्भवती", "स्तनपान",
+    "स्वयं सहायता", "पोषण", "गृहलक्ष्मी", "सम्मान"
+]
+
+# Strict Male-Only Exclusion Patterns
+MALE_EXCLUSIVE_KEYWORDS = [
+    "boys only", "men only", "male only", "exclusively for boys",
+    "only for male candidates", "only for boys", "male applicants only",
+    "for men and boys", "boys and young men only"
+]
+
+# Canonical Life-Stage Tags (Section 6.1 / Ticket 2.3)
+CANONICAL_LIFE_STAGES = ["maternal", "student", "entrepreneur", "senior", "general"]
+
+# Life-Stage Pattern Dictionaries (Ticket 2.3)
+LIFE_STAGE_PATTERNS = {
+    "maternal": [
+        "pregnant", "pregnancy", "maternal", "maternity", "lactating", "lactation",
+        "infant", "child birth", "delivery", "postnatal", "prenatal", "newborn",
+        "pmmvy", "matru", "matritva", "janani", "jsy", "mcp card", "safe motherhood",
+        "immunization", "antenatal", "गर्भ", "मातृ", "मातृत्व", "स्तनपान"
+    ],
+    "student": [
+        "student", "students", "scholarship", "scholarships", "education", "school",
+        "schools", "college", "colleges", "university", "universities", "undergraduate",
+        "post-graduation", "post-graduate", "master's degree", "degree", "diploma",
+        "intermediate", "class 1", "class 6", "class 8", "class 9", "class 10",
+        "class 12", "10th pass", "12th pass", "kanyashree", "pudhumai penn",
+        "kanya utthan", "sumangala", "gaura devi", "tuition", "fellowship",
+        "sukanya samriddhi", "sukanya", "girl child education", "higher education",
+        "stem", "hostel", "study", "learning", "छात्र", "छात्रा", "शिक्षा", "छात्रवृत्ति", "स्कूल"
+    ],
+    "entrepreneur": [
+        "entrepreneur", "entrepreneurs", "business", "loan", "loans", "micro-credit",
+        "microcredit", "working capital", "shg", "self-help group", "self help group",
+        "livelihood", "livelihoods", "stand-up india", "stand up india", "mudra",
+        "svanidhi", "street vendor", "street vendors", "vendor", "vendors", "hawker",
+        "kudumbashree", "mission shakti", "utkarsh", "joint liability", "jleg",
+        "cheyutha", "micro-enterprise", "micro enterprise", "enterprise", "enterprises",
+        "artisans", "artisan", "vocational training", "step", "self-employment",
+        "self employment", "subsidy", "credit facility", "swarojgar", "handloom",
+        "उद्यम", "व्यवसाय", "ऋण", "स्वयं सहायता"
+    ],
+    "senior": [
+        "widow", "widows", "vidhwa", "pension", "pensions", "elderly", "senior citizen",
+        "senior citizens", "old age", "old-age", "ignwps", "destitute widow",
+        "destitute widows", "pensioner", "superannuated", "aged 60", "above 60",
+        "40-79 years", "elderly women", "वृद्ध", "पेंशन", "विधवा"
+    ],
+    "general": [
+        "housing", "shelter", "sakhi niwas", "ujjwala", "lpg", "gas connection",
+        "sanitation", "bus travel", "free bus", "transport", "travel", "pink pass",
+        "pink ticket", "mahalakshmi", "basic income", "cash assistance", "cash transfer",
+        "ladli behna", "majhi ladki", "gruha lakshmi", "orunodoi", "maiya samman",
+        "chiranjeevi", "swasthya bima", "health insurance", "healthcare", "ration",
+        "bpl", "homemaker", "housewife", "housewives", "griha aadhar", "samman",
+        "vivah", "marriage assistance", "kanya vivah", "आवास", "स्वास्थ्य", "राशन"
+    ]
+}
+
+def classify_life_stage(record: dict) -> list:
+    """
+    Life-Stage Classifier & Automated Tagging (Ticket 2.3).
+    Categorizes a scheme into one or more of the 5 canonical life-stage tags:
+    ['maternal', 'student', 'entrepreneur', 'senior', 'general'].
+    """
+    if not record or not isinstance(record, dict):
+        return ["general"]
+
+    # Aggregate text fields for semantic scoring
+    title_text = str(
+        record.get("name") or record.get("scheme_name") or
+        record.get("Scheme Name") or record.get("title") or ""
+    )
+    beneficiary_text = str(
+        record.get("beneficiary_type") or record.get("target_beneficiary") or
+        record.get("Beneficiaries") or ""
+    )
+    category_text = str(
+        record.get("category") or record.get("scheme_category") or
+        record.get("Category") or record.get("domain") or ""
+    )
+    description_text = str(
+        record.get("description") or record.get("Details") or
+        record.get("summary") or ""
+    )
+    eligibility_text = str(
+        record.get("eligibility_text") or record.get("eligibility_criteria_text") or
+        record.get("Eligibility") or ""
+    )
+    benefits_text = str(
+        record.get("benefits") or record.get("scheme_benefits") or
+        record.get("Benefits") or ""
+    )
+
+    full_text = f"{title_text} {category_text} {beneficiary_text} {description_text} {eligibility_text} {benefits_text}".lower()
+
+    stage_scores = {stage: 0 for stage in CANONICAL_LIFE_STAGES}
+
+    # Weight title matches higher (+3)
+    title_lower = title_text.lower()
+    for stage, patterns in LIFE_STAGE_PATTERNS.items():
+        for pat in patterns:
+            if pat in title_lower:
+                stage_scores[stage] += 3
+            elif pat in full_text:
+                stage_scores[stage] += 1
+
+    # Specific category domain boosts
+    cat_lower = category_text.lower()
+    if "education" in cat_lower or "learning" in cat_lower:
+        stage_scores["student"] += 2
+    if "business" in cat_lower or "entrepreneurship" in cat_lower or "skills" in cat_lower or "employment" in cat_lower:
+        stage_scores["entrepreneur"] += 2
+    if "maternal" in cat_lower or ("health" in cat_lower and any(w in full_text for w in ["pregnant", "infant", "lactating"])):
+        stage_scores["maternal"] += 2
+
+    # Specific age bounds checks
+    age_min = clean_int(record.get("age_min") or record.get("min_age"), 0)
+    age_max = clean_int(record.get("age_max") or record.get("max_age"), 100)
+    if 0 <= age_min <= 10 and age_max <= 25:
+        stage_scores["student"] += 1
+    if age_min >= 40 and "widow" in full_text:
+        stage_scores["senior"] += 2
+    if age_min >= 60:
+        stage_scores["senior"] += 2
+
+    # Determine assigned stages
+    assigned_tags = []
+    specialized_stages = ["maternal", "student", "entrepreneur", "senior"]
+    max_spec_score = max(stage_scores[s] for s in specialized_stages)
+
+    if max_spec_score >= 2:
+        for s in specialized_stages:
+            if stage_scores[s] >= 2 and stage_scores[s] >= (max_spec_score - 1):
+                assigned_tags.append(s)
+    elif max_spec_score == 1:
+        best_s = max(specialized_stages, key=lambda s: stage_scores[s])
+        assigned_tags.append(best_s)
+
+    if not assigned_tags:
+        assigned_tags.append("general")
+    elif "general" not in assigned_tags and stage_scores["general"] >= 4:
+        assigned_tags.append("general")
+
+    # If explicit tag was provided and is valid, merge or prioritize
+    explicit_raw = record.get("life_stage")
+    if explicit_raw and isinstance(explicit_raw, str):
+        exp_clean = explicit_raw.strip().lower()
+        if exp_clean in CANONICAL_LIFE_STAGES and exp_clean not in assigned_tags:
+            assigned_tags.insert(0, exp_clean)
+
+    return assigned_tags if assigned_tags else ["general"]
+
 
 def slugify(text: str) -> str:
     """Converts a scheme title into a unique clean slug identifier."""
@@ -42,25 +206,143 @@ def slugify(text: str) -> str:
     text = re.sub(r'-+', '-', text)
     return text.strip('-') or "scheme"
 
+def classify_women_relevancy(record: dict) -> dict:
+    """
+    Multi-Criteria Women & Girl-Child Relevancy Classifier (Ticket 2.2).
+    Evaluates gender tags, women-centric keywords (English, transliterated & Devanagari),
+    target beneficiaries, ministries, and negative exclusion filters.
+    
+    Returns a dict with:
+      - is_relevant: bool
+      - confidence_score: float (0.0 to 1.0)
+      - matched_keywords: list[str]
+      - is_male_exclusive: bool
+      - reasons: list[str]
+    """
+    if not record or not isinstance(record, dict):
+        return {
+            "is_relevant": False,
+            "confidence_score": 0.0,
+            "matched_keywords": [],
+            "is_male_exclusive": False,
+            "reasons": ["Empty or invalid record payload"]
+        }
+
+    # Extract all text sources
+    gender_raw = str(
+        record.get("gender") or record.get("gender_applicable") or
+        record.get("Beneficiaries") or record.get("target_beneficiary") or ""
+    ).strip().lower()
+
+    title_text = str(
+        record.get("name") or record.get("scheme_name") or
+        record.get("Scheme Name") or record.get("title") or ""
+    ).strip()
+
+    beneficiary_text = str(
+        record.get("beneficiary_type") or record.get("target_beneficiary") or
+        record.get("Beneficiaries") or ""
+    ).strip()
+
+    category_text = str(
+        record.get("category") or record.get("scheme_category") or
+        record.get("Category") or record.get("domain") or ""
+    ).strip()
+
+    ministry_text = str(
+        record.get("ministry") or record.get("ministry_name") or
+        record.get("Ministry") or record.get("organization") or ""
+    ).strip()
+
+    description_text = str(
+        record.get("description") or record.get("Details") or
+        record.get("summary") or ""
+    ).strip()
+
+    eligibility_text = str(
+        record.get("eligibility_text") or record.get("eligibility_criteria_text") or
+        record.get("Eligibility") or ""
+    ).strip()
+
+    benefits_text = str(
+        record.get("benefits") or record.get("scheme_benefits") or
+        record.get("Benefits") or ""
+    ).strip()
+
+    full_searchable = f"{title_text} {category_text} {beneficiary_text} {ministry_text} {description_text} {eligibility_text} {benefits_text}".lower()
+
+    # 1. Negative male-exclusive check
+    is_male_exclusive = any(pattern in full_searchable for pattern in MALE_EXCLUSIVE_KEYWORDS)
+    if is_male_exclusive:
+        # Check if there are explicit female overrides (e.g. co-ed, widow exception)
+        has_female_override = any(kw in full_searchable for kw in ["female", "widow", "women", "girl", "mother"])
+        if not has_female_override:
+            return {
+                "is_relevant": False,
+                "confidence_score": 0.0,
+                "matched_keywords": [],
+                "is_male_exclusive": True,
+                "reasons": ["Filtered out: Explicitly restricted to male beneficiaries only"]
+            }
+
+    reasons = []
+    matched_keywords = []
+    confidence_points = 0.0
+
+    # 2. Gender check
+    explicit_female_genders = ["female", "women", "woman", "girl", "widow", "mother", "pregnant"]
+    if any(g in gender_raw for g in explicit_female_genders):
+        confidence_points += 0.50
+        reasons.append(f"Explicit target gender indicator: '{gender_raw}'")
+
+    # 3. Ministry check
+    if any(w in ministry_text.lower() for w in ["women and child", "women empowerment", "wcd", "mission shakti"]):
+        confidence_points += 0.25
+        reasons.append(f"Administered by Women-Centric Ministry: '{ministry_text}'")
+
+    # 4. Keyword match check (English & Transliterated)
+    for kw in WOMEN_KEYWORDS:
+        if re.search(r'\b' + re.escape(kw) + r'\b', full_searchable, re.IGNORECASE) or kw in full_searchable:
+            if kw not in matched_keywords:
+                matched_keywords.append(kw)
+
+    # 5. Devanagari Keyword match check
+    for kw in DEVANAGARI_WOMEN_KEYWORDS:
+        if kw in full_searchable and kw not in matched_keywords:
+            matched_keywords.append(kw)
+
+    if matched_keywords:
+        kw_score = min(0.40, len(matched_keywords) * 0.10)
+        confidence_points += kw_score
+        reasons.append(f"Matched {len(matched_keywords)} women/girl-child key term(s): {', '.join(matched_keywords[:5])}")
+
+    # 6. Title specific match boost
+    title_lower = title_text.lower()
+    title_matches = [kw for kw in (WOMEN_KEYWORDS + DEVANAGARI_WOMEN_KEYWORDS) if kw in title_lower]
+    if title_matches:
+        confidence_points += 0.15
+        reasons.append(f"Scheme title explicitly contains women-targeted term(s): {', '.join(title_matches[:3])}")
+
+    confidence_score = min(1.0, round(confidence_points, 2))
+    is_relevant = confidence_score >= 0.20 or bool(matched_keywords)
+
+    if not is_relevant:
+        reasons.append("No women-specific keywords, gender tags, or administrative markers identified.")
+
+    return {
+        "is_relevant": is_relevant,
+        "confidence_score": confidence_score,
+        "matched_keywords": matched_keywords,
+        "is_male_exclusive": False,
+        "reasons": reasons
+    }
+
 def is_women_relevant(record: dict) -> bool:
     """
-    Women Filter Logic (TDD Section 6.2):
-    Checks whether a scheme is relevant for women based on gender applicability
-    or presence of women-centric keywords in title, category, or beneficiary text.
+    Women Filter Logic (TDD Section 6.2 / Ticket 2.2):
+    Checks whether a scheme is relevant for women using the multi-criteria classifier.
     """
-    gender = str(record.get("gender", record.get("gender_applicable", record.get("Beneficiaries", "")))).lower().strip()
-    if any(g in gender for g in ["female", "women", "woman", "girl", "widow", "mother"]):
-        return True
-        
-    searchable_text = " ".join([
-        str(record.get("name", record.get("scheme_name", record.get("Scheme Name", record.get("title", ""))))),
-        str(record.get("category", record.get("scheme_category", record.get("Category", record.get("domain", ""))))),
-        str(record.get("beneficiary_type", record.get("target_beneficiary", record.get("Beneficiaries", "")))),
-        str(record.get("description", record.get("Details", record.get("summary", "")))),
-        str(record.get("eligibility_text", record.get("eligibility_criteria_text", record.get("Eligibility", ""))))
-    ]).lower()
-    
-    return any(keyword in searchable_text for keyword in WOMEN_KEYWORDS)
+    return classify_women_relevancy(record)["is_relevant"]
 
 def clean_int(val, default=0) -> int:
     """Safely converts a value to integer."""
@@ -81,10 +363,221 @@ def clean_bool(val, default=False) -> bool:
     val_str = str(val).strip().lower()
     return val_str in ["true", "1", "yes", "t", "y"]
 
+def extract_age_bounds(text: str, default_min: int = 0, default_max: int = 100) -> tuple:
+    """
+    Extracts numeric minimum and maximum age constraints from narrative eligibility text using regex (Ticket 2.4).
+    """
+    if not text:
+        return default_min, default_max
+    
+    text_clean = str(text).lower()
+
+    # Pattern 1: aged between X and Y / between X and Y years
+    m = re.search(r'(?:aged\s+)?between\s+(\d+)\s+(?:and|to|-)\s+(\d+)\s*(?:years|yrs)?', text_clean)
+    if m:
+        min_age, max_age = int(m.group(1)), int(m.group(2))
+        if min_age <= max_age and max_age <= 120:
+            return min_age, max_age
+
+    # Pattern 2: aged X to Y years / aged X-Y years
+    m = re.search(r'aged\s+(\d+)\s*(?:to|-)\s*(\d+)\s*(?:years|yrs)?', text_clean)
+    if m:
+        min_age, max_age = int(m.group(1)), int(m.group(2))
+        if min_age <= max_age and max_age <= 120:
+            return min_age, max_age
+
+    # Pattern 3: X to Y years of age / X-Y years
+    m = re.search(r'(\d+)\s*(?:to|-)\s*(\d+)\s*(?:years|yrs)(?:\s+of\s+age)?', text_clean)
+    if m:
+        min_age, max_age = int(m.group(1)), int(m.group(2))
+        if min_age <= max_age and max_age <= 120:
+            return min_age, max_age
+
+    # Pattern 4: aged X+ / X years and above / aged X years or older / aged X and above
+    m = re.search(r'(?:aged\s+)?(\d+)\s*(?:years|yrs)?\s*(?:\+|and\s+above|and\s+older|or\s+above|\babove\b|\bolder\b)(?!\s*%)', text_clean)
+    if m:
+        min_age = int(m.group(1))
+        if min_age <= 100:
+            return min_age, default_max
+
+    # Pattern 5: at least X years / minimum age of X years
+    m = re.search(r'(?:at\s+least|atleast|minimum\s+(?:age\s+(?:of\s+)?)?)\s*(\d+)\s*(?:years|yrs)(?!\s*%)', text_clean)
+    if m:
+        min_age = int(m.group(1))
+        if min_age <= 100:
+            return min_age, default_max
+
+    # Pattern 6: below X years / up to X years / under X years
+    m = re.search(r'(?:below|up\s+to|upto|under|maximum\s+(?:age\s+(?:of\s+)?)?)\s*(\d+)\s*(?:years|yrs)(?:\s+of\s+age)?(?!\s*%)', text_clean)
+    if m:
+        max_age = int(m.group(1))
+        if max_age <= 120:
+            return default_min, max_age
+
+    # Pattern 7: girl child (up to X years)
+    m = re.search(r'(?:girl\s+child|age|female)\s*\((?:up\s+to\s+)?(\d+)\s*(?:years|yrs)?\)', text_clean)
+    if m:
+        max_age = int(m.group(1))
+        if max_age <= 120:
+            return default_min, max_age
+
+    # Pattern 8: aged below (\d+) years
+    m = re.search(r'aged\s+below\s+(\d+)\s*(?:years|yrs)?', text_clean)
+    if m:
+        max_age = int(m.group(1))
+        if max_age <= 120:
+            return default_min, max_age
+
+    # Pattern 9: adult woman aged 18+ / aged 18
+    m = re.search(r'aged\s+(\d+)\b', text_clean)
+    if m:
+        min_age = int(m.group(1))
+        if 10 <= min_age <= 100:
+            return min_age, default_max
+
+    return default_min, default_max
+
+def extract_income_cap(text: str, default_income: int = 0) -> int:
+    """
+    Extracts maximum family/annual income cap in INR from narrative eligibility text (Ticket 2.4).
+    """
+    if not text:
+        return default_income
+
+    text_clean = str(text).lower()
+
+    # Pattern 1: annual/family/gross income ... not exceed / below / less than Rs 2,50,000 / Rs 3,00,000
+    m = re.search(
+        r'(?:annual|family|gross|household)?\s*(?:family\s*)?income\b(?:[a-zA-Z\s,]{0,45}?)(?:must|should)?\s*(?:not\s*exceed|below|under|less\s+than|up\s+to|upto|is\s+less\s+than|ceiling\s+of|limit\s+(?:of\s+)?)?\s*(?:rs\.?|inr|₹)?\s*([0-9,]+)',
+        text_clean
+    )
+    if m:
+        val_str = m.group(1).replace(",", "").strip()
+        try:
+            val = int(val_str)
+            if val >= 10000:  # Sensible minimum annual income cap
+                return val
+        except ValueError:
+            pass
+
+    # Pattern 2: income in Lakhs (e.g. Rs 2.5 Lakh / 3 Lakh / 5 Lakh)
+    m = re.search(
+        r'(?:annual|family|gross)?\s*(?:family\s*)?income\b(?:[a-zA-Z\s,]{0,45}?)(?:must|should)?\s*(?:not\s*exceed|below|under|less\s+than|up\s+to|upto)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|lac|lacs)',
+        text_clean
+    )
+    if m:
+        try:
+            val = int(float(m.group(1)) * 100000)
+            return val
+        except ValueError:
+            pass
+
+    # Pattern 3: gross monthly salary does not exceed Rs 50,000 (annualize to 12 * 50,000 = 600,000)
+    m = re.search(
+        r'monthly\s+(?:salary|income)\s*(?:does\s*not\s*exceed|below|under|less\s+than|up\s+to|upto)?\s*(?:rs\.?|inr|₹)?\s*([0-9,]+)',
+        text_clean
+    )
+    if m:
+        val_str = m.group(1).replace(",", "").strip()
+        try:
+            monthly_val = int(val_str)
+            if monthly_val > 0:
+                return monthly_val * 12
+        except ValueError:
+            pass
+
+    return default_income
+
+def extract_caste_categories(text: str) -> list:
+    """
+    Extracts applicable caste/social categories (SC, ST, OBC, General) from eligibility text (Ticket 2.4).
+    Returns ['All'] if universal or unrestricted.
+    """
+    if not text:
+        return ["All"]
+
+    text_clean = str(text).lower()
+
+    if "all categories" in text_clean or "all women" in text_clean or "any caste" in text_clean:
+        return ["All"]
+
+    categories = []
+    
+    # Check SC/ST
+    if re.search(r'\bsc\b|\bst\b|scheduled\s+caste|scheduled\s+tribe|sc/st|sc\s+and\s+st', text_clean):
+        if "sc" in text_clean or "scheduled caste" in text_clean:
+            categories.append("SC")
+        if "st" in text_clean or "scheduled tribe" in text_clean:
+            categories.append("ST")
+
+    # Check OBC
+    if re.search(r'\bobc\b|\bbc\b|backward\s+class|other\s+backward', text_clean):
+        if "OBC" not in categories:
+            categories.append("OBC")
+
+    # Check General
+    if "general" in text_clean or "all caste" in text_clean:
+        if "General" not in categories:
+            categories.append("General")
+
+    categories = sorted(list(set(categories)))
+    return categories if categories else ["All"]
+
+def extract_residence_type(text: str) -> str:
+    """
+    Extracts target residence type (Rural, Urban, or All) from text (Ticket 2.4).
+    """
+    if not text:
+        return "All"
+    text_clean = str(text).lower()
+    
+    is_rural = "rural" in text_clean
+    is_urban = "urban" in text_clean or "street vendor" in text_clean or "metro cities" in text_clean
+
+    if is_rural and not is_urban:
+        return "Rural"
+    elif is_urban and not is_rural:
+        return "Urban"
+    return "All"
+
+def extract_boolean_flags(text: str) -> dict:
+    """
+    Extracts boolean eligibility flags (requires_bpl, requires_disability, is_active) (Ticket 2.4).
+    """
+    if not text:
+        return {
+            "requires_bpl": False,
+            "requires_disability": False,
+            "is_active": True
+        }
+
+    text_clean = str(text).lower()
+
+    # BPL Indicators
+    bpl_keywords = [
+        "bpl", "below poverty line", "below the poverty line", "antyodaya", "aay",
+        "secc", "yellow ration card", "orange ration card", "pink ration card",
+        "food security card", "white ration card", "poor household", "poor families",
+        "low-income", "low income", "destitute"
+    ]
+    requires_bpl = any(kw in text_clean for kw in bpl_keywords)
+
+    # Disability Indicators
+    disability_keywords = [
+        "disability", "disabled", "divyang", "specially abled", "handicap", "orthopedic"
+    ]
+    requires_disability = any(kw in text_clean for kw in disability_keywords)
+
+    return {
+        "requires_bpl": requires_bpl,
+        "requires_disability": requires_disability,
+        "is_active": True
+    }
+
 def transform_kaggle_myscheme_record(row: dict) -> dict:
     """
-    Transforms a raw Kaggle MyScheme CSV record into the BigQuery `schemes_women` data model (Ticket 2.1).
-    Maps both exact MyScheme CSV column names and snake_case equivalents.
+    Transforms a raw Kaggle MyScheme CSV record into the BigQuery `schemes_women` data model (Ticket 2.1 & 2.4).
+    Maps both exact MyScheme CSV column names and extracts structured constraints from narrative text.
     """
     name = (
         row.get("Scheme Name") or row.get("scheme_name") or
@@ -162,19 +655,38 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
         row.get("Source URL") or apply_url
     ).strip()
 
-    life_stage_raw = row.get("life_stage", "general")
-    if isinstance(life_stage_raw, list):
-        life_stage_tags = life_stage_raw
-    else:
-        ls_str = str(life_stage_raw).strip().lower()
-        life_stage_tags = [ls_str] if ls_str else ["general"]
+    life_stage_tags = classify_life_stage(row)
 
-    caste_raw = row.get("caste_category") or row.get("caste_categories") or "All"
-    if isinstance(caste_raw, list):
-        caste_categories = caste_raw
+    # Extract structured constraints from narrative eligibility, beneficiary, and details text
+    eligibility_narrative = f"{beneficiary_type} {eligibility_text} {details} {benefits}"
+
+    extracted_min_age, extracted_max_age = extract_age_bounds(eligibility_narrative, default_min=0, default_max=100)
+    explicit_min_age = clean_int(row.get("min_age") or row.get("age_min"), 0)
+    explicit_max_age = clean_int(row.get("max_age") or row.get("age_max"), 100)
+    age_min = explicit_min_age if explicit_min_age > 0 else extracted_min_age
+    age_max = explicit_max_age if explicit_max_age < 100 else extracted_max_age
+
+    extracted_income = extract_income_cap(eligibility_narrative, default_income=0)
+    explicit_income = clean_int(row.get("max_income_limit") or row.get("income_max"), 0)
+    income_max = explicit_income if explicit_income > 0 else extracted_income
+
+    extracted_caste = extract_caste_categories(eligibility_narrative)
+    caste_raw = row.get("caste_category") or row.get("caste_categories")
+    if caste_raw:
+        if isinstance(caste_raw, list):
+            caste_categories = caste_raw
+        else:
+            c_str = str(caste_raw).strip()
+            caste_categories = [c_str] if c_str and c_str != "All" else extracted_caste
     else:
-        c_str = str(caste_raw).strip()
-        caste_categories = [c_str] if c_str and c_str != "All" else ["All"]
+        caste_categories = extracted_caste
+
+    extracted_residence = extract_residence_type(eligibility_narrative)
+    residence = str(row.get("residence_type") or row.get("residence") or extracted_residence).strip()
+
+    flags = extract_boolean_flags(eligibility_narrative)
+    requires_bpl = clean_bool(row.get("is_bpl_required") or row.get("requires_bpl"), flags["requires_bpl"])
+    requires_disability = clean_bool(row.get("is_disability_required") or row.get("requires_disability"), flags["requires_disability"])
 
     return {
         "scheme_id": scheme_id,
@@ -191,15 +703,15 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
         "application_process": application_process,
         "apply_url": apply_url,
         "official_url": official_url,
-        "age_min": clean_int(row.get("min_age") or row.get("age_min"), 0),
-        "age_max": clean_int(row.get("max_age") or row.get("age_max"), 100),
+        "age_min": age_min,
+        "age_max": age_max,
         "gender": str(row.get("gender") or row.get("gender_applicable") or "Female").strip(),
         "caste_categories": json.dumps(caste_categories),
-        "income_max": clean_int(row.get("max_income_limit") or row.get("income_max"), 0),
-        "residence": str(row.get("residence_type") or row.get("residence") or "All").strip(),
+        "income_max": income_max,
+        "residence": residence,
         "eligible_states": json.dumps(eligible_states),
-        "requires_bpl": clean_bool(row.get("is_bpl_required") or row.get("requires_bpl"), False),
-        "requires_disability": clean_bool(row.get("is_disability_required") or row.get("requires_disability"), False),
+        "requires_bpl": requires_bpl,
+        "requires_disability": requires_disability,
         "life_stage_tags": json.dumps(life_stage_tags),
         "is_active": clean_bool(row.get("active_status") or row.get("is_active"), True),
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -211,8 +723,7 @@ def transform_csv_record(row: dict) -> dict:
     name = row.get("scheme_name", "").strip()
     scheme_id = raw_id if raw_id else slugify(name)
     
-    life_stage_raw = row.get("life_stage", "general").strip().lower()
-    life_stage_tags = [life_stage_raw] if life_stage_raw else ["general"]
+    life_stage_tags = classify_life_stage(row)
     
     state = row.get("state_name", "All").strip()
     eligible_states_str = row.get("eligible_states_list", state).strip()
@@ -257,7 +768,7 @@ def transform_json_record(item: dict) -> dict:
     
     eligibility = item.get("eligibility", {})
     urls = item.get("urls", {})
-    tags = item.get("tags", ["general"])
+    life_stage_tags = classify_life_stage(item)
 
     return {
         "scheme_id": scheme_id,
@@ -283,7 +794,7 @@ def transform_json_record(item: dict) -> dict:
         "eligible_states": json.dumps(["All"]),
         "requires_bpl": clean_bool(eligibility.get("requires_bpl"), False),
         "requires_disability": clean_bool(eligibility.get("requires_disability"), False),
-        "life_stage_tags": json.dumps(tags),
+        "life_stage_tags": json.dumps(life_stage_tags),
         "is_active": True,
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }
@@ -336,7 +847,7 @@ def load_raw_data() -> list:
 
 def main():
     print("==================================================")
-    print("Yojana Dvar — Ticket 2.1 & 2.2 ETL Ingestion Pipeline")
+    print("Yojana Dvar — Ticket 2.1, 2.2 & 2.3 ETL Ingestion Pipeline")
     print("==================================================")
     
     os.makedirs(DATA_PROCESSED_DIR, exist_ok=True)
@@ -348,12 +859,20 @@ def main():
     # Filter for Women relevance & Deduplicate
     women_schemes_map = {}
     filtered_out_count = 0
+    classification_diagnostics = []
     
     for raw_item, transformed in raw_pairs:
-        if is_women_relevant(raw_item) or is_women_relevant(transformed):
+        raw_res = classify_women_relevancy(raw_item)
+        trans_res = classify_women_relevancy(transformed)
+        
+        is_rel = raw_res["is_relevant"] or trans_res["is_relevant"]
+        best_res = raw_res if raw_res["confidence_score"] >= trans_res["confidence_score"] else trans_res
+
+        if is_rel:
             scheme_id = transformed["scheme_id"]
             if scheme_id not in women_schemes_map or len(transformed["description"]) > len(women_schemes_map[scheme_id]["description"]):
                 women_schemes_map[scheme_id] = transformed
+                classification_diagnostics.append((transformed["name"], best_res))
         else:
             filtered_out_count += 1
             
@@ -363,6 +882,23 @@ def main():
     print(f"  - Total Raw Input Records:     {total_raw}")
     print(f"  - Filtered Non-Women Schemes:  {filtered_out_count}")
     print(f"  - Deduplicated Women Catalog:  {len(final_schemes)}")
+    if classification_diagnostics:
+        avg_conf = round(sum(d[1]["confidence_score"] for d in classification_diagnostics) / len(classification_diagnostics), 2)
+        print(f"  - Avg Relevancy Confidence:    {avg_conf * 100:.1f}%")
+
+    # Life Stage Distribution
+    stage_counts = {s: 0 for s in CANONICAL_LIFE_STAGES}
+    for scheme in final_schemes:
+        try:
+            tags = json.loads(scheme.get("life_stage_tags", "[]"))
+            for t in tags:
+                if t in stage_counts:
+                    stage_counts[t] += 1
+        except Exception:
+            pass
+    print("\n  Life-Stage Breakdown:")
+    for s, c in stage_counts.items():
+        print(f"    - {s.capitalize():<14}: {c} scheme(s)")
     
     # Save to data/processed/schemes_women.json
     out_json_path = os.path.join(DATA_PROCESSED_DIR, "schemes_women.json")
@@ -381,7 +917,7 @@ def main():
         print(f"✓ Saved processed CSV catalog:  {out_csv_path}")
 
     print("==================================================")
-    print("✓ Ticket 2.1 ETL Column Mapper & Ingestion Complete!")
+    print("✓ Ticket 2.3 Life-Stage Classifier & ETL Complete!")
     print("==================================================")
 
 if __name__ == "__main__":
