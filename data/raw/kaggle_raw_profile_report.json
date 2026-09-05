@@ -1,0 +1,189 @@
+{
+  "file_path": "/Users/kirtikaj/workspace/yojanadvar/yojana-dvar/data/raw/kaggle_myscheme_schemes.csv",
+  "file_size_bytes": 26390,
+  "total_records": 30,
+  "total_columns": 12,
+  "columns": [
+    "Scheme Name",
+    "Ministry",
+    "Department",
+    "State",
+    "Category",
+    "Beneficiaries",
+    "Details",
+    "Benefits",
+    "Eligibility",
+    "Application Process",
+    "Documents Required",
+    "Source URL"
+  ],
+  "column_stats": {
+    "Scheme Name": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 40.8,
+      "min_length": 19,
+      "max_length": 79,
+      "sample_value": "Pradhan Mantri Matru Vandana Yojana (PMMVY)"
+    },
+    "Ministry": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 25.7,
+      "min_length": 17,
+      "max_length": 39,
+      "sample_value": "Ministry of Women and Child Development"
+    },
+    "Department": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 40.9,
+      "min_length": 12,
+      "max_length": 68,
+      "sample_value": "Department of Women and Child Development"
+    },
+    "State": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 8.5,
+      "min_length": 3,
+      "max_length": 16,
+      "sample_value": "Central"
+    },
+    "Category": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 26.0,
+      "min_length": 17,
+      "max_length": 41,
+      "sample_value": "Social welfare & Empowerment"
+    },
+    "Beneficiaries": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 39.8,
+      "min_length": 15,
+      "max_length": 54,
+      "sample_value": "Pregnant Women and Lactating Mothers"
+    },
+    "Details": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 140.4,
+      "min_length": 98,
+      "max_length": 181,
+      "sample_value": "Centrally sponsored conditional cash transfer scheme providing direct financial support to pregnant women and lactating mothers for health, nutrition, and partial wage compensation."
+    },
+    "Benefits": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 144.9,
+      "min_length": 87,
+      "max_length": 266,
+      "sample_value": "Direct cash benefit of Rs 5,000 in two installments for the first child, and Rs 6,000 in a single installment for a second child if the infant is a girl child."
+    },
+    "Eligibility": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 143.4,
+      "min_length": 75,
+      "max_length": 221,
+      "sample_value": "Pregnant and lactating women aged 19 to 45 years. Must belong to SC, ST, BPL, EWS, or hold MGNREGA card or disability certificate. Excludes regular government employees."
+    },
+    "Application Process": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 110.9,
+      "min_length": 73,
+      "max_length": 171,
+      "sample_value": "Register online via the PMMVY Citizen Portal (pmmvy.wcd.gov.in) or offline at nearest Anganwadi Center / approved health facility (ASHA worker)."
+    },
+    "Documents Required": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 101.0,
+      "min_length": 39,
+      "max_length": 158,
+      "sample_value": "Aadhaar Card of mother and husband, Mother and Child Protection (MCP) Card, Bank Account Details linked with Aadhaar, Income/BPL Certificate."
+    },
+    "Source URL": {
+      "populated_count": 30,
+      "missing_count": 0,
+      "completeness_pct": 100.0,
+      "avg_length": 32.8,
+      "min_length": 20,
+      "max_length": 83,
+      "sample_value": "https://pmmvy.wcd.gov.in/"
+    }
+  },
+  "geographic_breakdown": {
+    "central_schemes_count": 10,
+    "state_specific_schemes_count": 20,
+    "unique_states_count": 21,
+    "state_distribution": {
+      "Central": 10,
+      "Uttar Pradesh": 1,
+      "Tamil Nadu": 1,
+      "West Bengal": 1,
+      "Madhya Pradesh": 1,
+      "Maharashtra": 1,
+      "Karnataka": 1,
+      "Telangana": 1,
+      "Kerala": 1,
+      "Bihar": 1,
+      "Rajasthan": 1,
+      "Odisha": 1,
+      "Gujarat": 1,
+      "Andhra Pradesh": 1,
+      "Assam": 1,
+      "Delhi": 1,
+      "Jharkhand": 1,
+      "Chhattisgarh": 1,
+      "Himachal Pradesh": 1,
+      "Uttarakhand": 1,
+      "Goa": 1
+    }
+  },
+  "ministry_distribution_top": {
+    "Ministry of Women and Child Development": 3,
+    "Ministry of Finance": 3,
+    "Ministry of Rural Development": 1,
+    "Ministry of Petroleum and Natural Gas": 1,
+    "Ministry of Education": 1,
+    "Ministry of Housing and Urban Affairs": 1,
+    "Government of Uttar Pradesh": 1,
+    "Government of Tamil Nadu": 1,
+    "Government of West Bengal": 1,
+    "Government of Madhya Pradesh": 1,
+    "Government of Maharashtra": 1,
+    "Government of Karnataka": 1,
+    "Government of Telangana": 1,
+    "Government of Kerala": 1,
+    "Government of Bihar": 1
+  },
+  "category_distribution": {
+    "Social welfare & Empowerment": 14,
+    "Business & Entrepreneurship": 4,
+    "Education & Learning": 4,
+    "Banking, Financial Services and Insurance": 2,
+    "Skills & Employment": 2,
+    "Travel & Transportation": 2,
+    "Housing & Shelter": 1,
+    "Health & Wellness": 1
+  },
+  "women_relevant_records_estimate": {
+    "count": 30,
+    "percentage": 100.0
+  }
+}

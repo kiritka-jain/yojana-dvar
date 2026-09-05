@@ -213,7 +213,7 @@ flowchart TD
 
 ```markdown
 - [x] Ticket 1.1: Download & stage raw Kaggle CSV to data/raw/
-- [ ] Ticket 1.2: Schema profile & audit
+- [x] Ticket 1.2: Schema profile & audit
 - [ ] Ticket 2.1: Implement Kaggle record parser in scripts/etl_load_schemes.py
 - [ ] Ticket 2.2: Implement Women-relevancy filter logic
 - [ ] Ticket 2.3: Implement life-stage classifier & tagging
