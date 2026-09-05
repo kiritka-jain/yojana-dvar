@@ -26,6 +26,9 @@ export interface TranslationDictionary {
   heroChipMaternity: string;
   heroChipBusiness: string;
   heroChipPension: string;
+  heroDirectWizardPrompt: string;
+  ctaBannerTitle: string;
+  ctaBannerSubtitle: string;
 
   // Key stats & Trust Badges
   statFreeAccess: string;
@@ -315,6 +318,9 @@ export const translations: Record<Language, TranslationDictionary> = {
     heroChipMaternity: "🤱 Maternity Aid",
     heroChipBusiness: "💼 Business Loans",
     heroChipPension: "👵 Pension",
+    heroDirectWizardPrompt: "Or check instant eligibility:",
+    ctaBannerTitle: "Ready to Discover Your Entitlements?",
+    ctaBannerSubtitle: "Answer 3 simple questions to discover all direct welfare benefits designed for you.",
 
     statFreeAccess: "100% Free & Open",
     statFreeAccessSub: "Zero application or processing fee",
@@ -595,6 +601,9 @@ export const translations: Record<Language, TranslationDictionary> = {
     heroChipMaternity: "🤱 मातृत्व सहायता",
     heroChipBusiness: "💼 व्यवसाय व ऋण",
     heroChipPension: "👵 पेंशन",
+    heroDirectWizardPrompt: "या 3 प्रश्नों में पात्रता निकालें:",
+    ctaBannerTitle: "अपनी पात्रता जांचने के लिए तैयार हैं?",
+    ctaBannerSubtitle: "केवल 3 सरल प्रश्नों के उत्तर दें और 1 मिनट में अपनी पात्र योजनाओं की सूची पाएं।",
 
     statFreeAccess: "100% नि:शुल्क सेवा",
     statFreeAccessSub: "कोई आवेदन शुल्क या बिचौलिया नहीं",
