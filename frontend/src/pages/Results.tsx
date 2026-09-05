@@ -14,10 +14,8 @@ import {
   ArrowLeft, 
   Sparkles, 
   RotateCcw, 
-  CheckCircle2,
   X,
-  BookmarkCheck,
-  Edit3
+  BookmarkCheck
 } from 'lucide-react';
 
 export type CategoryFilterType = 'all' | 'education' | 'maternity' | 'business' | 'pension';
@@ -150,7 +148,6 @@ export const Results: React.FC = () => {
 
   const [schemes, setSchemes] = useState<SchemeMatchResult[]>([]);
   const [loading, setLoading] = useState<boolean>(!locationState?.matchData);
-  const [userProfile, setUserProfile] = useState<ProfileInput | undefined>(locationState?.profile);
 
   // Filter & Sort State (Single Horizontal Chip Bar)
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilterType>('all');
@@ -163,7 +160,6 @@ export const Results: React.FC = () => {
   useEffect(() => {
     if (locationState?.matchData?.schemes) {
       setSchemes(locationState.matchData.schemes);
-      setUserProfile(locationState.profile);
       setLoading(false);
       return;
     }
@@ -183,7 +179,6 @@ export const Results: React.FC = () => {
           has_disability: false,
           limit: 15
         };
-        setUserProfile(defaultProfile);
         const res = await matchSchemes(defaultProfile);
         setSchemes(res.schemes);
       } catch {
@@ -314,43 +309,6 @@ export const Results: React.FC = () => {
           <span>{t('resultsRefineProfile')}</span>
         </Link>
       </div>
-
-      {/* Profile Context Summary Bar */}
-      {userProfile && (
-        <div className="mb-8 p-4 rounded-2xl bg-cream-100/90 border border-saffron-200 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 animate-fadeIn">
-          <div className="flex items-center gap-2 flex-wrap text-xs text-charcoal-700">
-            <span className="font-bold text-saffron-900 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-forest-600" />
-              {t('resultsProfileSummary')}:
-            </span>
-            <span className="bg-white px-2.5 py-1 rounded-md border border-cream-300 font-semibold text-charcoal-800">
-              📍 {userProfile.state}
-            </span>
-            <span className="bg-white px-2.5 py-1 rounded-md border border-cream-300 font-semibold text-charcoal-800">
-              👤 {userProfile.age} {language === 'hi' ? 'वर्ष' : 'Yrs'}
-            </span>
-            <span className="bg-white px-2.5 py-1 rounded-md border border-cream-300 font-semibold text-charcoal-800">
-              🏷️ {userProfile.caste}
-            </span>
-            <span className="bg-white px-2.5 py-1 rounded-md border border-cream-300 font-semibold text-charcoal-800 capitalize">
-              🌱 {userProfile.life_stage}
-            </span>
-            {userProfile.is_bpl && (
-              <span className="bg-saffron-500 text-white px-2 py-0.5 rounded text-[11px] font-bold">
-                BPL
-              </span>
-            )}
-          </div>
-
-          <Link
-            to="/find"
-            className="text-xs font-bold text-saffron-700 hover:text-saffron-900 inline-flex items-center gap-1 hover:underline whitespace-nowrap"
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            <span>{t('wizardEdit')}</span>
-          </Link>
-        </div>
-      )}
 
       {/* Main Results Title Header */}
       <div className="mb-6">
