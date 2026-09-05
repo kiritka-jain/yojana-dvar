@@ -48,16 +48,16 @@ def is_women_relevant(record: dict) -> bool:
     Checks whether a scheme is relevant for women based on gender applicability
     or presence of women-centric keywords in title, category, or beneficiary text.
     """
-    gender = str(record.get("gender", record.get("gender_applicable", ""))).lower().strip()
-    if gender in ["female", "women"]:
+    gender = str(record.get("gender", record.get("gender_applicable", record.get("Beneficiaries", "")))).lower().strip()
+    if any(g in gender for g in ["female", "women", "woman", "girl", "widow", "mother"]):
         return True
         
     searchable_text = " ".join([
-        str(record.get("name", record.get("scheme_name", record.get("title", "")))),
-        str(record.get("category", record.get("scheme_category", record.get("domain", "")))),
-        str(record.get("beneficiary_type", record.get("target_beneficiary", ""))),
-        str(record.get("description", record.get("summary", ""))),
-        str(record.get("eligibility_text", record.get("eligibility_criteria_text", "")))
+        str(record.get("name", record.get("scheme_name", record.get("Scheme Name", record.get("title", ""))))),
+        str(record.get("category", record.get("scheme_category", record.get("Category", record.get("domain", ""))))),
+        str(record.get("beneficiary_type", record.get("target_beneficiary", record.get("Beneficiaries", "")))),
+        str(record.get("description", record.get("Details", record.get("summary", "")))),
+        str(record.get("eligibility_text", record.get("eligibility_criteria_text", record.get("Eligibility", ""))))
     ]).lower()
     
     return any(keyword in searchable_text for keyword in WOMEN_KEYWORDS)
@@ -80,6 +80,130 @@ def clean_bool(val, default=False) -> bool:
         return default
     val_str = str(val).strip().lower()
     return val_str in ["true", "1", "yes", "t", "y"]
+
+def transform_kaggle_myscheme_record(row: dict) -> dict:
+    """
+    Transforms a raw Kaggle MyScheme CSV record into the BigQuery `schemes_women` data model (Ticket 2.1).
+    Maps both exact MyScheme CSV column names and snake_case equivalents.
+    """
+    name = (
+        row.get("Scheme Name") or row.get("scheme_name") or
+        row.get("name") or row.get("title") or ""
+    ).strip()
+    
+    scheme_id = slugify(name)
+    
+    raw_state = (
+        row.get("State") or row.get("state_name") or
+        row.get("state") or "All"
+    ).strip()
+    
+    if raw_state.lower() in ["central", "all", "all india", "national", "india", ""]:
+        state = "All"
+    else:
+        state = raw_state
+
+    eligible_states = ["All"] if state == "All" else [state]
+
+    details = (
+        row.get("Details") or row.get("details") or
+        row.get("description") or row.get("summary") or ""
+    ).strip()
+    
+    benefits = (
+        row.get("Benefits") or row.get("scheme_benefits") or
+        row.get("benefits") or ""
+    ).strip()
+    
+    description = details if details else benefits
+
+    ministry = (
+        row.get("Ministry") or row.get("ministry_name") or
+        row.get("ministry") or ("Government of India" if state == "All" else f"Government of {state}")
+    ).strip()
+
+    department = (
+        row.get("Department") or row.get("department_name") or
+        row.get("department") or "Department of Social Welfare"
+    ).strip()
+
+    category = (
+        row.get("Category") or row.get("scheme_category") or
+        row.get("category") or "Social welfare & Empowerment"
+    ).strip()
+
+    beneficiary_type = (
+        row.get("Beneficiaries") or row.get("target_beneficiary") or
+        row.get("beneficiary_type") or "Women & Girls"
+    ).strip()
+
+    eligibility_text = (
+        row.get("Eligibility") or row.get("eligibility_criteria_text") or
+        row.get("eligibility_text") or ""
+    ).strip()
+
+    documents_required = (
+        row.get("Documents Required") or row.get("required_documents") or
+        row.get("documents_required") or ""
+    ).strip()
+
+    apply_url = (
+        row.get("Source URL") or row.get("application_url") or
+        row.get("apply_url") or row.get("source_url") or ""
+    ).strip()
+
+    application_process = (
+        row.get("Application Process") or row.get("application_process") or
+        (f"Apply online at {apply_url} or visit designated nodal office." if apply_url else "Apply through official portal or designated nodal office.")
+    ).strip()
+
+    official_url = (
+        row.get("official_website") or row.get("official_url") or
+        row.get("Source URL") or apply_url
+    ).strip()
+
+    life_stage_raw = row.get("life_stage", "general")
+    if isinstance(life_stage_raw, list):
+        life_stage_tags = life_stage_raw
+    else:
+        ls_str = str(life_stage_raw).strip().lower()
+        life_stage_tags = [ls_str] if ls_str else ["general"]
+
+    caste_raw = row.get("caste_category") or row.get("caste_categories") or "All"
+    if isinstance(caste_raw, list):
+        caste_categories = caste_raw
+    else:
+        c_str = str(caste_raw).strip()
+        caste_categories = [c_str] if c_str and c_str != "All" else ["All"]
+
+    return {
+        "scheme_id": scheme_id,
+        "name": name,
+        "description": description,
+        "ministry": ministry,
+        "department": department,
+        "state": state,
+        "category": category,
+        "beneficiary_type": beneficiary_type,
+        "benefits": benefits,
+        "eligibility_text": eligibility_text,
+        "documents_required": documents_required,
+        "application_process": application_process,
+        "apply_url": apply_url,
+        "official_url": official_url,
+        "age_min": clean_int(row.get("min_age") or row.get("age_min"), 0),
+        "age_max": clean_int(row.get("max_age") or row.get("age_max"), 100),
+        "gender": str(row.get("gender") or row.get("gender_applicable") or "Female").strip(),
+        "caste_categories": json.dumps(caste_categories),
+        "income_max": clean_int(row.get("max_income_limit") or row.get("income_max"), 0),
+        "residence": str(row.get("residence_type") or row.get("residence") or "All").strip(),
+        "eligible_states": json.dumps(eligible_states),
+        "requires_bpl": clean_bool(row.get("is_bpl_required") or row.get("requires_bpl"), False),
+        "requires_disability": clean_bool(row.get("is_disability_required") or row.get("requires_disability"), False),
+        "life_stage_tags": json.dumps(life_stage_tags),
+        "is_active": clean_bool(row.get("active_status") or row.get("is_active"), True),
+        "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
+    }
 
 def transform_csv_record(row: dict) -> dict:
     """Transforms a raw CSV scheme record into the BigQuery `schemes_women` schema."""
@@ -168,10 +292,24 @@ def load_raw_data() -> list:
     """Reads raw datasets from local data/raw/ directory."""
     raw_records = []
     
-    # 1. Load CSV raw
+    # 1. Load Kaggle MyScheme CSV (Ticket 2.1)
+    kaggle_csv_path = os.path.join(DATA_RAW_DIR, "kaggle_myscheme_schemes.csv")
+    if os.path.exists(kaggle_csv_path):
+        with open(kaggle_csv_path, "r", encoding="utf-8", errors="replace") as f:
+            reader = csv.DictReader(f)
+            count = 0
+            for row in reader:
+                transformed = transform_kaggle_myscheme_record(row)
+                raw_records.append((row, transformed))
+                count += 1
+        print(f"✓ Loaded {count} records from raw Kaggle MyScheme CSV: {kaggle_csv_path}")
+    else:
+        print(f"⚠ Warning: Kaggle raw CSV file not found at {kaggle_csv_path}")
+
+    # 2. Load Legacy CSV raw
     csv_path = os.path.join(DATA_RAW_DIR, "indian_government_schemes_2025.csv")
     if os.path.exists(csv_path):
-        with open(csv_path, "r", encoding="utf-8") as f:
+        with open(csv_path, "r", encoding="utf-8", errors="replace") as f:
             reader = csv.DictReader(f)
             count = 0
             for row in reader:
@@ -182,7 +320,7 @@ def load_raw_data() -> list:
     else:
         print(f"⚠ Warning: Raw CSV file not found at {csv_path}")
 
-    # 2. Load JSON raw
+    # 3. Load JSON raw
     json_path = os.path.join(DATA_RAW_DIR, "huggingface_welfare_schemes.json")
     if os.path.exists(json_path):
         with open(json_path, "r", encoding="utf-8") as f:
@@ -198,7 +336,7 @@ def load_raw_data() -> list:
 
 def main():
     print("==================================================")
-    print("Yojana Dvar — Ticket 2.2 ETL Ingestion Pipeline")
+    print("Yojana Dvar — Ticket 2.1 & 2.2 ETL Ingestion Pipeline")
     print("==================================================")
     
     os.makedirs(DATA_PROCESSED_DIR, exist_ok=True)
@@ -243,7 +381,7 @@ def main():
         print(f"✓ Saved processed CSV catalog:  {out_csv_path}")
 
     print("==================================================")
-    print("✓ Ticket 2.2 ETL Ingestion Pipeline Complete!")
+    print("✓ Ticket 2.1 ETL Column Mapper & Ingestion Complete!")
     print("==================================================")
 
 if __name__ == "__main__":
