@@ -4,53 +4,41 @@ import { useLanguage } from '../../context/LanguageContext';
 import { ShieldCheck, ExternalLink, Heart } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
-    <footer className="bg-[#f7f2e7] border-t border-saffron-200/60 mt-20 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
-        {/* Mandatory Advisory Notice Banner */}
-        <div className="bg-amber-50/90 border border-amber-300/80 rounded-xl p-4 sm:p-5 mb-10 shadow-sm flex items-start gap-3.5">
-          <ShieldCheck className="w-6 h-6 text-amber-700 flex-shrink-0 mt-0.5" />
-          <div>
-            <h4 className="text-xs sm:text-sm font-bold text-amber-900 tracking-wide uppercase mb-1">
-              Public Advisory & Information Disclosure
-            </h4>
-            <p className="text-xs sm:text-sm text-amber-950 leading-relaxed">
-              {t('footerDisclaimer')}
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-saffron-100">
+    <footer className="bg-[#f7f2e7] border-t border-saffron-200/60 mt-16 sm:mt-20 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-saffron-200/60">
           
-          {/* Col 1: Brand Info */}
-          <div className="md:col-span-2 space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-saffron-100 border border-saffron-500 flex items-center justify-center p-1">
-                <img src="/chakra.svg" alt="Emblem" className="w-full h-full object-contain" />
+          {/* Col 1 & 2: Brand Info & Advisory */}
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-saffron-100 border border-saffron-500 flex items-center justify-center p-1 shadow-xs">
+                <img src="/chakra.svg" alt="Yojana Dvar Emblem" className="w-full h-full object-contain" />
               </div>
-              <span className="font-bold text-lg text-charcoal-900">
-                {t('navBrand')}
+              <span className="font-bold text-lg text-charcoal-900 tracking-tight">
+                {language === 'hi' ? 'योजना द्वार' : 'Yojana Dvar'}
               </span>
             </div>
-            <p className="text-sm text-charcoal-600 max-w-md leading-relaxed">
+
+            <p className="text-xs sm:text-sm text-charcoal-600 max-w-md leading-relaxed">
               {t('heroSubtitle')}
             </p>
-            <div className="flex items-center gap-2 text-xs text-charcoal-500 pt-2">
-              <span>Made with</span>
-              <Heart className="w-3.5 h-3.5 text-terracotta fill-terracotta" />
-              <span>for women empowerment across India</span>
+
+            {/* Integrated Compact Advisory Note */}
+            <div className="inline-flex items-start gap-2 p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 max-w-md">
+              <ShieldCheck className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
+              <p className="leading-normal">{t('footerDisclaimer')}</p>
             </div>
           </div>
 
-          {/* Col 2: Official Portals */}
+          {/* Col 3: Official Government Portals */}
           <div>
-            <h4 className="font-semibold text-sm text-charcoal-900 mb-3 tracking-wide">
-              Official Government Portals
+            <h4 className="font-bold text-xs text-charcoal-900 uppercase tracking-wider mb-3">
+              {language === 'hi' ? 'सरकारी पोर्टल' : 'Official Portals'}
             </h4>
-            <ul className="space-y-2 text-sm text-charcoal-600">
+            <ul className="space-y-2 text-xs sm:text-sm text-charcoal-600">
               <li>
                 <a 
                   href="https://www.myscheme.gov.in/" 
@@ -98,34 +86,46 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 3: Accessibility & Info */}
+          {/* Col 4: Platform & Info */}
           <div>
-            <h4 className="font-semibold text-sm text-charcoal-900 mb-3 tracking-wide">
-              Platform & Standards
+            <h4 className="font-bold text-xs text-charcoal-900 uppercase tracking-wider mb-3">
+              {language === 'hi' ? 'प्लेटफ़ॉर्म व जानकारी' : 'Platform & Info'}
             </h4>
-            <ul className="space-y-2 text-sm text-charcoal-600">
-              <li>{t('footerAccessibility')}</li>
-              <li>Voice Navigation Enabled</li>
-              <li>Progressive Web App (PWA)</li>
-              <li>Dual Language (EN / हिंदी)</li>
+            <ul className="space-y-2 text-xs sm:text-sm text-charcoal-600">
+              <li>
+                <Link to="/about" className="hover:text-saffron-700 font-medium transition-colors">
+                  {t('footerAbout')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/find" className="hover:text-saffron-700 transition-colors">
+                  {t('navFindSchemes')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/bookmarks" className="hover:text-saffron-700 transition-colors">
+                  {t('navBookmarks')}
+                </Link>
+              </li>
+              <li>
+                <span className="text-charcoal-500">{t('footerAccessibility')}</span>
+              </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom copyright row */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-charcoal-500">
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-charcoal-500">
           <p>{t('footerRights')}</p>
-          <div className="flex gap-4">
-            <span className="hover:text-charcoal-700 cursor-pointer">{t('footerPrivacy')}</span>
-            <span>•</span>
-            <span className="hover:text-charcoal-700 cursor-pointer">{t('footerTerms')}</span>
-            <span>•</span>
-            <Link to="/about" className="hover:text-saffron-700 font-semibold hover:underline">
-              {t('footerAbout')}
-            </Link>
+          <div className="flex items-center gap-1.5 text-xs text-charcoal-500">
+            <span>Made with</span>
+            <Heart className="w-3.5 h-3.5 text-terracotta fill-terracotta" />
+            <span>for women empowerment across India</span>
           </div>
         </div>
       </div>
     </footer>
   );
 };
+
+export default Footer;
