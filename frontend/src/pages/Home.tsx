@@ -68,7 +68,7 @@ export const Home: React.FC = () => {
             <button
               type="button"
               title={t('heroVoiceTooltip')}
-              onClick={() => alert("Voice input listening... Speak scheme name or benefit.")}
+              onClick={() => alert(t('voiceListeningAlert'))}
               className="p-2.5 rounded-xl text-saffron-600 hover:bg-saffron-50 transition-colors focus:outline-none cursor-pointer"
             >
               <Mic className="w-5 h-5" />

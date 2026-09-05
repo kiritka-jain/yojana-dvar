@@ -11,8 +11,7 @@ import {
   Eye, 
   FileText, 
   Building2, 
-  ArrowRight,
-  Heart
+  ArrowRight
 } from 'lucide-react';
 
 export const About: React.FC = () => {
@@ -53,56 +52,56 @@ export const About: React.FC = () => {
     {
       name: 'myScheme National Portal',
       url: 'https://www.myscheme.gov.in/',
-      ministry: 'National e-Governance Division (NeGD) • MeitY',
-      desc: 'One-stop search and discovery portal for government schemes across India.'
+      ministry: language === 'hi' ? 'राष्ट्रीय ई-गवर्नेंस प्रभाग (NeGD) • MeitY' : 'National e-Governance Division (NeGD) • MeitY',
+      desc: language === 'hi' ? 'समस्त भारत में सरकारी योजनाओं की खोज व आवेदन के लिए एकीकृत राष्ट्रीय पोर्टल।' : 'One-stop search and discovery portal for government schemes across India.'
     },
     {
       name: 'Ministry of Women and Child Development',
       url: 'https://wcd.gov.in/',
-      ministry: 'Government of India',
-      desc: 'Nodal ministry for Mission Shakti, PMMVY, BBBP, and women empowerment initiatives.'
+      ministry: language === 'hi' ? 'भारत सरकार' : 'Government of India',
+      desc: language === 'hi' ? 'मिशन शक्ति, मातृ वंदना योजना (PMMVY) और बेटी बचाओ बेटी पढ़ाओ का नोडल मंत्रालय।' : 'Nodal ministry for Mission Shakti, PMMVY, BBBP, and women empowerment initiatives.'
     },
     {
       name: 'Ministry of Rural Development',
       url: 'https://rural.gov.in/',
-      ministry: 'Government of India',
-      desc: 'Administers DAY-NRLM, MGNREGA, PMAY-G, and rural women livelihood programs.'
+      ministry: language === 'hi' ? 'भारत सरकार' : 'Government of India',
+      desc: language === 'hi' ? 'दीनदयाल अंत्योदय योजना (NRLM), मनरेगा और ग्रामीण आजीविका कार्यक्रमों का संचालक मंत्रालय।' : 'Administers DAY-NRLM, MGNREGA, PMAY-G, and rural women livelihood programs.'
     },
     {
       name: 'National Portal of India',
       url: 'https://india.gov.in/',
-      ministry: 'Government of India',
-      desc: 'Official gateway providing a single point of access to all public services and schemes.'
+      ministry: language === 'hi' ? 'भारत सरकार' : 'Government of India',
+      desc: language === 'hi' ? 'सभी सरकारी सेवाओं और योजनाओं तक एकल पहुंच प्रदान करने वाला आधिकारिक प्रवेश द्वार।' : 'Official gateway providing a single point of access to all public services and schemes.'
     },
     {
       name: 'Digital India Initiative',
       url: 'https://www.digitalindia.gov.in/',
-      ministry: 'Ministry of Electronics & IT',
-      desc: 'Flagship programme transforming India into a digitally empowered society.'
+      ministry: language === 'hi' ? 'इलेक्ट्रॉनिक्स एवं सूचना प्रौद्योगिकी मंत्रालय' : 'Ministry of Electronics & IT',
+      desc: language === 'hi' ? 'भारत को डिजिटल रूप से सशक्त समाज और ज्ञान अर्थव्यवस्था में बदलने वाला प्रमुख कार्यक्रम।' : 'Flagship programme transforming India into a digitally empowered society.'
     },
     {
       name: 'Pradhan Mantri Matru Vandana Yojana (PMMVY)',
       url: 'https://pmmvy.wcd.gov.in/',
-      ministry: 'Ministry of WCD',
-      desc: 'Official portal for maternal cash transfers and DBT nutrition disbursements.'
+      ministry: language === 'hi' ? 'महिला एवं बाल विकास मंत्रालय' : 'Ministry of WCD',
+      desc: language === 'hi' ? 'मातृत्व प्रत्यक्ष नकद लाभ हस्तांतरण (DBT) और पोषण सहायता का आधिकारिक पोर्टल।' : 'Official portal for maternal cash transfers and DBT nutrition disbursements.'
     }
   ];
 
   const DATA_ATTRIBUTIONS = [
     {
       name: 'myScheme Public Catalog',
-      source: 'Government of India Open Data Services (myScheme.gov.in)',
-      role: 'Scheme eligibility parameters, benefits formulas, and application guidelines'
+      source: language === 'hi' ? 'भारत सरकार ओपन डेटा सर्विसेज (myScheme.gov.in)' : 'Government of India Open Data Services (myScheme.gov.in)',
+      role: language === 'hi' ? 'योजना पात्रता पैरामीटर, लाभ सूत्र और आवेदन दिशानिर्देश' : 'Scheme eligibility parameters, benefits formulas, and application guidelines'
     },
     {
       name: 'Ministry Public Domains',
-      source: 'Official Gazette Notifications & Annual Ministry Reports',
-      role: 'Administrative criteria, departmental nodal guidelines, and official portal URLs'
+      source: language === 'hi' ? 'आधिकारिक राजपत्र अधिसूचनाएं एवं वार्षिक मंत्रालय रिपोर्ट' : 'Official Gazette Notifications & Annual Ministry Reports',
+      role: language === 'hi' ? 'प्रशासनिक मानदंड, विभागीय दिशानिर्देश और आधिकारिक पोर्टल यूआरएल' : 'Administrative criteria, departmental nodal guidelines, and official portal URLs'
     },
     {
       name: 'Kaggle & Hugging Face Civic Datasets',
-      source: 'Open Community Civic Tech Welfare Repositories',
-      role: 'Curated public dataset baseline and state-specific scheme cross-referencing'
+      source: language === 'hi' ? 'ओपन कम्युनिटी सिविक टेक कल्याणकारी रिपॉजिटरी' : 'Open Community Civic Tech Welfare Repositories',
+      role: language === 'hi' ? 'सार्वजनिक डेटासेट आधार और राज्य-विशिष्ट योजनाओं का सत्यापन' : 'Curated public dataset baseline and state-specific scheme cross-referencing'
     }
   ];
 
@@ -115,7 +114,7 @@ export const About: React.FC = () => {
       <div className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-saffron-100/90 text-saffron-900 border border-saffron-300 text-xs font-bold shadow-2xs">
           <img src="/chakra.svg" alt="Ashoka Chakra" className="w-4 h-4" />
-          <span>Open-Source Civic Tech • Built for India</span>
+          <span>{t('aboutBadge')}</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-extrabold text-charcoal-900 tracking-tight">
@@ -156,7 +155,7 @@ export const About: React.FC = () => {
       <div className="bg-white rounded-3xl p-6 sm:p-10 border border-cream-300 shadow-card space-y-6">
         <div className="border-b border-cream-200 pb-4">
           <span className="text-xs font-extrabold text-saffron-700 uppercase tracking-widest block mb-1">
-            Vision & Alignment
+            {t('aboutVisionSubheading')}
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-charcoal-900">
             {t('aboutMissionHeading')}
@@ -170,7 +169,7 @@ export const About: React.FC = () => {
 
         {/* Impact Quote */}
         <div className="p-5 rounded-2xl bg-cream-50 border-l-4 border-saffron-500 text-xs sm:text-sm text-charcoal-800 italic">
-          &ldquo;Every woman in India possesses the constitutional and social right to easily know, understand, and claim the welfare entitlements created for her upliftment — without bureaucratic intermediaries.&rdquo;
+          {t('aboutImpactQuote')}
         </div>
       </div>
 
@@ -180,7 +179,7 @@ export const About: React.FC = () => {
       <div className="space-y-6">
         <div>
           <span className="text-xs font-extrabold text-saffron-700 uppercase tracking-widest block mb-1">
-            Technology & Philosophy
+            {t('aboutPillarsSubheading')}
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-charcoal-900">
             {t('aboutPillarsHeading')}
@@ -215,7 +214,7 @@ export const About: React.FC = () => {
           <div className="flex items-center gap-2 text-saffron-700 mb-1">
             <Database className="w-4 h-4" />
             <span className="text-xs font-extrabold uppercase tracking-widest">
-              Data Transparency
+              {t('aboutDataTransparency')}
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-charcoal-900">
@@ -234,7 +233,7 @@ export const About: React.FC = () => {
                 <span>{d.name}</span>
               </div>
               <div className="text-charcoal-600 text-[11px] font-medium">
-                <strong>Source:</strong> {d.source}
+                <strong>{t('aboutDataSourceLabel')}</strong> {d.source}
               </div>
               <p className="text-charcoal-500 text-[11px] leading-relaxed">
                 {d.role}
@@ -244,7 +243,7 @@ export const About: React.FC = () => {
         </div>
 
         <p className="text-xs text-charcoal-500 pt-3 border-t border-cream-200">
-          All scheme titles, eligibility rules, nodal guidelines, and portal trademarks belong to their respective nodal ministries of the Government of India and State Governments.
+          {t('aboutTrademarksNote')}
         </p>
       </div>
 
@@ -254,7 +253,7 @@ export const About: React.FC = () => {
       <div className="space-y-6">
         <div>
           <span className="text-xs font-extrabold text-saffron-700 uppercase tracking-widest block mb-1">
-            Nodal Gateways
+            {t('aboutGatewaysSubheading')}
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-charcoal-900">
             {t('aboutOfficialPortalsHeading')}
@@ -287,7 +286,7 @@ export const About: React.FC = () => {
               </div>
 
               <span className="text-xs text-saffron-700 font-bold inline-flex items-center gap-1 group-hover:underline pt-2 border-t border-cream-100">
-                <span>Visit Official Portal</span>
+                <span>{t('aboutVisitPortal')}</span>
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
               </span>
             </a>
@@ -303,7 +302,7 @@ export const About: React.FC = () => {
           {t('aboutCtaHeading')}
         </h2>
         <p className="text-xs sm:text-sm text-saffron-100 max-w-md mx-auto leading-relaxed">
-          Input your state, age, and life stage to get an instant matched list of central and state welfare entitlements with AI plain-language explanations.
+          {t('aboutCtaSubtitle')}
         </p>
         <div>
           <Link
@@ -317,9 +316,7 @@ export const About: React.FC = () => {
         </div>
 
         <div className="pt-4 flex items-center justify-center gap-1 text-[11px] text-saffron-200">
-          <span>Made with</span>
-          <Heart className="w-3.5 h-3.5 text-white fill-white" />
-          <span>for women entitlement empowerment across India</span>
+          <span>{t('aboutMadeWithLove')}</span>
         </div>
       </div>
 

@@ -20,6 +20,7 @@ export interface TranslationDictionary {
   heroSearchPlaceholder: string;
   heroSearchButton: string;
   heroVoiceTooltip: string;
+  voiceListeningAlert: string;
   heroStartWizard: string;
   heroQuickSearch: string;
   heroChipScholarship: string;
@@ -98,6 +99,12 @@ export interface TranslationDictionary {
   fieldGenderAll: string;
 
   fieldCaste: string;
+  casteGeneral: string;
+  casteObc: string;
+  casteSc: string;
+  casteSt: string;
+  casteMinorities: string;
+
   fieldIncome: string;
   fieldIncomeHelper: string;
   incomeTierBpl: string;
@@ -266,23 +273,38 @@ export interface TranslationDictionary {
   bookmarksExploreBtn: string;
   bookmarksSearchPlaceholder: string;
   bookmarksCountBadge: string;
+  bookmarksLoading: string;
+  bookmarksShowingCount: string;
+  bookmarksCategoryLabel: string;
+  bookmarksAllChip: string;
 
-  // About Page (Ticket 6.8)
+  // About Page
   aboutTitle: string;
   aboutSubtitle: string;
+  aboutBadge: string;
   aboutMissionHeading: string;
+  aboutVisionSubheading: string;
   aboutMissionP1: string;
   aboutMissionP2: string;
+  aboutImpactQuote: string;
   aboutPillarsHeading: string;
+  aboutPillarsSubheading: string;
   aboutDataSourcesHeading: string;
   aboutDataSourcesDesc: string;
+  aboutDataTransparency: string;
+  aboutDataSourceLabel: string;
+  aboutTrademarksNote: string;
   aboutLegalDisclaimerHeading: string;
   aboutLegalDisclaimerP1: string;
   aboutLegalDisclaimerP2: string;
   aboutLegalDisclaimerP3: string;
   aboutOfficialPortalsHeading: string;
+  aboutGatewaysSubheading: string;
+  aboutVisitPortal: string;
   aboutCtaHeading: string;
+  aboutCtaSubtitle: string;
   aboutCtaButton: string;
+  aboutMadeWithLove: string;
 
   // Footer & Disclaimer
   footerDisclaimer: string;
@@ -292,6 +314,7 @@ export interface TranslationDictionary {
   footerPrivacy: string;
   footerTerms: string;
   footerAccessibility: string;
+  footerMadeWithLove: string;
 }
 
 export const translations: Record<Language, TranslationDictionary> = {
@@ -313,6 +336,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     heroSearchPlaceholder: "Search scheme name (e.g. Sukanya, PMMVY, Mudra)...",
     heroSearchButton: "Search",
     heroVoiceTooltip: "Click to speak in Hindi or English",
+    voiceListeningAlert: "Voice input listening... Speak scheme name or benefit.",
     heroStartWizard: "Find My Eligible Schemes",
     heroQuickSearch: "Popular Searches:",
     heroChipScholarship: "🎓 Scholarships",
@@ -386,6 +410,12 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldGenderAll: "All (सभी)",
 
     fieldCaste: "Social Category / Caste",
+    casteGeneral: "General",
+    casteObc: "OBC",
+    casteSc: "SC",
+    casteSt: "ST",
+    casteMinorities: "Minority",
+
     fieldIncome: "Annual Household Income",
     fieldIncomeHelper: "Choose the income range closest to your family's annual earnings",
     incomeTierBpl: "BPL / Ration Card (₹0)",
@@ -553,23 +583,38 @@ export const translations: Record<Language, TranslationDictionary> = {
     bookmarksExploreBtn: "Find My Schemes",
     bookmarksSearchPlaceholder: "Filter saved schemes...",
     bookmarksCountBadge: "Saved Schemes",
+    bookmarksLoading: "Loading your saved bookmarks...",
+    bookmarksShowingCount: "saved welfare scheme",
+    bookmarksCategoryLabel: "Category:",
+    bookmarksAllChip: "All",
 
     // About Page
     aboutTitle: "About Yojana Dvar (योजना द्वार)",
     aboutSubtitle: "Empowering Indian women with easy, accessible, and transparent welfare entitlement discovery.",
+    aboutBadge: "Open-Source Civic Tech • Built for India",
     aboutMissionHeading: "Project Mission & Vision",
+    aboutVisionSubheading: "Vision & Alignment",
     aboutMissionP1: "India maintains one of the world's most extensive social welfare safety nets. However, complex guidelines and administrative jargon prevent millions of eligible beneficiaries from accessing their entitlements.",
     aboutMissionP2: "Yojana Dvar was created to bridge this discovery gap, empowering citizens with simple demographic inputs and plain-language guidance in English and हिंदी.",
+    aboutImpactQuote: "“Every woman in India possesses the constitutional and social right to easily know, understand, and claim the welfare entitlements created for her upliftment — without bureaucratic intermediaries.”",
     aboutPillarsHeading: "Core Principles",
+    aboutPillarsSubheading: "Technology & Philosophy",
     aboutDataSourcesHeading: "Data Sources & Public Attribution",
     aboutDataSourcesDesc: "Our catalog is synthesized and cross-verified against official Indian government public domains and open data repositories:",
+    aboutDataTransparency: "Data Transparency",
+    aboutDataSourceLabel: "Source:",
+    aboutTrademarksNote: "All scheme titles, eligibility rules, nodal guidelines, and portal trademarks belong to their respective nodal ministries of the Government of India and State Governments.",
     aboutLegalDisclaimerHeading: "Legal Disclaimer",
     aboutLegalDisclaimerP1: "Important Notice: Yojana Dvar is an independent civic technology platform developed for public informational purposes. It is NOT a government agency.",
     aboutLegalDisclaimerP2: "Yojana Dvar does NOT collect fees, process transactions, or disburse benefits. All benefits are disbursed solely by competent government authorities.",
     aboutLegalDisclaimerP3: "Citizens must submit applications and verify guidelines on designated official portals (*.gov.in and *.nic.in).",
     aboutOfficialPortalsHeading: "Recognized Official Portals",
+    aboutGatewaysSubheading: "Nodal Gateways",
+    aboutVisitPortal: "Visit Official Portal",
     aboutCtaHeading: "Ready to Discover Your Entitlements?",
+    aboutCtaSubtitle: "Input your state, age, and life stage to get an instant matched list of central and state welfare entitlements with AI plain-language explanations.",
     aboutCtaButton: "Find My Schemes",
+    aboutMadeWithLove: "Made with ❤️ for women entitlement empowerment across India",
 
     footerDisclaimer: "Disclaimer: Yojana Dvar is an informational gateway and not a government agency. Always verify guidelines on official portals.",
     footerRights: "© 2026 Yojana Dvar. Open-source civic tech built for women welfare empowerment.",
@@ -577,7 +622,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     footerAbout: "About Yojana Dvar",
     footerPrivacy: "Data Privacy",
     footerTerms: "Terms of Use",
-    footerAccessibility: "Web Accessibility"
+    footerAccessibility: "Web Accessibility",
+    footerMadeWithLove: "Made with ❤️ for women empowerment across India"
   },
   hi: {
     navBrand: "योजना द्वार",
@@ -597,6 +643,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     heroSearchPlaceholder: "योजना का नाम खोजें (जैसे सुकन्या, मातृत्व, मुद्रा)...",
     heroSearchButton: "खोजें",
     heroVoiceTooltip: "हिंदी या अंग्रेजी में बोलने के लिए क्लिक करें",
+    voiceListeningAlert: "आवाज पहचानी जा रही है... योजना का नाम या लाभ बोलें।",
     heroStartWizard: "अपनी योजनाएं खोजें",
     heroQuickSearch: "मुख्य योजनाएं:",
     heroChipScholarship: "🎓 छात्रवृत्ति",
@@ -670,6 +717,12 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldGenderAll: "सभी (All)",
 
     fieldCaste: "सामाजिक श्रेणी / जाति",
+    casteGeneral: "सामान्य (General)",
+    casteObc: "ओबीसी (OBC)",
+    casteSc: "अनुसूचित जाति (SC)",
+    casteSt: "अनुसूचित जनजाति (ST)",
+    casteMinorities: "अल्पसंख्यक (Minority)",
+
     fieldIncome: "वार्षिक पारिवारिक आय",
     fieldIncomeHelper: "अपने परिवार की कुल अनुमानित वार्षिक कमाई चुनें",
     incomeTierBpl: "BPL / राशन कार्ड (शून्य आय)",
@@ -837,23 +890,38 @@ export const translations: Record<Language, TranslationDictionary> = {
     bookmarksExploreBtn: "योजनाएं खोजें",
     bookmarksSearchPlaceholder: "सहेजी गई योजनाओं में खोजें...",
     bookmarksCountBadge: "सहेजी गई योजनाएं",
+    bookmarksLoading: "आपकी सहेजी गई योजनाएं लोड हो रही हैं...",
+    bookmarksShowingCount: "सहेजी गई कल्याणकारी योजनाएं",
+    bookmarksCategoryLabel: "श्रेणी:",
+    bookmarksAllChip: "सभी",
 
     // About Page
     aboutTitle: "योजना द्वार (Yojana Dvar) के बारे में",
     aboutSubtitle: "भारतीय महिलाओं के लिए आसान, पारदर्शी और सुलभ सरकारी कल्याणकारी योजना खोज मंच।",
+    aboutBadge: "ओपन-सोर्स नागरिक तकनीक • भारत के लिए समर्पित",
     aboutMissionHeading: "परियोजना का उद्देश्य",
+    aboutVisionSubheading: "दृष्टिकोण व उद्देश्य",
     aboutMissionP1: "भारत सरकार और राज्य सरकारों द्वारा महिलाओं के कल्याण के लिए सैकड़ों योजनाएं चलाई जा रही हैं। परंतु जटिल प्रशासनिक भाषा के कारण पात्र महिलाएं इनसे वंचित रह जाती हैं।",
     aboutMissionP2: "योजना द्वार इसी दूरी को पाटने के लिए बनाया गया है, जहाँ नागरिक सरल जानकारी देकर तुरंत अपनी पात्र योजनाओं को हिंदी व अंग्रेजी में समझ सकते हैं।",
+    aboutImpactQuote: "“भारत की प्रत्येक महिला को अपने उत्थान के लिए बनी सरकारी कल्याणकारी योजनाओं को बिना किसी बिचौलिए के आसानी से जानने, समझने और प्राप्त करने का संवैधानिक व सामाजिक अधिकार है।”",
     aboutPillarsHeading: "मूल सिद्धांत",
+    aboutPillarsSubheading: "तकनीक व सिद्धांत",
     aboutDataSourcesHeading: "डेटा स्रोत एवं श्रेय",
     aboutDataSourcesDesc: "हमारा कैटलॉग भारत सरकार के आधिकारिक सार्वजनिक डोमेन और ओपन डेटा रिपॉजिटरी से सत्यापित है:",
+    aboutDataTransparency: "डेटा पारदर्शिता",
+    aboutDataSourceLabel: "स्रोत:",
+    aboutTrademarksNote: "सभी योजना नाम, पात्रता नियम, नोडल दिशानिर्देश एवं पोर्टल ट्रेडमार्क भारत सरकार तथा संबंधित राज्य सरकारों के नोडल मंत्रालयों के हैं।",
     aboutLegalDisclaimerHeading: "कानूनी अस्वीकरण",
     aboutLegalDisclaimerP1: "महत्वपूर्ण सूचना: योजना द्वार एक स्वतंत्र नागरिक तकनीक मंच है। यह कोई सरकारी एजेंसी नहीं है।",
     aboutLegalDisclaimerP2: "योजना द्वार कोई शुल्क नहीं लेता और न ही प्रत्यक्ष लाभ वितरित करता है। लाभ संवितरण का पूर्ण अधिकार केवल संबंधित सरकार के पास है।",
     aboutLegalDisclaimerP3: "नागरिकों को हमेशा संबंधित आधिकारिक सरकारी पोर्टलों (*.gov.in और *.nic.in) पर जाकर ही आवेदन प्रस्तुत करना चाहिए।",
     aboutOfficialPortalsHeading: "मान्यता प्राप्त सरकारी पोर्टल",
+    aboutGatewaysSubheading: "नोडल सरकारी पोर्टल",
+    aboutVisitPortal: "आधिकारिक पोर्टल पर जाएं",
     aboutCtaHeading: "क्या आप अपने सरकारी अधिकारों को खोजने के लिए तैयार हैं?",
+    aboutCtaSubtitle: "अपना राज्य, आयु और स्थिति दर्ज करें और एआई द्वारा सरल भाषा में समझाई गई अपनी सभी केंद्रीय व राज्य योजनाओं की सूची तुरंत पाएं।",
     aboutCtaButton: "अपनी योजनाएं खोजें",
+    aboutMadeWithLove: "भारतीय महिलाओं के सशक्तिकरण और कल्याण हेतु ❤️ से निर्मित",
 
     footerDisclaimer: "अस्वीकरण: योजना द्वार एक सूचनात्मक मंच है, सरकारी एजेंसी नहीं। पात्रता की अंतिम पुष्टि आधिकारिक सरकारी पोर्टल पर करें।",
     footerRights: "© 2026 योजना द्वार। भारतीय महिला सशक्तिकरण और डिजिटल समावेशन के लिए समर्पित।",
@@ -861,6 +929,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     footerAbout: "योजना द्वार के बारे में",
     footerPrivacy: "गोपनीयता नीति",
     footerTerms: "उपयोग की शर्तें",
-    footerAccessibility: "सुलभता मानक"
+    footerAccessibility: "सुलभता मानक",
+    footerMadeWithLove: "भारतीय महिला सशक्तिकरण हेतु ❤️ से निर्मित"
   }
 };

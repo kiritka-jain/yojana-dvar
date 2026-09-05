@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { ShieldCheck, ExternalLink, Heart } from 'lucide-react';
+import { ShieldCheck, ExternalLink } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { t, language } = useLanguage();
@@ -118,9 +118,7 @@ export const Footer: React.FC = () => {
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-charcoal-500">
           <p>{t('footerRights')}</p>
           <div className="flex items-center gap-1.5 text-xs text-charcoal-500">
-            <span>Made with</span>
-            <Heart className="w-3.5 h-3.5 text-terracotta fill-terracotta" />
-            <span>for women empowerment across India</span>
+            <span>{t('footerMadeWithLove')}</span>
           </div>
         </div>
       </div>

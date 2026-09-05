@@ -31,7 +31,13 @@ const INDIAN_STATES = [
   "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
 ];
 
-const CASTE_OPTIONS = ["General", "OBC", "SC", "ST", "Minorities"];
+const CASTE_OPTIONS = [
+  { value: "General", labelKey: "casteGeneral" as const },
+  { value: "OBC", labelKey: "casteObc" as const },
+  { value: "SC", labelKey: "casteSc" as const },
+  { value: "ST", labelKey: "casteSt" as const },
+  { value: "Minorities", labelKey: "casteMinorities" as const }
+];
 
 const OCCUPATION_OPTIONS = [
   { value: "Student", labelEn: "Student / Trainee", labelHi: "छात्रा / शिक्षार्थी" },
@@ -534,16 +540,16 @@ export const Wizard: React.FC = () => {
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                 {CASTE_OPTIONS.map((c) => (
                   <button
-                    key={c}
+                    key={c.value}
                     type="button"
-                    onClick={() => setProfile({ ...profile, caste: c })}
+                    onClick={() => setProfile({ ...profile, caste: c.value })}
                     className={`min-h-[48px] py-3 px-3 rounded-2xl border text-xs sm:text-sm font-bold transition-all flex items-center justify-center ${
-                      profile.caste === c
+                      profile.caste === c.value
                         ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 ring-2 ring-saffron-300 shadow-2xs'
                         : 'border-cream-300 hover:bg-cream-100 text-charcoal-800'
                     }`}
                   >
-                    {c}
+                    {t(c.labelKey)}
                   </button>
                 ))}
               </div>

@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 
 export const Bookmarks: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { token, isAuthenticated } = useAuth();
 
   // State
@@ -225,7 +225,7 @@ export const Bookmarks: React.FC = () => {
               <div className="flex items-center gap-1.5 flex-wrap w-full sm:w-auto">
                 <span className="text-xs font-semibold text-charcoal-500 mr-1 flex items-center gap-1">
                   <Filter className="w-3 h-3 text-saffron-600" />
-                  <span>Category:</span>
+                  <span>{t('bookmarksCategoryLabel')}</span>
                 </span>
 
                 <button
@@ -237,7 +237,7 @@ export const Bookmarks: React.FC = () => {
                       : 'bg-cream-100 text-charcoal-700 hover:bg-cream-200'
                   }`}
                 >
-                  All ({bookmarks.length})
+                  {t('bookmarksAllChip')} ({bookmarks.length})
                 </button>
 
                 {categories.map((cat) => (
@@ -265,13 +265,17 @@ export const Bookmarks: React.FC = () => {
           <div className="py-16 text-center space-y-3">
             <Loader2 className="w-8 h-8 text-saffron-600 animate-spin mx-auto" />
             <p className="text-xs sm:text-sm text-charcoal-500 font-medium">
-              Loading your saved bookmarks...
+              {t('bookmarksLoading')}
             </p>
           </div>
         ) : filteredBookmarks.length > 0 ? (
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs text-charcoal-500 font-medium">
-              <span>Showing {filteredBookmarks.length} saved welfare scheme{filteredBookmarks.length > 1 ? 's' : ''}</span>
+              <span>
+                {language === 'hi'
+                  ? `${filteredBookmarks.length} ${t('bookmarksShowingCount')} प्रदर्शित`
+                  : `Showing ${filteredBookmarks.length} ${t('bookmarksShowingCount')}${filteredBookmarks.length > 1 ? 's' : ''}`}
+              </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
