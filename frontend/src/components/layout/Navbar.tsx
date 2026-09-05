@@ -160,15 +160,6 @@ export const Navbar: React.FC = () => {
               </Link>
             )}
 
-            {/* CTA Button */}
-            <Link
-              to="/find"
-              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-saffron-500 hover:bg-saffron-600 text-white text-xs lg:text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
-            >
-              <Sparkles className="w-4 h-4" />
-              {t('heroStartWizard')}
-            </Link>
-
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
