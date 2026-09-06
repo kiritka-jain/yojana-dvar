@@ -212,3 +212,50 @@ def test_user_models():
     )
     assert save_req.profile.state == "Delhi"
     assert save_req.profile_id == "default"
+
+
+# =============================================================================
+# 6. Ticket YD-BUG-5.1: Cross-Field Age Validation Tests
+# =============================================================================
+
+def test_cross_field_maternal_age_under_18_fails():
+    """Verify age < 18 with maternal life stage raises ValidationError."""
+    with pytest.raises(ValidationError) as excinfo:
+        ProfileInput(age=10, life_stage="maternal")
+    assert "Maternal life stage requires age >= 18" in str(excinfo.value)
+
+def test_cross_field_maternal_age_18_plus_succeeds():
+    """Verify age >= 18 with maternal life stage succeeds."""
+    p = ProfileInput(age=18, life_stage="maternal")
+    assert p.age == 18
+    assert p.life_stage == "maternal"
+
+def test_cross_field_widow_age_under_18_fails():
+    """Verify age < 18 with widow life stage raises ValidationError."""
+    with pytest.raises(ValidationError) as excinfo:
+        ProfileInput(age=12, life_stage="widow")
+    assert "Widow status requires age >= 18" in str(excinfo.value)
+
+def test_cross_field_widow_age_18_plus_succeeds():
+    """Verify age >= 18 with widow life stage succeeds."""
+    p = ProfileInput(age=28, life_stage="widow")
+    assert p.age == 28
+    assert p.life_stage == "widow"
+
+def test_cross_field_entrepreneur_age_under_18_fails():
+    """Verify age < 18 with entrepreneur life stage raises ValidationError."""
+    with pytest.raises(ValidationError) as excinfo:
+        ProfileInput(age=14, life_stage="entrepreneur")
+    assert "Entrepreneur life stage requires age >= 18" in str(excinfo.value)
+
+def test_cross_field_senior_age_under_60_fails():
+    """Verify age < 60 with senior life stage raises ValidationError."""
+    with pytest.raises(ValidationError) as excinfo:
+        ProfileInput(age=45, life_stage="senior")
+    assert "Senior citizen status requires age >= 60" in str(excinfo.value)
+
+def test_cross_field_senior_age_60_plus_succeeds():
+    """Verify age >= 60 with senior life stage succeeds."""
+    p = ProfileInput(age=65, life_stage="senior")
+    assert p.age == 65
+    assert p.life_stage == "senior"

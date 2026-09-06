@@ -13,7 +13,7 @@ JSON_CATALOG_PATH = os.path.join(DATA_PROCESSED_DIR, "schemes_women.json")
 CSV_CATALOG_PATH = os.path.join(DATA_PROCESSED_DIR, "schemes_women.csv")
 NDJSON_CATALOG_PATH = os.path.join(DATA_PROCESSED_DIR, "schemes_women.ndjson")
 
-CANONICAL_LIFE_STAGES = {"maternal", "student", "entrepreneur", "senior", "general"}
+CANONICAL_LIFE_STAGES = {"maternal", "student", "entrepreneur", "senior", "widow", "general"}
 VALID_CASTE_CATEGORIES = {"All", "General", "SC", "ST", "OBC"}
 VALID_RESIDENCES = {"All", "Rural", "Urban"}
 VALID_GENDERS = {"Female", "All", "female", "all"}

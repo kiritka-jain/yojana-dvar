@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 class ProfileInput(BaseModel):
     """Demographic input model for eligibility matching."""
@@ -9,12 +9,34 @@ class ProfileInput(BaseModel):
     caste: str = Field(default="General", description="Caste category (General, SC, ST, OBC)")
     income: int = Field(default=0, ge=0, description="Annual family income in INR")
     residence: str = Field(default="All", description="Residence type (Rural, Urban, All)")
-    life_stage: str = Field(default="general", description="Life stage tag (student, maternal, entrepreneur, senior, general)")
+    life_stage: str = Field(default="general", description="Life stage tag (student, maternal, widow, entrepreneur, senior, general, all)")
     occupation: Optional[str] = Field(default="", description="User's current occupation")
     education: Optional[str] = Field(default="", description="Highest education level")
     is_bpl: bool = Field(default=False, description="Below Poverty Line cardholder flag")
     has_disability: bool = Field(default=False, description="Disability flag")
     limit: int = Field(default=10, ge=1, le=50, description="Max number of matched schemes to return")
+
+    @model_validator(mode='after')
+    def validate_cross_field_age_constraints(self) -> 'ProfileInput':
+        stage = (self.life_stage or "").strip().lower()
+
+        # Age-gating for maternal / pregnancy schemes (18+)
+        if stage == 'maternal' and self.age < 18:
+            raise ValueError("Maternal life stage requires age >= 18")
+
+        # Age-gating for widow schemes (18+)
+        if stage == 'widow' and self.age < 18:
+            raise ValueError("Widow status requires age >= 18")
+
+        # Age-gating for entrepreneur schemes (18+)
+        if stage == 'entrepreneur' and self.age < 18:
+            raise ValueError("Entrepreneur life stage requires age >= 18")
+
+        # Age-gating for senior citizen status (60+)
+        if stage == 'senior' and self.age < 60:
+            raise ValueError("Senior citizen status requires age >= 60")
+
+        return self
 
 class SchemeMatchResult(BaseModel):
     """Matched scheme output model with confidence score and match reasons."""
