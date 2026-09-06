@@ -455,7 +455,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageEntrepreneur: "Self-Employed / SHG Member",
     fieldLifeStageEntrepreneurAgeRestricted: "Requires age 18+",
     fieldLifeStageSenior: "Widow / Senior Citizen",
-    fieldLifeStageSeniorAgeRestricted: "Requires age 18+",
+    fieldLifeStageSeniorAgeRestricted: "Requires age 60+",
     fieldLifeStageGeneral: "General Citizen",
 
     fieldBpl: "Do you have a BPL or Antyodaya Ration Card?",
@@ -773,7 +773,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageEntrepreneur: "महिला उद्यमी / SHG सदस्य (Business)",
     fieldLifeStageEntrepreneurAgeRestricted: "18+ वर्ष आवश्यक",
     fieldLifeStageSenior: "वरिष्ठ नागरिक / विधवा (Senior)",
-    fieldLifeStageSeniorAgeRestricted: "18+ वर्ष आवश्यक",
+    fieldLifeStageSeniorAgeRestricted: "60+ वर्ष आवश्यक",
     fieldLifeStageGeneral: "सामान्य नागरिक (General)",
 
     fieldBpl: "क्या आपके पास बीपीएल (BPL) या अंत्योदय राशन कार्ड है?",

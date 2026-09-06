@@ -54,7 +54,7 @@ export const isLifeStageAllowed = (stageKey: string, age: number): { allowed: bo
   if (stageKey === 'entrepreneur' && age < 18) {
     return { allowed: false, reason: 'age_restricted' };
   }
-  if (stageKey === 'senior' && age < 18) {
+  if (stageKey === 'senior' && age < 60) {
     return { allowed: false, reason: 'age_restricted' };
   }
   return { allowed: true };
@@ -237,8 +237,11 @@ export const Wizard: React.FC = () => {
     const clampedAge = Math.min(100, Math.max(0, newAge));
     setProfile((prev) => {
       const updated = { ...prev, age: clampedAge };
-      // Age-gate adult life stages for minors (Tickets YD-BUG-1.1, YD-BUG-1.2, YD-BUG-1.3)
-      if (clampedAge < 18 && (updated.life_stage === 'maternal' || updated.life_stage === 'senior' || updated.life_stage === 'entrepreneur')) {
+      // Age-gate life stages (Tickets YD-BUG-1.1, YD-BUG-1.2, YD-BUG-1.3, YD-BUG-1.4)
+      if (clampedAge < 18 && (updated.life_stage === 'maternal' || updated.life_stage === 'entrepreneur')) {
+        updated.life_stage = 'all';
+      }
+      if (clampedAge < 60 && updated.life_stage === 'senior') {
         updated.life_stage = 'all';
       }
       return updated;
