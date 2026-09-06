@@ -498,7 +498,11 @@ export const Wizard: React.FC = () => {
                   <Minus className="w-6 h-6 stroke-[3] group-hover:text-saffron-700 transition-colors" />
                 </button>
 
-                <div className="flex items-center justify-center gap-2 bg-white px-6 py-3 rounded-2xl border-2 border-saffron-500 shadow-md focus-within:ring-4 focus-within:ring-saffron-200 transition-all">
+                <div className={`flex items-center justify-center gap-2 bg-white px-6 py-3 rounded-2xl border-2 transition-all ${
+                  errors.age 
+                    ? 'border-red-400 focus-within:ring-4 focus-within:ring-red-200' 
+                    : 'border-saffron-500 shadow-md focus-within:ring-4 focus-within:ring-saffron-200'
+                }`}>
                   <input
                     id={ageInputId}
                     type="number"
@@ -510,11 +514,22 @@ export const Wizard: React.FC = () => {
                     aria-valuenow={profile.age}
                     aria-valuemin={0}
                     aria-valuemax={100}
+                    aria-invalid={!!errors.age}
                     aria-label={language === 'hi' ? 'आयु (वर्ष में)' : 'Age in years'}
                     onChange={(e) => {
-                      const raw = e.target.value;
-                      const val = raw === '' ? 0 : parseInt(raw) || 0;
-                      handleAgeChange(val);
+                      const raw = e.target.value.trim();
+                      if (raw === '') {
+                        handleAgeChange(0);
+                        return;
+                      }
+                      const parsed = parseInt(raw, 10);
+                      if (!isNaN(parsed)) {
+                        handleAgeChange(parsed);
+                      }
+                    }}
+                    onBlur={() => {
+                      const err = validateField('age', profile.age);
+                      setErrors((prev) => ({ ...prev, age: err }));
                     }}
                     className="w-16 sm:w-20 text-center text-3xl sm:text-4xl font-black text-charcoal-900 focus:outline-none bg-transparent"
                   />
