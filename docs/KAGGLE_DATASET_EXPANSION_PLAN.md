@@ -225,6 +225,6 @@ flowchart TD
 - [x] Ticket 4.2: Verify matcher response time (< 50ms)
 - [x] Ticket 4.3: Validate Gemini Top-K AI explanation
 - [x] Ticket 5.1: Verify frontend pagination & rendering performance
-- [ ] Ticket 5.2: Verify 28 States & 8 UTs filtering
+- [x] Ticket 5.2: Verify 28 States & 8 UTs filtering
 - [ ] Ticket 5.3: Update homepage stats & data attribution
 ```

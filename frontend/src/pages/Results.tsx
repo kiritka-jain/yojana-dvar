@@ -19,8 +19,44 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import { INDIAN_STATES, UNION_TERRITORIES } from '../constants/states';
 
 export type CategoryFilterType = 'all' | 'education' | 'maternity' | 'business' | 'pension';
+
+export const matchesState = (scheme: SchemeMatchResult, selectedState: string): boolean => {
+  if (!selectedState || selectedState.toLowerCase() === 'all') return true;
+
+  const schemeState = (scheme.state || '').trim().toLowerCase();
+  const isCentral = !schemeState || schemeState === 'all' || schemeState === 'all india';
+
+  if (selectedState.toLowerCase() === 'central') {
+    return isCentral;
+  }
+
+  // Central schemes are available nationwide across all states
+  if (isCentral) return true;
+
+  // Exact state match
+  if (schemeState === selectedState.toLowerCase()) return true;
+
+  // Check eligible_states array / JSON string if present
+  if (scheme.eligible_states) {
+    try {
+      const eligible = typeof scheme.eligible_states === 'string'
+        ? JSON.parse(scheme.eligible_states)
+        : scheme.eligible_states;
+      if (Array.isArray(eligible)) {
+        if (eligible.some((st: string) => st.toLowerCase() === 'all' || st.toLowerCase() === selectedState.toLowerCase())) {
+          return true;
+        }
+      }
+    } catch {
+      // fallback
+    }
+  }
+
+  return false;
+};
 
 export const matchesCategory = (scheme: SchemeMatchResult, category: CategoryFilterType): boolean => {
   if (category === 'all') return true;
@@ -43,7 +79,9 @@ export const matchesCategory = (scheme: SchemeMatchResult, category: CategoryFil
         name.includes('छात्रवृत्ति') ||
         name.includes('sukanya') ||
         name.includes('udaan') ||
-        name.includes('pragati')
+        name.includes('pragati') ||
+        name.includes('kanya') ||
+        name.includes('kanyashree')
       );
     case 'maternity':
       return (
@@ -56,8 +94,11 @@ export const matchesCategory = (scheme: SchemeMatchResult, category: CategoryFil
         name.includes('मातृत्व') ||
         name.includes('गर्भवती') ||
         name.includes('पोषण') ||
+        name.includes('स्वास्थ्य') ||
+        name.includes('chiranjeevi') ||
         benefits.includes('pregnant') ||
-        benefits.includes('maternity')
+        benefits.includes('maternity') ||
+        benefits.includes('health')
       );
     case 'business':
       return (
@@ -67,23 +108,40 @@ export const matchesCategory = (scheme: SchemeMatchResult, category: CategoryFil
         cat.includes('financial') ||
         cat.includes('employment') ||
         cat.includes('banking') ||
+        cat.includes('housing') ||
+        cat.includes('shelter') ||
+        cat.includes('transportation') ||
+        cat.includes('travel') ||
         name.includes('stand up') ||
         name.includes('mudra') ||
         name.includes('mahila samman') ||
         name.includes('samriddhi') ||
+        name.includes('utkarsh') ||
+        name.includes('shakti') ||
+        name.includes('cheyutha') ||
         name.includes('उद्यम') ||
         name.includes('स्वरोजगार') ||
         benefits.includes('loan') ||
-        benefits.includes('subsidy')
+        benefits.includes('subsidy') ||
+        benefits.includes('financial assistance') ||
+        benefits.includes('employment') ||
+        benefits.includes('hostel')
       );
     case 'pension':
       return (
         tags.some((t) => ['senior', 'elderly', 'widow', 'destitute', 'social_security', 'pension'].includes(t)) ||
         cat.includes('pension') ||
         cat.includes('social security') ||
+        cat.includes('social welfare') ||
         name.includes('pension') ||
         name.includes('widow') ||
         name.includes('indira gandhi') ||
+        name.includes('ladli behna') ||
+        name.includes('ladki bahin') ||
+        name.includes('samman') ||
+        name.includes('griha') ||
+        name.includes('gruha') ||
+        name.includes('orunodoi') ||
         name.includes('पेंशन') ||
         name.includes('विधवा') ||
         name.includes('वृद्धा') ||
@@ -137,9 +195,10 @@ export const Results: React.FC = () => {
   const [schemes, setSchemes] = useState<SchemeMatchResult[]>([]);
   const [loading, setLoading] = useState<boolean>(!locationState?.matchData);
 
-  // Filter & Sort State (Single Horizontal Chip Bar)
+  // Filter & Sort State
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilterType>('all');
   const [selectedScope, setSelectedScope] = useState<'all' | 'central' | 'state'>('all');
+  const [selectedState, setSelectedState] = useState<string>(locationState?.profile?.state || 'all');
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [debouncedSearch, setDebouncedSearch] = useState<string>('');
 
@@ -160,7 +219,7 @@ export const Results: React.FC = () => {
   // Reset page to 1 whenever filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, selectedScope, debouncedSearch]);
+  }, [selectedCategory, selectedScope, selectedState, debouncedSearch]);
 
   useEffect(() => {
     if (locationState?.matchData?.schemes) {
@@ -201,7 +260,7 @@ export const Results: React.FC = () => {
     loadDefaultSchemes();
   }, [locationState]);
 
-  // Compute counts for each category chip under current scope & search filters
+  // Compute counts for each category chip dynamically under active scope, state & search filters
   const categoryCounts = useMemo(() => {
     const counts: Record<CategoryFilterType, number> = {
       all: 0,
@@ -211,11 +270,16 @@ export const Results: React.FC = () => {
       pension: 0,
     };
 
-    const scopeAndSearchFiltered = schemes.filter((s) => {
+    const scopeAndStateFiltered = schemes.filter((s) => {
+      // Scope filter (Central vs State)
       const isCentral = !s.state || s.state.toLowerCase() === 'all' || s.state.toLowerCase() === 'all india';
       if (selectedScope === 'central' && !isCentral) return false;
       if (selectedScope === 'state' && isCentral) return false;
 
+      // State filter (Central + Selected State schemes)
+      if (!matchesState(s, selectedState)) return false;
+
+      // Search within results
       if (debouncedSearch.trim()) {
         const query = debouncedSearch.toLowerCase();
         const matches =
@@ -228,14 +292,14 @@ export const Results: React.FC = () => {
       return true;
     });
 
-    counts.all = scopeAndSearchFiltered.length;
-    counts.education = scopeAndSearchFiltered.filter((s) => matchesCategory(s, 'education')).length;
-    counts.maternity = scopeAndSearchFiltered.filter((s) => matchesCategory(s, 'maternity')).length;
-    counts.business = scopeAndSearchFiltered.filter((s) => matchesCategory(s, 'business')).length;
-    counts.pension = scopeAndSearchFiltered.filter((s) => matchesCategory(s, 'pension')).length;
+    counts.all = scopeAndStateFiltered.length;
+    counts.education = scopeAndStateFiltered.filter((s) => matchesCategory(s, 'education')).length;
+    counts.maternity = scopeAndStateFiltered.filter((s) => matchesCategory(s, 'maternity')).length;
+    counts.business = scopeAndStateFiltered.filter((s) => matchesCategory(s, 'business')).length;
+    counts.pension = scopeAndStateFiltered.filter((s) => matchesCategory(s, 'pension')).length;
 
     return counts;
-  }, [schemes, selectedScope, debouncedSearch]);
+  }, [schemes, selectedScope, selectedState, debouncedSearch]);
 
   // Filter Logic
   const filteredSchemes = useMemo(() => {
@@ -244,6 +308,11 @@ export const Results: React.FC = () => {
       const isCentral = !s.state || s.state.toLowerCase() === 'all' || s.state.toLowerCase() === 'all india';
       if (selectedScope === 'central' && !isCentral) return false;
       if (selectedScope === 'state' && isCentral) return false;
+
+      // State filter
+      if (!matchesState(s, selectedState)) {
+        return false;
+      }
 
       // Category filter
       if (!matchesCategory(s, selectedCategory)) {
@@ -263,7 +332,7 @@ export const Results: React.FC = () => {
 
       return true;
     });
-  }, [schemes, selectedScope, selectedCategory, debouncedSearch]);
+  }, [schemes, selectedScope, selectedState, selectedCategory, debouncedSearch]);
 
   // Pagination Calculations
   const totalPages = Math.max(1, Math.ceil(filteredSchemes.length / PAGE_SIZE));
@@ -283,13 +352,14 @@ export const Results: React.FC = () => {
 
   const handleResetFilters = () => {
     setSelectedScope('all');
+    setSelectedState('all');
     setSelectedCategory('all');
     setSearchFilter('');
     setDebouncedSearch('');
     setCurrentPage(1);
   };
 
-  const isFiltered = selectedScope !== 'all' || selectedCategory !== 'all' || debouncedSearch.trim() !== '';
+  const isFiltered = selectedScope !== 'all' || selectedState !== 'all' || selectedCategory !== 'all' || debouncedSearch.trim() !== '';
 
   const handleBookmarkChange = (_schemeId: string, isSaved: boolean, schemeName: string) => {
     const text = isSaved 
@@ -349,35 +419,65 @@ export const Results: React.FC = () => {
       {/* 1-Row Horizontal Category Filter Bar */}
       <div className="bg-white rounded-3xl p-4 sm:p-5 border border-cream-300 shadow-card mb-8 space-y-4">
         
-        {/* Top Controls Row: Search Input + Scope Pill Toggle */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          {/* Search box */}
-          <div className="relative flex-1 sm:max-w-xs">
-            <Search className="w-4 h-4 text-charcoal-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchFilter}
-              onChange={(e) => setSearchFilter(e.target.value)}
-              placeholder={t('searchInResults')}
-              className="w-full min-h-[44px] pl-10 pr-10 py-2.5 text-xs sm:text-sm bg-cream-50 rounded-2xl border border-cream-300 text-charcoal-900 placeholder:text-charcoal-500 focus:outline-none focus:ring-2 focus:ring-saffron-500 transition-all font-medium"
-            />
-            {searchFilter && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchFilter('');
-                  setDebouncedSearch('');
-                }}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] text-charcoal-500 hover:text-charcoal-900 p-1.5 rounded-full hover:bg-cream-200 transition-colors flex items-center justify-center"
-                aria-label="Clear search"
+        {/* Top Controls Row: Search Input + State Selector + Scope Pill Toggle */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+          
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+            {/* Search box */}
+            <div className="relative flex-1 sm:max-w-xs">
+              <Search className="w-4 h-4 text-charcoal-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                placeholder={t('searchInResults')}
+                className="w-full min-h-[44px] pl-10 pr-10 py-2.5 text-xs sm:text-sm bg-cream-50 rounded-2xl border border-cream-300 text-charcoal-900 placeholder:text-charcoal-500 focus:outline-none focus:ring-2 focus:ring-saffron-500 transition-all font-medium"
+              />
+              {searchFilter && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchFilter('');
+                    setDebouncedSearch('');
+                  }}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] text-charcoal-500 hover:text-charcoal-900 p-1.5 rounded-full hover:bg-cream-200 transition-colors flex items-center justify-center"
+                  aria-label="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* State Filter Dropdown (28 States + 8 UTs) */}
+            <div className="relative sm:max-w-[210px] w-full">
+              <select
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                aria-label={t('filterStateLabel')}
+                className="w-full min-h-[44px] px-3.5 py-2.5 text-xs sm:text-sm bg-cream-50 rounded-2xl border border-cream-300 text-charcoal-900 font-semibold focus:outline-none focus:ring-2 focus:ring-saffron-500 transition-all cursor-pointer truncate"
               >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+                <option value="all">📍 {t('filterStateAll')}</option>
+                <option value="central">🏛️ {t('filterScopeCentral')}</option>
+                <optgroup label="── 28 States ──">
+                  {INDIAN_STATES.slice(0, 28).map((st) => (
+                    <option key={st} value={st}>
+                      {st}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="── 8 Union Territories ──">
+                  {UNION_TERRITORIES.map((ut) => (
+                    <option key={ut} value={ut}>
+                      {ut}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
           </div>
 
           {/* Scope Pill Toggle (All | Central | State) */}
-          <div className="inline-flex items-center p-1 bg-cream-100 rounded-2xl border border-cream-200/80 shadow-xs self-start sm:self-auto w-full sm:w-auto">
+          <div className="inline-flex items-center p-1 bg-cream-100 rounded-2xl border border-cream-200/80 shadow-xs self-start lg:self-auto w-full sm:w-auto">
             {(['all', 'central', 'state'] as const).map((sc) => {
               const isActive = selectedScope === sc;
               return (

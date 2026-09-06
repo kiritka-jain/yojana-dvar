@@ -180,6 +180,8 @@ export interface TranslationDictionary {
   filterScopeAll: string;
   filterScopeCentral: string;
   filterScopeState: string;
+  filterStateLabel: string;
+  filterStateAll: string;
   filterLifeStage: string;
   filterLifeStageAll: string;
   sortLabel: string;
@@ -496,6 +498,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     filterScopeAll: "All",
     filterScopeCentral: "Central",
     filterScopeState: "State Only",
+    filterStateLabel: "State / UT",
+    filterStateAll: "All States & UTs",
     filterLifeStage: "Stage",
     filterLifeStageAll: "All",
     sortLabel: "Sort",
@@ -809,6 +813,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     filterScopeAll: "सभी",
     filterScopeCentral: "केंद्रीय",
     filterScopeState: "केवल राज्य",
+    filterStateLabel: "राज्य / UT",
+    filterStateAll: "सभी राज्य व UT",
     filterLifeStage: "चरण",
     filterLifeStageAll: "सभी",
     sortLabel: "क्रम",
