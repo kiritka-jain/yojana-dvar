@@ -289,3 +289,26 @@ def test_scoring_weights_and_cap(matcher, base_scheme):
     base_scheme["eligible_states"] = '["Delhi"]'
     _, score, _ = matcher.evaluate_scheme(p, base_scheme)
     assert score == 100
+
+
+# =============================================================================
+# 4. Ticket YD-BUG-5.2: Minimum Age & Newborn (Age 0 / Infant) Matching Tests
+# =============================================================================
+
+def test_newborn_infant_age_0_matching(matcher):
+    """
+    Verify age = 0 (Newborn/Infant < 1 yr) qualifies for birth & child schemes
+    like Sukanya Samriddhi Yojana (age_min: 0, age_max: 10) and does not fail validation.
+    """
+    p_infant = ProfileInput(age=0, gender="Female", state="All", life_stage="general")
+    res = matcher.match_profile(p_infant)
+    assert res.count > 0
+
+    # Sukanya Samriddhi Yojana (age 0-10) should be matched
+    ssy_matches = [s for s in res.schemes if s.scheme_id == "ssy-central"]
+    assert len(ssy_matches) == 1
+    assert any("Infant / Newborn" in reason for reason in ssy_matches[0].match_reasons)
+
+    # Adult-only scheme should NOT be matched for age 0
+    adult_matches = [s for s in res.schemes if s.age_min > 0]
+    assert len(adult_matches) == 0

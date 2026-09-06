@@ -119,6 +119,7 @@ export interface TranslationDictionary {
   ageTierStudent: string;
   ageTierAdult: string;
   ageTierSenior: string;
+  ageNewbornLabel: string;
 
   fieldResidence: string;
   fieldResidenceRural: string;
@@ -444,6 +445,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     ageTierStudent: "Young Woman / Student (18–25 Yrs)",
     ageTierAdult: "Adult Woman (26–59 Yrs)",
     ageTierSenior: "Senior Citizen (60+ Yrs)",
+    ageNewbornLabel: "Newborn / Infant (< 1 year)",
 
     fieldResidence: "Residence Area",
     fieldResidenceRural: "Rural (गाँव / Village)",
@@ -765,6 +767,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     ageTierStudent: "युवती / छात्रा (18–25 वर्ष)",
     ageTierAdult: "वयस्क महिला (26–59 वर्ष)",
     ageTierSenior: "वरिष्ठ नागरिक (60+ वर्ष)",
+    ageNewbornLabel: "नवजात शिशु (आयु < 1 वर्ष)",
 
     fieldResidence: "निवास क्षेत्र",
     fieldResidenceRural: "ग्रामीण (गाँव / Rural)",

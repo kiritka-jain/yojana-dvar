@@ -71,7 +71,10 @@ class EligibilityMatcher:
         age_max = int(scheme.get("age_max", 100))
         if not (age_min <= profile.age <= age_max):
             return False, 0, []
-        reasons.append(f"Age {profile.age} is within eligible range ({age_min}–{age_max} years)")
+        if profile.age == 0:
+            reasons.append(f"Infant / Newborn (<1 yr) eligible within scheme range ({age_min}–{age_max} years)")
+        else:
+            reasons.append(f"Age {profile.age} is within eligible range ({age_min}–{age_max} years)")
 
         # 4. State Coverage Check
         scheme_state = str(scheme.get("state", "All")).strip()

@@ -552,6 +552,16 @@ export const Wizard: React.FC = () => {
                 </button>
               </div>
 
+              {/* Newborn / Infant Clarification Badge for Age 0 (Ticket YD-BUG-5.2) */}
+              {profile.age === 0 && (
+                <div className="flex items-center justify-center -mt-1 pb-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-saffron-800 bg-saffron-100/90 border border-saffron-300/80 px-3.5 py-1 rounded-full shadow-xs animate-fadeIn">
+                    <span>👶</span>
+                    <span>{t('ageNewbornLabel')}</span>
+                  </span>
+                </div>
+              )}
+
               {/* 4 Large Visual Age Milestone Tiles */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                 {[
