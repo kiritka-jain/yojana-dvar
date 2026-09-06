@@ -132,6 +132,7 @@ export interface TranslationDictionary {
   fieldLifeStageMaternalAgeRestricted: string;
   fieldLifeStageEntrepreneur: string;
   fieldLifeStageSenior: string;
+  fieldLifeStageSeniorAgeRestricted: string;
   fieldLifeStageGeneral: string;
 
   fieldBpl: string;
@@ -452,6 +453,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageMaternalAgeRestricted: "Requires age 18+",
     fieldLifeStageEntrepreneur: "Self-Employed / SHG Member",
     fieldLifeStageSenior: "Widow / Senior Citizen",
+    fieldLifeStageSeniorAgeRestricted: "Requires age 18+",
     fieldLifeStageGeneral: "General Citizen",
 
     fieldBpl: "Do you have a BPL or Antyodaya Ration Card?",
@@ -768,6 +770,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageMaternalAgeRestricted: "18+ वर्ष आवश्यक",
     fieldLifeStageEntrepreneur: "महिला उद्यमी / SHG सदस्य (Business)",
     fieldLifeStageSenior: "वरिष्ठ नागरिक / विधवा (Senior)",
+    fieldLifeStageSeniorAgeRestricted: "18+ वर्ष आवश्यक",
     fieldLifeStageGeneral: "सामान्य नागरिक (General)",
 
     fieldBpl: "क्या आपके पास बीपीएल (BPL) या अंत्योदय राशन कार्ड है?",
