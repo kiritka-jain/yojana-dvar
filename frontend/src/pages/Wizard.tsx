@@ -47,6 +47,13 @@ const EDUCATION_OPTIONS = [
   { value: "Postgraduate", labelEn: "Postgraduate & Above", labelHi: "स्नातकोत्तर व अधिक" }
 ];
 
+export const isLifeStageAllowed = (stageKey: string, age: number): { allowed: boolean; reason?: string } => {
+  if (stageKey === 'maternal' && age < 18) {
+    return { allowed: false, reason: 'age_restricted' };
+  }
+  return { allowed: true };
+};
+
 interface FormErrors {
   state?: string;
   age?: string;
@@ -219,11 +226,24 @@ export const Wizard: React.FC = () => {
     { num: 3, title: t('wizardStep3Title'), icon: <HeartHandshake className="w-4 h-4" /> },
   ];
 
+  // Handle age updates with validation & reactive state reconciliation
+  const handleAgeChange = (newAge: number) => {
+    const clampedAge = Math.min(100, Math.max(0, newAge));
+    setProfile((prev) => {
+      const updated = { ...prev, age: clampedAge };
+      // Age-gate maternal life stage (Ticket YD-BUG-1.1)
+      if (clampedAge < 18 && updated.life_stage === 'maternal') {
+        updated.life_stage = 'all';
+      }
+      return updated;
+    });
+    const err = validateField('age', clampedAge);
+    setErrors((prev) => ({ ...prev, age: err }));
+  };
+
   // Age increment/decrement helper
   const adjustAge = (delta: number) => {
-    const newAge = Math.min(100, Math.max(0, (profile.age || 0) + delta));
-    setProfile({ ...profile, age: newAge });
-    setErrors((prev) => ({ ...prev, age: undefined }));
+    handleAgeChange((profile.age || 0) + delta);
   };
 
   return (
@@ -415,10 +435,8 @@ export const Wizard: React.FC = () => {
                     aria-label={language === 'hi' ? 'आयु (वर्ष में)' : 'Age in years'}
                     onChange={(e) => {
                       const raw = e.target.value;
-                      const val = raw === '' ? 0 : Math.min(100, Math.max(0, parseInt(raw) || 0));
-                      setProfile({ ...profile, age: val });
-                      const err = validateField('age', val);
-                      setErrors((prev) => ({ ...prev, age: err }));
+                      const val = raw === '' ? 0 : parseInt(raw) || 0;
+                      handleAgeChange(val);
                     }}
                     className="w-16 sm:w-20 text-center text-3xl sm:text-4xl font-black text-charcoal-900 focus:outline-none bg-transparent"
                   />
@@ -452,8 +470,7 @@ export const Wizard: React.FC = () => {
                       key={tier.id}
                       type="button"
                       onClick={() => {
-                        setProfile({ ...profile, age: tier.defaultAge });
-                        setErrors((prev) => ({ ...prev, age: undefined }));
+                        handleAgeChange(tier.defaultAge);
                       }}
                       className={`min-h-[72px] sm:min-h-[80px] p-3 sm:p-3.5 rounded-2xl border-2 text-center transition-all duration-200 flex flex-col items-center justify-center gap-1 active:scale-95 ${
                         isActive
@@ -726,24 +743,49 @@ export const Wizard: React.FC = () => {
                     icon: '🌸',
                     hint: language === 'hi' ? 'सभी सामान्य कल्याण योजनाएं' : 'General citizen schemes'
                   }
-                ].map((ls) => (
-                  <button
-                    key={ls.val}
-                    type="button"
-                    onClick={() => setProfile({ ...profile, life_stage: ls.val })}
-                    className={`min-h-[64px] p-4 rounded-2xl border text-left flex items-start gap-3 transition-all ${
-                      profile.life_stage === ls.val
-                        ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 font-bold ring-2 ring-saffron-300 shadow-xs'
-                        : 'border-cream-300 bg-white hover:bg-cream-50 text-charcoal-800'
-                    }`}
-                  >
-                    <span className="text-2xl mt-0.5">{ls.icon}</span>
-                    <div>
-                      <span className="text-sm font-bold block text-charcoal-900">{ls.label}</span>
-                      <span className="text-xs text-charcoal-600 font-medium">{ls.hint}</span>
-                    </div>
-                  </button>
-                ))}
+                ].map((ls) => {
+                  const { allowed } = isLifeStageAllowed(ls.val, profile.age);
+                  const isSelected = profile.life_stage === ls.val;
+                  const isDisabled = !allowed;
+
+                  return (
+                    <button
+                      key={ls.val}
+                      type="button"
+                      disabled={isDisabled}
+                      onClick={() => {
+                        if (!isDisabled) {
+                          setProfile({ ...profile, life_stage: ls.val });
+                        }
+                      }}
+                      aria-disabled={isDisabled}
+                      className={`min-h-[64px] p-4 rounded-2xl border text-left flex items-start gap-3 transition-all ${
+                        isDisabled
+                          ? 'border-cream-200 bg-cream-100/50 text-charcoal-400 opacity-60 cursor-not-allowed select-none'
+                          : isSelected
+                          ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 font-bold ring-2 ring-saffron-300 shadow-xs'
+                          : 'border-cream-300 bg-white hover:bg-cream-50 text-charcoal-800'
+                      }`}
+                    >
+                      <span className={`text-2xl mt-0.5 ${isDisabled ? 'grayscale opacity-60' : ''}`}>{ls.icon}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className={`text-sm font-bold block ${isDisabled ? 'text-charcoal-500' : 'text-charcoal-900'}`}>
+                            {ls.label}
+                          </span>
+                          {isDisabled && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100/90 border border-amber-300/80 px-2 py-0.5 rounded-md flex-shrink-0">
+                              ⚠️ {t('fieldLifeStageMaternalAgeRestricted')}
+                            </span>
+                          )}
+                        </div>
+                        <span className={`text-xs block mt-0.5 ${isDisabled ? 'text-charcoal-400' : 'text-charcoal-600 font-medium'}`}>
+                          {ls.hint}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
