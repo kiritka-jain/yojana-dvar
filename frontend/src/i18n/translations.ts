@@ -199,6 +199,12 @@ export interface TranslationDictionary {
   resultsProfileSummary: string;
   toastBookmarkSaved: string;
   toastBookmarkRemoved: string;
+  paginationPrev: string;
+  paginationNext: string;
+  paginationPage: string;
+  paginationOf: string;
+  paginationShowing: string;
+  paginationSchemes: string;
 
   // Scheme Detail Page (myScheme 4-Tab Architecture)
   detailTabBenefits: string;
@@ -509,6 +515,12 @@ export const translations: Record<Language, TranslationDictionary> = {
     resultsProfileSummary: "Evaluated Profile",
     toastBookmarkSaved: "Scheme saved to your bookmarks!",
     toastBookmarkRemoved: "Scheme removed from bookmarks",
+    paginationPrev: "Previous",
+    paginationNext: "Next",
+    paginationPage: "Page",
+    paginationOf: "of",
+    paginationShowing: "Showing",
+    paginationSchemes: "schemes",
 
     // Scheme Detail Page (myScheme 4-Tab Architecture)
     detailTabBenefits: "Benefits (फायदे)",
@@ -816,6 +828,12 @@ export const translations: Record<Language, TranslationDictionary> = {
     resultsProfileSummary: "आपकी दर्ज जानकारी",
     toastBookmarkSaved: "योजना आपकी सहेजी गई सूची में जोड़ी गई!",
     toastBookmarkRemoved: "योजना सहेजी गई सूची से हटाई गई",
+    paginationPrev: "पिछला",
+    paginationNext: "अगला",
+    paginationPage: "पृष्ठ",
+    paginationOf: "का",
+    paginationShowing: "दिखाए जा रहे हैं",
+    paginationSchemes: "योजनाएं",
 
     // Scheme Detail Page (myScheme 4-Tab Architecture)
     detailTabBenefits: "क्या मिलेगा (Benefits)",

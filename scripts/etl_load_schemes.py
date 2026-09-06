@@ -1104,6 +1104,13 @@ def main():
         json.dump(final_schemes, f, indent=2, ensure_ascii=False)
     print(f"\n✓ Saved processed JSON catalog: {out_json_path}")
 
+    # Synchronize to backend/data/processed/schemes_women.json (Ticket 4.1)
+    backend_json_path = os.path.join(BASE_DIR, "backend", "data", "processed", "schemes_women.json")
+    os.makedirs(os.path.dirname(backend_json_path), exist_ok=True)
+    with open(backend_json_path, "w", encoding="utf-8") as f:
+        json.dump(final_schemes, f, indent=2, ensure_ascii=False)
+    print(f"✓ Synchronized backend catalog cache: {backend_json_path}")
+
     # Save to data/processed/schemes_women.csv
     out_csv_path = os.path.join(DATA_PROCESSED_DIR, "schemes_women.csv")
     if final_schemes:
@@ -1115,7 +1122,7 @@ def main():
         print(f"✓ Saved processed CSV catalog:  {out_csv_path}")
 
     print("==================================================")
-    print("✓ Ticket 3.1 Deduplication & ETL Pipeline Complete!")
+    print("✓ Ticket 4.1 Synchronized Catalog & ETL Complete!")
     print("==================================================")
 
 if __name__ == "__main__":

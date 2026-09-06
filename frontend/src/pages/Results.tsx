@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { SchemeCard, parseLifeStageTags } from '../components/schemes/SchemeCard';
@@ -15,7 +15,9 @@ import {
   Sparkles, 
   RotateCcw, 
   X,
-  BookmarkCheck
+  BookmarkCheck,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 export type CategoryFilterType = 'all' | 'education' | 'maternity' | 'business' | 'pension';
@@ -45,54 +47,47 @@ export const matchesCategory = (scheme: SchemeMatchResult, category: CategoryFil
       );
     case 'maternity':
       return (
-        tags.some((t) => ['maternal', 'mother', 'pregnant', 'maternity', 'nutrition'].includes(t)) ||
-        cat.includes('maternal') ||
-        cat.includes('child health') ||
-        cat.includes('nutrition') ||
+        tags.some((t) => ['maternal', 'mother', 'pregnant', 'infant', 'lactating', 'child_care'].includes(t)) ||
+        cat.includes('maternity') ||
+        cat.includes('health') ||
+        cat.includes('child development') ||
         name.includes('matru') ||
-        name.includes('मातृत्व') ||
-        name.includes('पोषण') ||
-        name.includes('pmmvy') ||
         name.includes('janani') ||
-        benefits.includes('गर्भवती') ||
-        benefits.includes('maternity') ||
-        benefits.includes('lactating')
+        name.includes('मातृत्व') ||
+        name.includes('गर्भवती') ||
+        name.includes('पोषण') ||
+        benefits.includes('pregnant') ||
+        benefits.includes('maternity')
       );
     case 'business':
       return (
-        tags.some((t) => ['entrepreneur', 'business', 'working_women', 'housing', 'shg', 'loan', 'employment'].includes(t)) ||
-        tags.includes('entrepreneur') ||
-        cat.includes('entrepreneur') ||
-        cat.includes('loan') ||
-        cat.includes('employment') ||
+        tags.some((t) => ['entrepreneur', 'business', 'shg', 'livelihood', 'self_help', 'startup', 'credit'].includes(t)) ||
         cat.includes('business') ||
-        cat.includes('shg') ||
-        cat.includes('safe housing') ||
-        name.includes('mudra') ||
+        cat.includes('entrepreneurship') ||
+        cat.includes('financial') ||
+        cat.includes('employment') ||
+        cat.includes('banking') ||
         name.includes('stand up') ||
-        name.includes('shg') ||
+        name.includes('mudra') ||
+        name.includes('mahila samman') ||
+        name.includes('samriddhi') ||
         name.includes('उद्यम') ||
         name.includes('स्वरोजगार') ||
-        name.includes('ऋण') ||
-        name.includes('hostel') ||
-        name.includes('working women') ||
-        name.includes('pmegp')
+        benefits.includes('loan') ||
+        benefits.includes('subsidy')
       );
     case 'pension':
       return (
-        tags.some((t) => ['senior', 'pension', 'widow', 'elderly', 'social_security', 'disability'].includes(t)) ||
+        tags.some((t) => ['senior', 'elderly', 'widow', 'destitute', 'social_security', 'pension'].includes(t)) ||
         cat.includes('pension') ||
         cat.includes('social security') ||
-        cat.includes('social empowerment') ||
         name.includes('pension') ||
+        name.includes('widow') ||
+        name.includes('indira gandhi') ||
         name.includes('पेंशन') ||
-        name.includes('वृद्धावस्था') ||
         name.includes('विधवा') ||
-        name.includes('सुरक्षा') ||
-        name.includes('ignwps') ||
-        name.includes('igndps') ||
-        name.includes('ignoaps') ||
-        name.includes('atal pension')
+        name.includes('वृद्धा') ||
+        benefits.includes('pension')
       );
     default:
       return true;
@@ -109,40 +104,33 @@ const CATEGORY_ITEMS: { id: CategoryFilterType; labelKey: keyof TranslationDicti
 
 const SchemeCardSkeleton: React.FC = () => {
   return (
-    <div className="rounded-3xl border border-cream-200 bg-white p-6 shadow-xs animate-pulse flex flex-col justify-between space-y-4">
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-6 w-24 bg-cream-200 rounded-full" />
-            <div className="h-5 w-20 bg-cream-100 rounded-full" />
-          </div>
-          <div className="w-8 h-8 bg-cream-200 rounded-xl" />
+    <div className="bg-white rounded-3xl p-6 border border-cream-300 shadow-card animate-pulse space-y-4">
+      <div className="flex justify-between items-start gap-4">
+        <div className="space-y-2 flex-1">
+          <div className="h-4 bg-cream-200 rounded-md w-1/3"></div>
+          <div className="h-6 bg-cream-200 rounded-md w-4/5"></div>
         </div>
-
-        <div className="space-y-1.5 pt-1">
-          <div className="h-5 bg-cream-200 rounded-md w-4/5" />
-          <div className="h-5 bg-cream-200 rounded-md w-3/5" />
-        </div>
-
-        <div className="h-3.5 bg-cream-100 rounded-md w-1/2" />
-
-        <div className="p-4 rounded-2xl bg-cream-100/70 border border-cream-200 space-y-2">
-          <div className="h-3 bg-cream-200 rounded w-1/4" />
-          <div className="h-3.5 bg-cream-200 rounded w-full" />
-          <div className="h-3.5 bg-cream-200 rounded w-4/5" />
-        </div>
+        <div className="w-12 h-6 bg-cream-200 rounded-full"></div>
       </div>
-
-      <div className="pt-3 border-t border-cream-200">
-        <div className="h-10 w-full bg-cream-200 rounded-2xl" />
+      <div className="h-16 bg-cream-100 rounded-2xl"></div>
+      <div className="space-y-2">
+        <div className="h-3 bg-cream-200 rounded w-full"></div>
+        <div className="h-3 bg-cream-200 rounded w-5/6"></div>
+      </div>
+      <div className="pt-4 border-t border-cream-100 flex justify-between items-center">
+        <div className="h-8 bg-cream-200 rounded-xl w-24"></div>
+        <div className="h-8 bg-cream-200 rounded-xl w-28"></div>
       </div>
     </div>
   );
 };
 
+const PAGE_SIZE = 9;
+
 export const Results: React.FC = () => {
   const { t, language } = useLanguage();
   const location = useLocation();
+  const catalogTopRef = useRef<HTMLDivElement>(null);
 
   const locationState = location.state as { matchData?: MatchResponse; profile?: ProfileInput } | undefined;
 
@@ -153,9 +141,26 @@ export const Results: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilterType>('all');
   const [selectedScope, setSelectedScope] = useState<'all' | 'central' | 'state'>('all');
   const [searchFilter, setSearchFilter] = useState<string>('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>('');
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   // Toast Notification State for Bookmarks
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Debounce search input for silky-smooth UI rendering
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchFilter);
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [searchFilter]);
+
+  // Reset page to 1 whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedScope, debouncedSearch]);
 
   useEffect(() => {
     if (locationState?.matchData?.schemes) {
@@ -177,13 +182,13 @@ export const Results: React.FC = () => {
           life_stage: 'maternal',
           is_bpl: false,
           has_disability: false,
-          limit: 15
+          limit: 38
         };
         const res = await matchSchemes(defaultProfile);
         setSchemes(res.schemes);
       } catch {
         try {
-          const searchRes = await searchSchemes();
+          const searchRes = await searchSchemes('', '', '', 50);
           setSchemes(searchRes.schemes);
         } catch (searchErr) {
           console.error("Failed to load fallback schemes:", searchErr);
@@ -211,8 +216,8 @@ export const Results: React.FC = () => {
       if (selectedScope === 'central' && !isCentral) return false;
       if (selectedScope === 'state' && isCentral) return false;
 
-      if (searchFilter.trim()) {
-        const query = searchFilter.toLowerCase();
+      if (debouncedSearch.trim()) {
+        const query = debouncedSearch.toLowerCase();
         const matches =
           s.name.toLowerCase().includes(query) ||
           s.benefits.toLowerCase().includes(query) ||
@@ -230,7 +235,7 @@ export const Results: React.FC = () => {
     counts.pension = scopeAndSearchFiltered.filter((s) => matchesCategory(s, 'pension')).length;
 
     return counts;
-  }, [schemes, selectedScope, searchFilter]);
+  }, [schemes, selectedScope, debouncedSearch]);
 
   // Filter Logic
   const filteredSchemes = useMemo(() => {
@@ -246,8 +251,8 @@ export const Results: React.FC = () => {
       }
 
       // Search within results
-      if (searchFilter.trim()) {
-        const query = searchFilter.toLowerCase();
+      if (debouncedSearch.trim()) {
+        const query = debouncedSearch.toLowerCase();
         const matches =
           s.name.toLowerCase().includes(query) ||
           s.benefits.toLowerCase().includes(query) ||
@@ -258,15 +263,33 @@ export const Results: React.FC = () => {
 
       return true;
     });
-  }, [schemes, selectedScope, selectedCategory, searchFilter]);
+  }, [schemes, selectedScope, selectedCategory, debouncedSearch]);
+
+  // Pagination Calculations
+  const totalPages = Math.max(1, Math.ceil(filteredSchemes.length / PAGE_SIZE));
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const endIndex = Math.min(startIndex + PAGE_SIZE, filteredSchemes.length);
+  const paginatedSchemes = useMemo(() => {
+    return filteredSchemes.slice(startIndex, endIndex);
+  }, [filteredSchemes, startIndex, endIndex]);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    if (catalogTopRef.current) {
+      catalogTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const handleResetFilters = () => {
     setSelectedScope('all');
     setSelectedCategory('all');
     setSearchFilter('');
+    setDebouncedSearch('');
+    setCurrentPage(1);
   };
 
-  const isFiltered = selectedScope !== 'all' || selectedCategory !== 'all' || searchFilter.trim() !== '';
+  const isFiltered = selectedScope !== 'all' || selectedCategory !== 'all' || debouncedSearch.trim() !== '';
 
   const handleBookmarkChange = (_schemeId: string, isSaved: boolean, schemeName: string) => {
     const text = isSaved 
@@ -281,6 +304,9 @@ export const Results: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 relative">
       
+      {/* Scroll Anchor */}
+      <div ref={catalogTopRef} id="results-catalog-anchor" className="scroll-mt-6" />
+
       {/* Toast Notification */}
       {toastMessage && (
         <div 
@@ -320,7 +346,7 @@ export const Results: React.FC = () => {
         </p>
       </div>
 
-      {/* 1-Row Horizontal Category Filter Bar (myScheme Style) */}
+      {/* 1-Row Horizontal Category Filter Bar */}
       <div className="bg-white rounded-3xl p-4 sm:p-5 border border-cream-300 shadow-card mb-8 space-y-4">
         
         {/* Top Controls Row: Search Input + Scope Pill Toggle */}
@@ -338,7 +364,10 @@ export const Results: React.FC = () => {
             {searchFilter && (
               <button
                 type="button"
-                onClick={() => setSearchFilter('')}
+                onClick={() => {
+                  setSearchFilter('');
+                  setDebouncedSearch('');
+                }}
                 className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] text-charcoal-500 hover:text-charcoal-900 p-1.5 rounded-full hover:bg-cream-200 transition-colors flex items-center justify-center"
                 aria-label="Clear search"
               >
@@ -455,14 +484,78 @@ export const Results: React.FC = () => {
           </div>
         </div>
       ) : filteredSchemes.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSchemes.map((scheme) => (
-            <SchemeCard 
-              key={scheme.scheme_id} 
-              scheme={scheme} 
-              onBookmarkChange={handleBookmarkChange}
-            />
-          ))}
+        <div className="space-y-8">
+          {/* Schemes Card Grid (Paginated) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedSchemes.map((scheme) => (
+              <SchemeCard 
+                key={scheme.scheme_id} 
+                scheme={scheme} 
+                onBookmarkChange={handleBookmarkChange}
+              />
+            ))}
+          </div>
+
+          {/* Pagination Controls Bar */}
+          {totalPages > 1 && (
+            <div className="bg-white rounded-3xl p-4 sm:p-5 border border-cream-300 shadow-card flex flex-col sm:flex-row items-center justify-between gap-4">
+              
+              {/* Summary showing X - Y of Z schemes */}
+              <div className="text-xs sm:text-sm text-charcoal-600 font-medium">
+                {t('paginationShowing')} <span className="font-bold text-charcoal-900">{startIndex + 1}</span>–<span className="font-bold text-charcoal-900">{endIndex}</span> {t('paginationOf')} <span className="font-bold text-charcoal-900">{filteredSchemes.length}</span> {t('paginationSchemes')}
+              </div>
+
+              {/* Navigation buttons */}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {/* Prev Button */}
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="min-h-[40px] px-3 sm:px-4 py-2 rounded-2xl border border-cream-300 bg-cream-50 hover:bg-cream-100 disabled:opacity-40 disabled:pointer-events-none text-charcoal-700 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all active:scale-95"
+                  aria-label="Previous Page"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline">{t('paginationPrev')}</span>
+                </button>
+
+                {/* Page Number Pills */}
+                {Array.from({ length: totalPages }).map((_, idx) => {
+                  const pageNum = idx + 1;
+                  const isActive = currentPage === pageNum;
+                  return (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`min-w-[40px] min-h-[40px] rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center ${
+                        isActive
+                          ? 'bg-saffron-500 text-white shadow-sm ring-2 ring-saffron-500/30 scale-105 font-black'
+                          : 'bg-cream-50 text-charcoal-700 hover:bg-cream-200 border border-cream-200'
+                      }`}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                {/* Next Button */}
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="min-h-[40px] px-3 sm:px-4 py-2 rounded-2xl border border-cream-300 bg-cream-50 hover:bg-cream-100 disabled:opacity-40 disabled:pointer-events-none text-charcoal-700 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all active:scale-95"
+                  aria-label="Next Page"
+                >
+                  <span className="hidden sm:inline">{t('paginationNext')}</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+            </div>
+          )}
+
         </div>
       ) : (
         <div className="bg-white rounded-3xl p-10 sm:p-14 border border-cream-300 shadow-card text-center max-w-xl mx-auto space-y-6 animate-fadeIn">

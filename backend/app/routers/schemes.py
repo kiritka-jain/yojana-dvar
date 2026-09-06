@@ -5,6 +5,64 @@ from app.services.matcher import matcher_service
 router = APIRouter(tags=["Scheme Catalog"])
 
 @router.get(
+    "/schemes",
+    response_model=Dict[str, Any],
+    summary="Get all schemes from the expanded catalog with optional filtering"
+)
+@router.get(
+    "/api/v1/schemes",
+    response_model=Dict[str, Any],
+    include_in_schema=False
+)
+async def get_all_schemes(
+    state: Optional[str] = Query(default=None, description="Filter by state name"),
+    category: Optional[str] = Query(default=None, description="Filter by category"),
+    life_stage: Optional[str] = Query(default=None, description="Filter by life stage tag"),
+    limit: Optional[int] = Query(default=None, ge=1, description="Max schemes to return"),
+    offset: int = Query(default=0, ge=0, description="Offset for pagination")
+):
+    """
+    Retrieve all schemes in the catalog. Supports optional filtering by state, category, and life stage.
+    """
+    catalog = matcher_service.get_catalog()
+    state_str = state.strip().lower() if state else ""
+    cat_str = category.strip().lower() if category else ""
+    life_stage_str = life_stage.strip().lower() if life_stage else ""
+
+    filtered = []
+    for scheme in catalog:
+        if state_str:
+            scheme_state = str(scheme.get("state", "All")).strip().lower()
+            eligible_states = str(scheme.get("eligible_states", "")).lower()
+            if state_str not in scheme_state and state_str not in eligible_states and scheme_state != "all":
+                continue
+
+        if cat_str:
+            scheme_cat = str(scheme.get("category", "")).strip().lower()
+            if cat_str not in scheme_cat:
+                continue
+
+        if life_stage_str:
+            tags = str(scheme.get("life_stage_tags", "")).lower()
+            if life_stage_str not in tags:
+                continue
+
+        filtered.append(scheme)
+
+    total = len(filtered)
+    if limit is not None:
+        paginated = filtered[offset:offset + limit]
+    else:
+        paginated = filtered[offset:]
+
+    return {
+        "count": len(paginated),
+        "total": total,
+        "offset": offset,
+        "schemes": paginated
+    }
+
+@router.get(
     "/schemes/search",
     response_model=Dict[str, Any],
     summary="Search scheme catalog by keyword, state, and category"

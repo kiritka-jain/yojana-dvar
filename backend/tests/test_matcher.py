@@ -43,13 +43,13 @@ def test_state_specific_filtering(matcher):
     # UP resident should qualify for Mukhya Mantri Kanya Sumangala Yojana (Uttar Pradesh)
     profile_up = ProfileInput(age=12, gender="Female", state="Uttar Pradesh", life_stage="student")
     res_up = matcher.match_profile(profile_up)
-    up_matches = [s for s in res_up.schemes if s.scheme_id == "kanya-sumangala-up"]
+    up_matches = [s for s in res_up.schemes if s.scheme_id in ["mukhya-mantri-kanya-sumangala-yojana", "kanya-sumangala-up"]]
     assert len(up_matches) == 1
 
     # Tamil Nadu resident should NOT qualify for UP state scheme
     profile_tn = ProfileInput(age=12, gender="Female", state="Tamil Nadu", life_stage="student")
     res_tn = matcher.match_profile(profile_tn)
-    up_in_tn = [s for s in res_tn.schemes if s.scheme_id == "kanya-sumangala-up"]
+    up_in_tn = [s for s in res_tn.schemes if s.scheme_id in ["mukhya-mantri-kanya-sumangala-yojana", "kanya-sumangala-up"]]
     assert len(up_in_tn) == 0
 
 def test_life_stage_score_boost(matcher):

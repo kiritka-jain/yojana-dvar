@@ -36,6 +36,22 @@ SAMPLE_PAYLOAD_HI = {
     }
 }
 
+SAMPLE_PORTFOLIO_PAYLOAD = {
+    "profile": {
+        "state": "Delhi",
+        "age": 22,
+        "gender": "Female",
+        "caste": "General",
+        "income": 0,
+        "residence": "Urban",
+        "life_stage": "student",
+        "is_bpl": False,
+        "has_disability": False
+    },
+    "top_k": 3,
+    "language": "en"
+}
+
 def test_explain_endpoint_english():
     """Verify POST /explain returns English explanation with mandatory disclaimer."""
     response = client.post("/explain", json=SAMPLE_PAYLOAD_EN)
@@ -90,3 +106,14 @@ def test_explain_with_gemini_client_success():
             assert "expecting mother" in data["summary"]
             assert len(data["key_benefits"]) == 2
             assert "Disclaimer: Yojana Dvar" in data["disclaimer"]
+
+def test_explain_portfolio_endpoint():
+    """Verify POST /explain/portfolio returns multi-scheme summary."""
+    response = client.post("/explain/portfolio", json=SAMPLE_PORTFOLIO_PAYLOAD)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["language"] == "en"
+    assert data["top_k_count"] > 0
+    assert len(data["holistic_summary"]) > 0
+    assert len(data["action_plan"]) >= 1
+    assert "disclaimer" in data

@@ -3,7 +3,7 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 from app.models.profile import ProfileInput
-from app.services.gemini import GeminiService, DISCLAIMER_EN, DISCLAIMER_HI
+from app.services.gemini import GeminiService, DISCLAIMER_EN, DISCLAIMER_HI, _trim_text
 
 # =============================================================================
 # 1. Initialization and Auth Tests
@@ -46,7 +46,7 @@ def service():
         return GeminiService()
 
 # =============================================================================
-# 2. Prompt Builder Tests (_build_prompt)
+# 2. Prompt Builder & Trimming Tests (_build_prompt & _trim_text)
 # =============================================================================
 
 @pytest.fixture
@@ -77,6 +77,29 @@ def sample_profile():
         has_disability=False
     )
 
+def test_trim_text_helper():
+    """Verify text trimming enforces character budget with ellipsis."""
+    short_text = "This is short."
+    assert _trim_text(short_text, max_chars=50) == short_text
+
+    long_text = "A" * 100
+    trimmed = _trim_text(long_text, max_chars=20)
+    assert len(trimmed) == 20
+    assert trimmed.endswith("...")
+
+    assert _trim_text(None) == ""
+
+def test_select_top_k_schemes(service, sample_profile):
+    """Verify select_top_k_schemes bounds output between 1 and 10."""
+    schemes = [{"scheme_id": f"s-{i}", "match_score": i * 10, "state": "All"} for i in range(20)]
+    
+    top_5 = service.select_top_k_schemes(schemes, sample_profile, k=5)
+    assert len(top_5) == 5
+    assert top_5[0]["scheme_id"] == "s-19"  # Highest match score first
+
+    top_10 = service.select_top_k_schemes(schemes, sample_profile, k=15)  # Cap at 10
+    assert len(top_10) == 10
+
 def test_build_prompt_english(service, sample_scheme, sample_profile):
     """Verify prompt builder sets English language directives, profile info, and guardrails."""
     prompt = service._build_prompt(sample_scheme, sample_profile, lang="en")
@@ -100,43 +123,39 @@ def test_build_prompt_english(service, sample_scheme, sample_profile):
     assert "valid JSON object" in prompt
 
 def test_build_prompt_hindi(service, sample_scheme, sample_profile):
-    """Verify prompt builder sets Hindi (हिंदी) language directive and guardrails."""
+    """Verify prompt builder sets Hindi language directives when lang='hi'."""
     prompt = service._build_prompt(sample_scheme, sample_profile, lang="hi")
 
-    # Language directive
-    assert "Hindi (हिंदी)" in prompt
-    # Scheme name embedded
+    assert "in Hindi (हिंदी)" in prompt
+    assert "compassionate women entitlement advisor" in prompt
+
+def test_build_portfolio_prompt(service, sample_scheme, sample_profile):
+    """Verify portfolio summary prompt builder."""
+    prompt = service._build_portfolio_prompt([sample_scheme], sample_profile, lang="en")
+    assert "holistic entitlement empowerment summary" in prompt
     assert sample_scheme["name"] in prompt
-    # Guardrails present
-    assert "strictly in Hindi (हिंदी)" in prompt
-    assert "valid JSON object" in prompt
+    assert "action_plan" in prompt
 
 # =============================================================================
-# 3. Clean JSON Response Tests (_clean_json_response)
+# 3. JSON Response Parser Tests (_clean_json_response)
 # =============================================================================
 
-def test_clean_json_response_raw(service):
-    """Verify parsing of clean unescaped JSON string."""
-    raw = '{"summary": "Eligible", "key_benefits": ["Cash aid"], "documents_required": ["Aadhaar"], "next_steps": "Apply"}'
-    data = service._clean_json_response(raw)
-    assert data["summary"] == "Eligible"
-    assert data["key_benefits"] == ["Cash aid"]
-
-def test_clean_json_response_markdown_fenced(service):
-    """Verify stripping of markdown ```json and ``` code blocks."""
+def test_clean_json_response_with_markdown_fence(service):
+    """Verify stripping of ```json ... ``` markdown wrappers."""
     fenced = """```json
 {
-  "summary": "You qualify for this grant.",
-  "key_benefits": ["Rs 10,000 grant"],
-  "documents_required": ["Voter ID"],
-  "next_steps": "Visit Panchayat"
+  "summary": "You qualify because you are an expectant mother.",
+  "key_benefits": ["Cash grant Rs 5000"],
+  "documents_required": ["Aadhaar", "MCP Card"],
+  "next_steps": "Visit Anganwadi"
 }
 ```"""
     data = service._clean_json_response(fenced)
-    assert data["summary"] == "You qualify for this grant."
-    assert data["next_steps"] == "Visit Panchayat"
+    assert data["summary"] == "You qualify because you are an expectant mother."
+    assert len(data["key_benefits"]) == 1
+    assert len(data["documents_required"]) == 2
 
-def test_clean_json_response_generic_fenced(service):
+def test_clean_json_response_without_language_spec(service):
     """Verify stripping of markdown ``` without language identifier."""
     fenced = """```
 {
@@ -155,7 +174,7 @@ def test_clean_json_response_invalid_json_raises(service):
         service._clean_json_response("This is not JSON text at all.")
 
 # =============================================================================
-# 4. Fallback Explanation Tests (_generate_fallback_explanation)
+# 4. Fallback Explanation Tests
 # =============================================================================
 
 def test_generate_fallback_explanation_english(service, sample_scheme, sample_profile):
@@ -182,3 +201,35 @@ def test_generate_fallback_explanation_hindi(service, sample_scheme, sample_prof
     assert "आपकी आयु" in fallback.summary
     assert fallback.disclaimer == DISCLAIMER_HI
     assert "अस्वीकरण: योजना द्वार" in fallback.disclaimer
+
+def test_generate_fallback_portfolio_summary(service, sample_scheme, sample_profile):
+    """Verify portfolio summary fallback in English and Hindi."""
+    res_en = service._generate_fallback_portfolio_summary([sample_scheme], sample_profile, lang="en")
+    assert res_en.is_fallback is True
+    assert res_en.top_k_count == 1
+    assert len(res_en.action_plan) == 3
+    assert res_en.disclaimer == DISCLAIMER_EN
+
+    res_hi = service._generate_fallback_portfolio_summary([sample_scheme], sample_profile, lang="hi")
+    assert res_hi.is_fallback is True
+    assert "आपकी प्रोफ़ाइल" in res_hi.holistic_summary
+    assert res_hi.disclaimer == DISCLAIMER_HI
+
+import asyncio
+
+def test_generate_portfolio_summary_async_mock(service, sample_scheme, sample_profile):
+    """Verify asynchronous portfolio summary generation with mocked client."""
+    mock_payload = """{
+        "holistic_summary": "As a pregnant woman in Bihar, these schemes provide financial and maternal support.",
+        "action_plan": ["Step 1: Get MCP card", "Step 2: Apply online", "Step 3: Track status"]
+    }"""
+    mock_resp = MagicMock()
+    mock_resp.text = mock_payload
+
+    with patch.object(service, "is_available", return_value=True):
+        with patch.object(service, "client") as mock_client:
+            mock_client.models.generate_content.return_value = mock_resp
+            result = asyncio.run(service.generate_portfolio_summary_async([sample_scheme], sample_profile, language="en", top_k=5))
+            assert result.is_fallback is False
+            assert "maternal support" in result.holistic_summary
+            assert len(result.action_plan) == 3

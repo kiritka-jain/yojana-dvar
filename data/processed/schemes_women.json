@@ -25,7 +25,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.319660+00:00"
+    "updated_at": "2026-09-06T08:38:45.985676+00:00"
   },
   {
     "scheme_id": "gaura-devi-kanya-dhan-yojana",
@@ -53,7 +53,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.320312+00:00"
+    "updated_at": "2026-09-06T08:38:45.986295+00:00"
   },
   {
     "scheme_id": "griha-aadhar-scheme",
@@ -81,7 +81,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.320435+00:00"
+    "updated_at": "2026-09-06T08:38:45.986409+00:00"
   },
   {
     "scheme_id": "gruha-lakshmi-scheme",
@@ -109,7 +109,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.317981+00:00"
+    "updated_at": "2026-09-06T08:38:45.984000+00:00"
   },
   {
     "scheme_id": "indira-gandhi-national-widow-pension-scheme",
@@ -137,7 +137,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.315944+00:00"
+    "updated_at": "2026-09-06T08:38:45.982108+00:00"
   },
   {
     "scheme_id": "ignwps-pension",
@@ -165,7 +165,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.320870+00:00"
+    "updated_at": "2026-09-06T08:38:45.986901+00:00"
   },
   {
     "scheme_id": "kanya-sumangala-mukhyamantri-kanya-vivah-yojana",
@@ -193,7 +193,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.320009+00:00"
+    "updated_at": "2026-09-06T08:38:45.986009+00:00"
   },
   {
     "scheme_id": "kanyashree-prakalpa",
@@ -221,7 +221,7 @@
     "requires_disability": true,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.317548+00:00"
+    "updated_at": "2026-09-06T08:38:45.983600+00:00"
   },
   {
     "scheme_id": "kudumbashree-women-empowerment-livelihood-mission",
@@ -249,7 +249,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.318486+00:00"
+    "updated_at": "2026-09-06T08:38:45.984544+00:00"
   },
   {
     "scheme_id": "mahalakshmi-scheme",
@@ -277,7 +277,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.318169+00:00"
+    "updated_at": "2026-09-06T08:38:45.984175+00:00"
   },
   {
     "scheme_id": "mahila-samman-savings-certificate",
@@ -305,7 +305,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.316490+00:00"
+    "updated_at": "2026-09-06T08:38:45.982559+00:00"
   },
   {
     "scheme_id": "hf-scheme-002",
@@ -333,7 +333,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.321134+00:00"
+    "updated_at": "2026-09-06T08:38:45.987173+00:00"
   },
   {
     "scheme_id": "maiya-samman-yojana",
@@ -361,7 +361,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.319829+00:00"
+    "updated_at": "2026-09-06T08:38:45.985838+00:00"
   },
   {
     "scheme_id": "mission-shakti-odisha",
@@ -389,7 +389,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.319072+00:00"
+    "updated_at": "2026-09-06T08:38:45.985113+00:00"
   },
   {
     "scheme_id": "moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme",
@@ -417,7 +417,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.317420+00:00"
+    "updated_at": "2026-09-06T08:38:45.983479+00:00"
   },
   {
     "scheme_id": "mukhya-mantri-kanya-sumangala-yojana",
@@ -445,7 +445,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.317239+00:00"
+    "updated_at": "2026-09-06T08:38:45.983296+00:00"
   },
   {
     "scheme_id": "mukhyamantri-chiranjeevi-swasthya-bima-yojana",
@@ -473,7 +473,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"maternal\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.318907+00:00"
+    "updated_at": "2026-09-06T08:38:45.984955+00:00"
   },
   {
     "scheme_id": "mukhyamantri-kanya-utthan-yojana",
@@ -501,7 +501,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.318695+00:00"
+    "updated_at": "2026-09-06T08:38:45.984752+00:00"
   },
   {
     "scheme_id": "mukhyamantri-ladli-behna-yojana",
@@ -529,7 +529,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"senior\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.317664+00:00"
+    "updated_at": "2026-09-06T08:38:45.983706+00:00"
   },
   {
     "scheme_id": "mukhyamantri-mahila-samman-yojana",
@@ -557,7 +557,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.320158+00:00"
+    "updated_at": "2026-09-06T08:38:45.986152+00:00"
   },
   {
     "scheme_id": "mukhyamantri-mahila-utkarsh-yojana",
@@ -585,7 +585,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.319210+00:00"
+    "updated_at": "2026-09-06T08:38:45.985245+00:00"
   },
   {
     "scheme_id": "mukhyamantri-majhi-ladki-bahin-yojana",
@@ -613,7 +613,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.317772+00:00"
+    "updated_at": "2026-09-06T08:38:45.983805+00:00"
   },
   {
     "scheme_id": "orunodoi-20-scheme",
@@ -641,7 +641,7 @@
     "requires_disability": true,
     "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.319495+00:00"
+    "updated_at": "2026-09-06T08:38:45.985518+00:00"
   },
   {
     "scheme_id": "pm-street-vendors-atmanirbhar-nidhi",
@@ -669,7 +669,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.317066+00:00"
+    "updated_at": "2026-09-06T08:38:45.983125+00:00"
   },
   {
     "scheme_id": "post-graduate-indira-gandhi-scholarship-for-single-girl-child",
@@ -697,7 +697,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.316875+00:00"
+    "updated_at": "2026-09-06T08:38:45.982933+00:00"
   },
   {
     "scheme_id": "hf-scheme-001",
@@ -725,7 +725,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.321093+00:00"
+    "updated_at": "2026-09-06T08:38:45.987132+00:00"
   },
   {
     "scheme_id": "pradhan-mantri-matru-vandana-yojana",
@@ -753,7 +753,7 @@
     "requires_disability": true,
     "life_stage_tags": "[\"maternal\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.314735+00:00"
+    "updated_at": "2026-09-06T08:38:45.980998+00:00"
   },
   {
     "scheme_id": "pmmvy-central",
@@ -781,7 +781,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"maternal\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.320632+00:00"
+    "updated_at": "2026-09-06T08:38:45.986661+00:00"
   },
   {
     "scheme_id": "pradhan-mantri-ujjwala-yojana",
@@ -809,7 +809,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.316132+00:00"
+    "updated_at": "2026-09-06T08:38:45.982266+00:00"
   },
   {
     "scheme_id": "standup-india-women",
@@ -837,7 +837,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.320816+00:00"
+    "updated_at": "2026-09-06T08:38:45.986846+00:00"
   },
   {
     "scheme_id": "stand-up-india-scheme-for-women-entrepreneurs",
@@ -865,7 +865,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.315809+00:00"
+    "updated_at": "2026-09-06T08:38:45.981972+00:00"
   },
   {
     "scheme_id": "sukanya-samriddhi-yojana",
@@ -893,7 +893,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.315454+00:00"
+    "updated_at": "2026-09-06T08:38:45.981629+00:00"
   },
   {
     "scheme_id": "ssy-central",
@@ -921,7 +921,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.320694+00:00"
+    "updated_at": "2026-09-06T08:38:45.986723+00:00"
   },
   {
     "scheme_id": "support-to-training-and-employment-programme-for-women",
@@ -949,7 +949,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.315629+00:00"
+    "updated_at": "2026-09-06T08:38:45.981792+00:00"
   },
   {
     "scheme_id": "step-central",
@@ -977,7 +977,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.320757+00:00"
+    "updated_at": "2026-09-06T08:38:45.986786+00:00"
   },
   {
     "scheme_id": "working-women-hostel-scheme",
@@ -1005,7 +1005,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\", \"senior\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.316685+00:00"
+    "updated_at": "2026-09-06T08:38:45.982746+00:00"
   },
   {
     "scheme_id": "hf-scheme-003",
@@ -1033,7 +1033,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\", \"entrepreneur\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.321173+00:00"
+    "updated_at": "2026-09-06T08:38:45.987213+00:00"
   },
   {
     "scheme_id": "ysr-cheyutha-scheme",
@@ -1061,6 +1061,6 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-05T18:35:03.319344+00:00"
+    "updated_at": "2026-09-06T08:38:45.985374+00:00"
   }
 ]

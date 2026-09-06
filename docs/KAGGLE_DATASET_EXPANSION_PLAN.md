@@ -221,10 +221,10 @@ flowchart TD
 - [x] Ticket 3.1: Deduplicate & export data/processed/schemes_women.json
 - [x] Ticket 3.2: Load into BigQuery schemes_women table
 - [x] Ticket 3.3: Run dataset integrity tests
-- [ ] Ticket 4.1: Sync backend local cache
-- [ ] Ticket 4.2: Verify matcher response time (< 50ms)
-- [ ] Ticket 4.3: Validate Gemini Top-K AI explanation
-- [ ] Ticket 5.1: Verify frontend pagination & rendering performance
+- [x] Ticket 4.1: Sync backend local cache
+- [x] Ticket 4.2: Verify matcher response time (< 50ms)
+- [x] Ticket 4.3: Validate Gemini Top-K AI explanation
+- [x] Ticket 5.1: Verify frontend pagination & rendering performance
 - [ ] Ticket 5.2: Verify 28 States & 8 UTs filtering
 - [ ] Ticket 5.3: Update homepage stats & data attribution
 ```
