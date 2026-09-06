@@ -144,7 +144,7 @@ const DEFAULT_PROFILE: ProfileInput = {
   caste: 'General',
   income: 120000,
   residence: 'Rural',
-  life_stage: 'maternal',
+  life_stage: 'all',
   occupation: '',
   education: '',
   is_bpl: false,
