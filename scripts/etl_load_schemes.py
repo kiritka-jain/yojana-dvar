@@ -799,6 +799,204 @@ def transform_json_record(item: dict) -> dict:
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }
 
+def merge_scheme_records(existing: dict, incoming: dict) -> dict:
+    """
+    Intelligently merges two scheme records sharing the same scheme_id (Ticket 3.1).
+    Applies field-specific conflict resolution rules:
+      - Narratives: selects longer, more comprehensive text.
+      - Ministry/Department/Category: prefers specific names over generic defaults.
+      - URLs: prefers valid HTTPS/HTTP URLs over empty/placeholder strings.
+      - Tags & Lists: unions life_stage_tags and caste_categories; deduplicates eligible_states.
+      - Bounds: preserves tightest valid age and income caps.
+      - Booleans: applies logical OR for welfare constraints (requires_bpl, requires_disability).
+    """
+    merged = dict(existing)
+
+    # 1. Names and Core Identifiers
+    if not merged.get("name") and incoming.get("name"):
+        merged["name"] = incoming["name"]
+
+    # 2. Narrative Fields (Prefer longer, more informative content)
+    narrative_fields = [
+        "description", "eligibility_text", "benefits",
+        "documents_required", "application_process"
+    ]
+    for field in narrative_fields:
+        ex_val = str(existing.get(field) or "").strip()
+        inc_val = str(incoming.get(field) or "").strip()
+        if len(inc_val) > len(ex_val):
+            merged[field] = inc_val
+        else:
+            merged[field] = ex_val
+
+    # 3. Ministry, Department, Category, Beneficiary Type (Prefer specific over generic defaults)
+    generic_values = {
+        "government of india", "central government", "department of social welfare",
+        "social welfare & empowerment", "general welfare", "welfare",
+        "women & girls", "women", "all", ""
+    }
+    org_fields = ["ministry", "department", "category", "beneficiary_type"]
+    for field in org_fields:
+        ex_val = str(existing.get(field) or "").strip()
+        inc_val = str(incoming.get(field) or "").strip()
+        ex_is_generic = ex_val.lower() in generic_values
+        inc_is_generic = inc_val.lower() in generic_values
+
+        if ex_is_generic and not inc_is_generic:
+            merged[field] = inc_val
+        elif not ex_is_generic and inc_is_generic:
+            merged[field] = ex_val
+        else:
+            # Both specific or both generic: pick longer string
+            merged[field] = inc_val if len(inc_val) > len(ex_val) else ex_val
+
+    # 4. URLs (Prefer valid http/https URLs)
+    url_fields = ["apply_url", "official_url"]
+    for field in url_fields:
+        ex_url = str(existing.get(field) or "").strip()
+        inc_url = str(incoming.get(field) or "").strip()
+        ex_valid = ex_url.startswith("http://") or ex_url.startswith("https://")
+        inc_valid = inc_url.startswith("http://") or inc_url.startswith("https://")
+
+        if not ex_valid and inc_valid:
+            merged[field] = inc_url
+        elif ex_valid and not inc_valid:
+            merged[field] = ex_url
+        elif inc_valid and ex_valid:
+            merged[field] = inc_url if len(inc_url) > len(ex_url) else ex_url
+        else:
+            merged[field] = inc_url or ex_url
+
+    # 5. Geography & States
+    ex_state = str(existing.get("state") or "All").strip()
+    inc_state = str(incoming.get("state") or "All").strip()
+    if ex_state.lower() in ["all", "central"] and inc_state.lower() not in ["all", "central", ""]:
+        merged["state"] = inc_state
+    else:
+        merged["state"] = ex_state
+
+    # Eligible states list union
+    try:
+        ex_states = json.loads(existing.get("eligible_states", '["All"]')) if isinstance(existing.get("eligible_states"), str) else existing.get("eligible_states", ["All"])
+    except Exception:
+        ex_states = ["All"]
+    try:
+        inc_states = json.loads(incoming.get("eligible_states", '["All"]')) if isinstance(incoming.get("eligible_states"), str) else incoming.get("eligible_states", ["All"])
+    except Exception:
+        inc_states = ["All"]
+    
+    combined_states = list(set([s for s in ex_states + inc_states if s and s != "All"]))
+    merged["eligible_states"] = json.dumps(combined_states if combined_states else ["All"])
+
+    # 6. Caste Categories Union
+    try:
+        ex_caste = json.loads(existing.get("caste_categories", '["All"]')) if isinstance(existing.get("caste_categories"), str) else existing.get("caste_categories", ["All"])
+    except Exception:
+        ex_caste = ["All"]
+    try:
+        inc_caste = json.loads(incoming.get("caste_categories", '["All"]')) if isinstance(incoming.get("caste_categories"), str) else incoming.get("caste_categories", ["All"])
+    except Exception:
+        inc_caste = ["All"]
+    
+    if ex_caste == ["All"] and inc_caste != ["All"]:
+        final_caste = inc_caste
+    elif inc_caste == ["All"] and ex_caste != ["All"]:
+        final_caste = ex_caste
+    elif ex_caste == ["All"] and inc_caste == ["All"]:
+        final_caste = ["All"]
+    else:
+        final_caste = sorted(list(set(ex_caste + inc_caste)))
+    merged["caste_categories"] = json.dumps(final_caste)
+
+    # 7. Life Stage Tags Union
+    try:
+        ex_tags = json.loads(existing.get("life_stage_tags", '["general"]')) if isinstance(existing.get("life_stage_tags"), str) else existing.get("life_stage_tags", ["general"])
+    except Exception:
+        ex_tags = ["general"]
+    try:
+        inc_tags = json.loads(incoming.get("life_stage_tags", '["general"]')) if isinstance(incoming.get("life_stage_tags"), str) else incoming.get("life_stage_tags", ["general"])
+    except Exception:
+        inc_tags = ["general"]
+
+    combined_tags = sorted(list(set([t for t in ex_tags + inc_tags if t in CANONICAL_LIFE_STAGES])))
+    if not combined_tags:
+        combined_tags = ["general"]
+    merged["life_stage_tags"] = json.dumps(combined_tags)
+
+    # 8. Age Bounds (Tighter bound reconciliation)
+    ex_min = clean_int(existing.get("age_min"), 0)
+    inc_min = clean_int(incoming.get("age_min"), 0)
+    ex_max = clean_int(existing.get("age_max"), 100)
+    inc_max = clean_int(incoming.get("age_max"), 100)
+
+    # Min age: tighter is higher non-zero
+    if ex_min > 0 and inc_min > 0:
+        new_min = max(ex_min, inc_min)
+    else:
+        new_min = ex_min if ex_min > 0 else inc_min
+
+    # Max age: tighter is lower non-default
+    if ex_max < 100 and inc_max < 100:
+        new_max = min(ex_max, inc_max)
+    else:
+        new_max = ex_max if ex_max < 100 else inc_max
+
+    if new_min <= new_max:
+        merged["age_min"] = new_min
+        merged["age_max"] = new_max
+    else:
+        # Fall back to existing bounds if conflicting tighter bounds cross over
+        merged["age_min"] = ex_min
+        merged["age_max"] = ex_max
+
+    # 9. Income Cap (Tighter bound reconciliation)
+    ex_inc = clean_int(existing.get("income_max"), 0)
+    inc_inc = clean_int(incoming.get("income_max"), 0)
+    if ex_inc > 0 and inc_inc > 0:
+        merged["income_max"] = min(ex_inc, inc_inc)
+    else:
+        merged["income_max"] = ex_inc if ex_inc > 0 else inc_inc
+
+    # 10. Residence Type
+    ex_res = str(existing.get("residence") or "All").strip()
+    inc_res = str(incoming.get("residence") or "All").strip()
+    if ex_res.lower() == "all" and inc_res.lower() in ["rural", "urban"]:
+        merged["residence"] = inc_res
+    else:
+        merged["residence"] = ex_res
+
+    # 11. Boolean Flags (Logical OR for eligibility requirements)
+    merged["requires_bpl"] = clean_bool(existing.get("requires_bpl"), False) or clean_bool(incoming.get("requires_bpl"), False)
+    merged["requires_disability"] = clean_bool(existing.get("requires_disability"), False) or clean_bool(incoming.get("requires_disability"), False)
+    merged["is_active"] = clean_bool(existing.get("is_active", True), True) and clean_bool(incoming.get("is_active", True), True)
+
+    # 12. Timestamp
+    merged["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    return merged
+
+def merge_and_deduplicate_schemes(records: list) -> list:
+    """
+    Deduplicates a list of transformed scheme records by scheme_id, applying
+    intelligent field conflict resolution via merge_scheme_records (Ticket 3.1).
+    """
+    schemes_by_id = {}
+    collision_count = 0
+
+    for rec in records:
+        sid = rec.get("scheme_id")
+        if not sid:
+            continue
+        if sid not in schemes_by_id:
+            schemes_by_id[sid] = rec
+        else:
+            schemes_by_id[sid] = merge_scheme_records(schemes_by_id[sid], rec)
+            collision_count += 1
+
+    deduplicated = sorted(list(schemes_by_id.values()), key=lambda x: x.get("name", ""))
+    print(f"✓ Deduplicated {len(records)} records into {len(deduplicated)} unique schemes ({collision_count} merge collision(s) resolved)")
+    return deduplicated
+
 def load_raw_data() -> list:
     """Reads raw datasets from local data/raw/ directory."""
     raw_records = []
@@ -847,7 +1045,7 @@ def load_raw_data() -> list:
 
 def main():
     print("==================================================")
-    print("Yojana Dvar — Ticket 2.1, 2.2 & 2.3 ETL Ingestion Pipeline")
+    print("Yojana Dvar — Ticket 3.1 Deduplication & Ingestion Pipeline")
     print("==================================================")
     
     os.makedirs(DATA_PROCESSED_DIR, exist_ok=True)
@@ -856,8 +1054,8 @@ def main():
     total_raw = len(raw_pairs)
     print(f"Total raw records loaded: {total_raw}")
     
-    # Filter for Women relevance & Deduplicate
-    women_schemes_map = {}
+    # Filter for Women relevance
+    relevant_schemes = []
     filtered_out_count = 0
     classification_diagnostics = []
     
@@ -869,19 +1067,19 @@ def main():
         best_res = raw_res if raw_res["confidence_score"] >= trans_res["confidence_score"] else trans_res
 
         if is_rel:
-            scheme_id = transformed["scheme_id"]
-            if scheme_id not in women_schemes_map or len(transformed["description"]) > len(women_schemes_map[scheme_id]["description"]):
-                women_schemes_map[scheme_id] = transformed
-                classification_diagnostics.append((transformed["name"], best_res))
+            relevant_schemes.append(transformed)
+            classification_diagnostics.append((transformed["name"], best_res))
         else:
             filtered_out_count += 1
             
-    final_schemes = list(women_schemes_map.values())
+    # Deduplicate and merge conflicts (Ticket 3.1)
+    final_schemes = merge_and_deduplicate_schemes(relevant_schemes)
     
     print("\nETL Execution Summary:")
     print(f"  - Total Raw Input Records:     {total_raw}")
     print(f"  - Filtered Non-Women Schemes:  {filtered_out_count}")
-    print(f"  - Deduplicated Women Catalog:  {len(final_schemes)}")
+    print(f"  - Relevant Women Records:      {len(relevant_schemes)}")
+    print(f"  - Deduplicated Final Catalog:  {len(final_schemes)}")
     if classification_diagnostics:
         avg_conf = round(sum(d[1]["confidence_score"] for d in classification_diagnostics) / len(classification_diagnostics), 2)
         print(f"  - Avg Relevancy Confidence:    {avg_conf * 100:.1f}%")
@@ -917,7 +1115,7 @@ def main():
         print(f"✓ Saved processed CSV catalog:  {out_csv_path}")
 
     print("==================================================")
-    print("✓ Ticket 2.3 Life-Stage Classifier & ETL Complete!")
+    print("✓ Ticket 3.1 Deduplication & ETL Pipeline Complete!")
     print("==================================================")
 
 if __name__ == "__main__":

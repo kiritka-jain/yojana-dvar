@@ -218,8 +218,8 @@ flowchart TD
 - [x] Ticket 2.2: Implement Women-relevancy filter logic
 - [x] Ticket 2.3: Implement life-stage classifier & tagging
 - [x] Ticket 2.4: Implement eligibility constraints normalizer
-- [ ] Ticket 3.1: Deduplicate & export data/processed/schemes_women.json
-- [ ] Ticket 3.2: Load into BigQuery schemes_women table
+- [x] Ticket 3.1: Deduplicate & export data/processed/schemes_women.json
+- [x] Ticket 3.2: Load into BigQuery schemes_women table
 - [ ] Ticket 3.3: Run dataset integrity tests
 - [ ] Ticket 4.1: Sync backend local cache
 - [ ] Ticket 4.2: Verify matcher response time (< 50ms)
