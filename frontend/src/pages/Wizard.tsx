@@ -70,6 +70,22 @@ export const isOccupationAllowed = (occValue: string, age: number): boolean => {
   return true;
 };
 
+export const EDUCATION_AGE_THRESHOLDS: Record<string, number> = {
+  Primary: 5,
+  Secondary: 14,
+  'Higher Secondary': 16,
+  Undergraduate: 18,
+  Postgraduate: 21,
+};
+
+export const isEducationAllowed = (eduValue: string, age: number): boolean => {
+  const minAge = EDUCATION_AGE_THRESHOLDS[eduValue];
+  if (minAge !== undefined) {
+    return age >= minAge;
+  }
+  return true;
+};
+
 interface FormErrors {
   state?: string;
   age?: string;
@@ -257,6 +273,10 @@ export const Wizard: React.FC = () => {
       // Age-gate occupation (Ticket YD-BUG-2.1)
       if (updated.occupation && !isOccupationAllowed(updated.occupation, clampedAge)) {
         updated.occupation = '';
+      }
+      // Age-gate education (Ticket YD-BUG-2.2)
+      if (updated.education && !isEducationAllowed(updated.education, clampedAge)) {
+        updated.education = '';
       }
       return updated;
     });
@@ -978,7 +998,7 @@ export const Wizard: React.FC = () => {
                     className="w-full min-h-[48px] p-3 rounded-2xl border border-cream-300 bg-cream-50/60 text-charcoal-900 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-saffron-500 focus:outline-none transition-colors"
                   >
                     <option value="">-- {language === 'hi' ? 'शिक्षा स्तर चुनें (वैकल्पिक)' : 'Select Education Level (Optional)'} --</option>
-                    {EDUCATION_OPTIONS.map((edu) => (
+                    {EDUCATION_OPTIONS.filter((edu) => isEducationAllowed(edu.value, profile.age)).map((edu) => (
                       <option key={edu.value} value={edu.value}>
                         {language === 'hi' ? edu.labelHi : edu.labelEn}
                       </option>
