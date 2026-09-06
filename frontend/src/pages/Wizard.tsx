@@ -60,6 +60,16 @@ export const isLifeStageAllowed = (stageKey: string, age: number): { allowed: bo
   return { allowed: true };
 };
 
+export const isOccupationAllowed = (occValue: string, age: number): boolean => {
+  if (['Homemaker', 'Self-Employed / Artisan', 'Agricultural / Farmer', 'Daily Wage Labor', 'Salaried'].includes(occValue)) {
+    return age >= 16;
+  }
+  if (occValue === 'Student') {
+    return age >= 6;
+  }
+  return true;
+};
+
 interface FormErrors {
   state?: string;
   age?: string;
@@ -243,6 +253,10 @@ export const Wizard: React.FC = () => {
       }
       if (clampedAge < 60 && updated.life_stage === 'senior') {
         updated.life_stage = 'all';
+      }
+      // Age-gate occupation (Ticket YD-BUG-2.1)
+      if (updated.occupation && !isOccupationAllowed(updated.occupation, clampedAge)) {
+        updated.occupation = '';
       }
       return updated;
     });
@@ -945,7 +959,7 @@ export const Wizard: React.FC = () => {
                     className="w-full min-h-[48px] p-3 rounded-2xl border border-cream-300 bg-cream-50/60 text-charcoal-900 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-saffron-500 focus:outline-none transition-colors"
                   >
                     <option value="">-- {language === 'hi' ? 'व्यवसाय चुनें (वैकल्पिक)' : 'Select Occupation (Optional)'} --</option>
-                    {OCCUPATION_OPTIONS.map((occ) => (
+                    {OCCUPATION_OPTIONS.filter((occ) => isOccupationAllowed(occ.value, profile.age)).map((occ) => (
                       <option key={occ.value} value={occ.value}>
                         {language === 'hi' ? occ.labelHi : occ.labelEn}
                       </option>
