@@ -220,7 +220,7 @@ flowchart TD
 - [x] Ticket 2.4: Implement eligibility constraints normalizer
 - [x] Ticket 3.1: Deduplicate & export data/processed/schemes_women.json
 - [x] Ticket 3.2: Load into BigQuery schemes_women table
-- [ ] Ticket 3.3: Run dataset integrity tests
+- [x] Ticket 3.3: Run dataset integrity tests
 - [ ] Ticket 4.1: Sync backend local cache
 - [ ] Ticket 4.2: Verify matcher response time (< 50ms)
 - [ ] Ticket 4.3: Validate Gemini Top-K AI explanation
