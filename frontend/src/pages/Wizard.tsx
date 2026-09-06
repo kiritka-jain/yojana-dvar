@@ -86,6 +86,16 @@ export const isEducationAllowed = (eduValue: string, age: number): boolean => {
   return true;
 };
 
+export const getAlignedOccupationForLifeStage = (stageKey: string, age: number): string | undefined => {
+  if (stageKey === 'student' && isOccupationAllowed('Student', age)) {
+    return 'Student';
+  }
+  if (stageKey === 'entrepreneur' && isOccupationAllowed('Self-Employed / Artisan', age)) {
+    return 'Self-Employed / Artisan';
+  }
+  return undefined;
+};
+
 interface FormErrors {
   state?: string;
   age?: string;
@@ -798,7 +808,12 @@ export const Wizard: React.FC = () => {
                       disabled={isDisabled}
                       onClick={() => {
                         if (!isDisabled) {
-                          setProfile({ ...profile, life_stage: ls.val });
+                          const alignedOccupation = getAlignedOccupationForLifeStage(ls.val, profile.age);
+                          setProfile((prev) => ({
+                            ...prev,
+                            life_stage: ls.val,
+                            ...(alignedOccupation ? { occupation: alignedOccupation } : {})
+                          }));
                         }
                       }}
                       aria-disabled={isDisabled}
@@ -985,6 +1000,16 @@ export const Wizard: React.FC = () => {
                       </option>
                     ))}
                   </select>
+                  {profile.life_stage === 'student' && profile.occupation && !['Student', 'Other', ''].includes(profile.occupation) && (
+                    <p className="text-[11px] text-amber-700 font-medium flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                      <span>
+                        {language === 'hi' 
+                          ? 'ध्यान दें: आपने "छात्रा / उच्च शिक्षा" परिस्थिति चुनी है।' 
+                          : 'Note: You have selected the Student life stage.'}
+                      </span>
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
