@@ -160,6 +160,7 @@ export interface TranslationDictionary {
   fieldEducation: string;
   optionalDetailsTitle: string;
   optionalDetailsSubtitle: string;
+  ageResetNotice: string;
 
   // Wizard Submit & Actions
   wizardEdit: string;
@@ -482,6 +483,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldEducation: "Highest Education Level",
     optionalDetailsTitle: "Additional Profile Details (Optional)",
     optionalDetailsSubtitle: "Helps discover tailored student scholarships & self-employment schemes",
+    ageResetNotice: "Options automatically adjusted to match your age.",
 
     wizardEdit: "Edit",
     wizardSubmitBtn: "Find My Schemes",
@@ -800,6 +802,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldEducation: "उच्चतम शिक्षा स्तर",
     optionalDetailsTitle: "अतिरिक्त विवरण (वैकल्पिक)",
     optionalDetailsSubtitle: "छात्रा व स्वरोजगार योजनाओं के सटीक मिलान के लिए",
+    ageResetNotice: "आपकी आयु के अनुसार विकल्प स्वतः समायोजित किए गए हैं।",
 
     wizardEdit: "बदलें",
     wizardSubmitBtn: "मेरी पात्र योजनाएं देखें",

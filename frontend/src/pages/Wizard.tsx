@@ -96,6 +96,41 @@ export const getAlignedOccupationForLifeStage = (stageKey: string, age: number):
   return undefined;
 };
 
+export interface ProfileReconciliationResult {
+  sanitized: ProfileInput;
+  resetReasons: string[];
+}
+
+export const reconcileProfileForAge = (
+  newAge: number,
+  currentProfile: ProfileInput
+): ProfileReconciliationResult => {
+  const clampedAge = Math.min(100, Math.max(0, newAge));
+  const sanitized: ProfileInput = { ...currentProfile, age: clampedAge };
+  const resetReasons: string[] = [];
+
+  // Age-gate life stages (Ticket YD-BUG-1.1 - 1.4)
+  const lifeStageCheck = isLifeStageAllowed(sanitized.life_stage, clampedAge);
+  if (!lifeStageCheck.allowed && sanitized.life_stage !== 'all') {
+    sanitized.life_stage = 'all';
+    resetReasons.push('life_stage');
+  }
+
+  // Age-gate occupation (Ticket YD-BUG-2.1)
+  if (sanitized.occupation && !isOccupationAllowed(sanitized.occupation, clampedAge)) {
+    sanitized.occupation = '';
+    resetReasons.push('occupation');
+  }
+
+  // Age-gate education (Ticket YD-BUG-2.2)
+  if (sanitized.education && !isEducationAllowed(sanitized.education, clampedAge)) {
+    sanitized.education = '';
+    resetReasons.push('education');
+  }
+
+  return { sanitized, resetReasons };
+};
+
 interface FormErrors {
   state?: string;
   age?: string;
@@ -133,6 +168,7 @@ export const Wizard: React.FC = () => {
 
   // Field validation errors
   const [errors, setErrors] = useState<FormErrors>({});
+  const [resetNotice, setResetNotice] = useState<string | null>(null);
 
   // Demographic Profile State
   const [profile, setProfile] = useState<ProfileInput>({ ...DEFAULT_PROFILE });
@@ -268,29 +304,18 @@ export const Wizard: React.FC = () => {
     { num: 3, title: t('wizardStep3Title'), icon: <HeartHandshake className="w-4 h-4" /> },
   ];
 
-  // Handle age updates with validation & reactive state reconciliation
+  // Handle age updates with validation & reactive state reconciliation (Ticket YD-BUG-3.1)
   const handleAgeChange = (newAge: number) => {
-    const clampedAge = Math.min(100, Math.max(0, newAge));
-    setProfile((prev) => {
-      const updated = { ...prev, age: clampedAge };
-      // Age-gate life stages (Tickets YD-BUG-1.1, YD-BUG-1.2, YD-BUG-1.3, YD-BUG-1.4)
-      if (clampedAge < 18 && (updated.life_stage === 'maternal' || updated.life_stage === 'entrepreneur')) {
-        updated.life_stage = 'all';
-      }
-      if (clampedAge < 60 && updated.life_stage === 'senior') {
-        updated.life_stage = 'all';
-      }
-      // Age-gate occupation (Ticket YD-BUG-2.1)
-      if (updated.occupation && !isOccupationAllowed(updated.occupation, clampedAge)) {
-        updated.occupation = '';
-      }
-      // Age-gate education (Ticket YD-BUG-2.2)
-      if (updated.education && !isEducationAllowed(updated.education, clampedAge)) {
-        updated.education = '';
-      }
-      return updated;
-    });
-    const err = validateField('age', clampedAge);
+    const { sanitized, resetReasons } = reconcileProfileForAge(newAge, profile);
+    setProfile(sanitized);
+
+    if (resetReasons.length > 0) {
+      setResetNotice(t('ageResetNotice'));
+    } else {
+      setResetNotice(null);
+    }
+
+    const err = validateField('age', sanitized.age);
     setErrors((prev) => ({ ...prev, age: err }));
   };
 
@@ -545,6 +570,21 @@ export const Wizard: React.FC = () => {
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{errors.age}</span>
                 </p>
+              )}
+
+              {resetNotice && (
+                <div className="flex items-center gap-2 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium animate-fadeIn mt-2">
+                  <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                  <span className="flex-1">{resetNotice}</span>
+                  <button
+                    type="button"
+                    onClick={() => setResetNotice(null)}
+                    className="text-amber-700 hover:text-amber-900 text-xs font-bold px-1.5 py-0.5 rounded hover:bg-amber-100/60 transition-colors"
+                    aria-label="Dismiss notice"
+                  >
+                    ✕
+                  </button>
+                </div>
               )}
             </div>
 
