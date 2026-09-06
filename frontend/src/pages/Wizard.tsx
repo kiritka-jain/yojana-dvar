@@ -51,6 +51,9 @@ export const isLifeStageAllowed = (stageKey: string, age: number): { allowed: bo
   if (stageKey === 'maternal' && age < 18) {
     return { allowed: false, reason: 'age_restricted' };
   }
+  if (stageKey === 'entrepreneur' && age < 18) {
+    return { allowed: false, reason: 'age_restricted' };
+  }
   if (stageKey === 'senior' && age < 18) {
     return { allowed: false, reason: 'age_restricted' };
   }
@@ -234,8 +237,8 @@ export const Wizard: React.FC = () => {
     const clampedAge = Math.min(100, Math.max(0, newAge));
     setProfile((prev) => {
       const updated = { ...prev, age: clampedAge };
-      // Age-gate maternal & widow/senior life stages for minors (Tickets YD-BUG-1.1 & YD-BUG-1.2)
-      if (clampedAge < 18 && (updated.life_stage === 'maternal' || updated.life_stage === 'senior')) {
+      // Age-gate adult life stages for minors (Tickets YD-BUG-1.1, YD-BUG-1.2, YD-BUG-1.3)
+      if (clampedAge < 18 && (updated.life_stage === 'maternal' || updated.life_stage === 'senior' || updated.life_stage === 'entrepreneur')) {
         updated.life_stage = 'all';
       }
       return updated;
@@ -778,7 +781,7 @@ export const Wizard: React.FC = () => {
                           </span>
                           {isDisabled && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100/90 border border-amber-300/80 px-2 py-0.5 rounded-md flex-shrink-0">
-                              ⚠️ {ls.val === 'senior' ? t('fieldLifeStageSeniorAgeRestricted') : t('fieldLifeStageMaternalAgeRestricted')}
+                              ⚠️ {ls.val === 'senior' ? t('fieldLifeStageSeniorAgeRestricted') : ls.val === 'entrepreneur' ? t('fieldLifeStageEntrepreneurAgeRestricted') : t('fieldLifeStageMaternalAgeRestricted')}
                             </span>
                           )}
                         </div>

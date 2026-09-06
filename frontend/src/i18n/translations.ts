@@ -131,6 +131,7 @@ export interface TranslationDictionary {
   fieldLifeStageMaternal: string;
   fieldLifeStageMaternalAgeRestricted: string;
   fieldLifeStageEntrepreneur: string;
+  fieldLifeStageEntrepreneurAgeRestricted: string;
   fieldLifeStageSenior: string;
   fieldLifeStageSeniorAgeRestricted: string;
   fieldLifeStageGeneral: string;
@@ -452,6 +453,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageMaternal: "Pregnant / Expecting Mother",
     fieldLifeStageMaternalAgeRestricted: "Requires age 18+",
     fieldLifeStageEntrepreneur: "Self-Employed / SHG Member",
+    fieldLifeStageEntrepreneurAgeRestricted: "Requires age 18+",
     fieldLifeStageSenior: "Widow / Senior Citizen",
     fieldLifeStageSeniorAgeRestricted: "Requires age 18+",
     fieldLifeStageGeneral: "General Citizen",
@@ -769,6 +771,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageMaternal: "गर्भवती / धात्री माता (Maternal)",
     fieldLifeStageMaternalAgeRestricted: "18+ वर्ष आवश्यक",
     fieldLifeStageEntrepreneur: "महिला उद्यमी / SHG सदस्य (Business)",
+    fieldLifeStageEntrepreneurAgeRestricted: "18+ वर्ष आवश्यक",
     fieldLifeStageSenior: "वरिष्ठ नागरिक / विधवा (Senior)",
     fieldLifeStageSeniorAgeRestricted: "18+ वर्ष आवश्यक",
     fieldLifeStageGeneral: "सामान्य नागरिक (General)",
