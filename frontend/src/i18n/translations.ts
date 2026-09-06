@@ -134,6 +134,8 @@ export interface TranslationDictionary {
   fieldLifeStageEntrepreneurAgeRestricted: string;
   fieldLifeStageSenior: string;
   fieldLifeStageSeniorAgeRestricted: string;
+  fieldLifeStageWidow: string;
+  fieldLifeStageWidowAgeRestricted: string;
   fieldLifeStageGeneral: string;
 
   fieldBpl: string;
@@ -455,8 +457,10 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageMaternalAgeRestricted: "Requires age 18+",
     fieldLifeStageEntrepreneur: "Self-Employed / SHG Member",
     fieldLifeStageEntrepreneurAgeRestricted: "Requires age 18+",
-    fieldLifeStageSenior: "Widow / Senior Citizen",
+    fieldLifeStageSenior: "Senior Citizen (60+)",
     fieldLifeStageSeniorAgeRestricted: "Requires age 60+",
+    fieldLifeStageWidow: "Widow / Single Mother",
+    fieldLifeStageWidowAgeRestricted: "Requires age 18+",
     fieldLifeStageGeneral: "General Citizen",
 
     fieldBpl: "Do you have a BPL or Antyodaya Ration Card?",
@@ -774,8 +778,10 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldLifeStageMaternalAgeRestricted: "18+ वर्ष आवश्यक",
     fieldLifeStageEntrepreneur: "महिला उद्यमी / SHG सदस्य (Business)",
     fieldLifeStageEntrepreneurAgeRestricted: "18+ वर्ष आवश्यक",
-    fieldLifeStageSenior: "वरिष्ठ नागरिक / विधवा (Senior)",
+    fieldLifeStageSenior: "वरिष्ठ नागरिक (Senior 60+)",
     fieldLifeStageSeniorAgeRestricted: "60+ वर्ष आवश्यक",
+    fieldLifeStageWidow: "विधवा / एकल महिला (Widow)",
+    fieldLifeStageWidowAgeRestricted: "18+ वर्ष आवश्यक",
     fieldLifeStageGeneral: "सामान्य नागरिक (General)",
 
     fieldBpl: "क्या आपके पास बीपीएल (BPL) या अंत्योदय राशन कार्ड है?",

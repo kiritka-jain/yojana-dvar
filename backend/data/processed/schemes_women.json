@@ -135,7 +135,7 @@
     "eligible_states": "[\"All\"]",
     "requires_bpl": true,
     "requires_disability": false,
-    "life_stage_tags": "[\"senior\"]",
+    "life_stage_tags": "[\"widow\", \"senior\"]",
     "is_active": true,
     "updated_at": "2026-09-06T08:38:45.982108+00:00"
   },
@@ -163,7 +163,7 @@
     "eligible_states": "[\"All\"]",
     "requires_bpl": true,
     "requires_disability": false,
-    "life_stage_tags": "[\"senior\"]",
+    "life_stage_tags": "[\"widow\", \"senior\"]",
     "is_active": true,
     "updated_at": "2026-09-06T08:38:45.986901+00:00"
   },

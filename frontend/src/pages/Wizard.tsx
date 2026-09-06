@@ -51,6 +51,9 @@ export const isLifeStageAllowed = (stageKey: string, age: number): { allowed: bo
   if (stageKey === 'maternal' && age < 18) {
     return { allowed: false, reason: 'age_restricted' };
   }
+  if (stageKey === 'widow' && age < 18) {
+    return { allowed: false, reason: 'age_restricted' };
+  }
   if (stageKey === 'entrepreneur' && age < 18) {
     return { allowed: false, reason: 'age_restricted' };
   }
@@ -834,6 +837,12 @@ export const Wizard: React.FC = () => {
                     hint: language === 'hi' ? 'मातृ वंदना (PMMVY) व पोषण सहायता' : 'Maternity aid & nutrition grants'
                   },
                   { 
+                    val: 'widow', 
+                    label: t('fieldLifeStageWidow'), 
+                    icon: '🕊️',
+                    hint: language === 'hi' ? 'विधवा पेंशन व सामाजिक सुरक्षा' : 'Widow pension & social security'
+                  },
+                  { 
                     val: 'entrepreneur', 
                     label: t('fieldLifeStageEntrepreneur'), 
                     icon: '💼',
@@ -843,7 +852,7 @@ export const Wizard: React.FC = () => {
                     val: 'senior', 
                     label: t('fieldLifeStageSenior'), 
                     icon: '👵',
-                    hint: language === 'hi' ? 'पेंशन व स्वास्थ्य सहायता' : 'Old age pensions & healthcare'
+                    hint: language === 'hi' ? 'वरिष्ठ नागरिक पेंशन व स्वास्थ्य सहायता' : 'Old age pensions & healthcare'
                   },
                   { 
                     val: 'all', 
@@ -888,7 +897,7 @@ export const Wizard: React.FC = () => {
                           </span>
                           {isDisabled && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100/90 border border-amber-300/80 px-2 py-0.5 rounded-md flex-shrink-0">
-                              ⚠️ {ls.val === 'senior' ? t('fieldLifeStageSeniorAgeRestricted') : ls.val === 'entrepreneur' ? t('fieldLifeStageEntrepreneurAgeRestricted') : t('fieldLifeStageMaternalAgeRestricted')}
+                              ⚠️ {ls.val === 'senior' ? t('fieldLifeStageSeniorAgeRestricted') : ls.val === 'widow' ? t('fieldLifeStageWidowAgeRestricted') : ls.val === 'entrepreneur' ? t('fieldLifeStageEntrepreneurAgeRestricted') : t('fieldLifeStageMaternalAgeRestricted')}
                             </span>
                           )}
                         </div>

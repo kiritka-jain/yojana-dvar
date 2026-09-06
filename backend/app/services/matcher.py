@@ -143,7 +143,13 @@ class EligibilityMatcher:
             life_stage_tags = ["general"]
             
         user_life_stage = profile.life_stage.strip().lower()
-        if any(tag.lower() == user_life_stage for tag in life_stage_tags):
+        is_stage_match = any(tag.lower() == user_life_stage for tag in life_stage_tags)
+        if not is_stage_match and user_life_stage == "widow":
+            scheme_text = f"{scheme.get('name', '')} {scheme.get('beneficiary_type', '')} {scheme.get('eligibility_text', '')}".lower()
+            if "widow" in scheme_text:
+                is_stage_match = True
+
+        if is_stage_match:
             score += 30
             reasons.append(f"Directly matches your target life stage ('{profile.life_stage}')")
 
