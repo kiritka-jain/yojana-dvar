@@ -30,6 +30,9 @@ export interface TranslationDictionary {
   heroDirectWizardPrompt: string;
   ctaBannerTitle: string;
   ctaBannerSubtitle: string;
+  badgeQuickTime: string;
+  badgeFreeService: string;
+  badgeNoLogin: string;
 
   // Key stats & Trust Badges
   statFreeAccess: string;
@@ -361,6 +364,9 @@ export const translations: Record<Language, TranslationDictionary> = {
     heroDirectWizardPrompt: "Or check instant eligibility:",
     ctaBannerTitle: "Ready to Discover Your Entitlements?",
     ctaBannerSubtitle: "Answer 3 simple questions to discover all direct welfare benefits designed for you.",
+    badgeQuickTime: "⚡ 1-2 Min Discovery",
+    badgeFreeService: "100% Free & Open",
+    badgeNoLogin: "No Login Needed",
 
     statFreeAccess: "100% Free & Open",
     statFreeAccessSub: "Zero application or processing fee",
@@ -683,6 +689,9 @@ export const translations: Record<Language, TranslationDictionary> = {
     heroDirectWizardPrompt: "या 3 प्रश्नों में पात्रता निकालें:",
     ctaBannerTitle: "अपनी पात्रता जांचने के लिए तैयार हैं?",
     ctaBannerSubtitle: "केवल 3 सरल प्रश्नों के उत्तर दें और 1 मिनट में अपनी पात्र योजनाओं की सूची पाएं।",
+    badgeQuickTime: "⚡ 1-2 मिनट का समय",
+    badgeFreeService: "100% नि:शुल्क सेवा",
+    badgeNoLogin: "लॉगिन अनिवार्य नहीं",
 
     statFreeAccess: "100% नि:शुल्क सेवा",
     statFreeAccessSub: "कोई आवेदन शुल्क या बिचौलिया नहीं",
