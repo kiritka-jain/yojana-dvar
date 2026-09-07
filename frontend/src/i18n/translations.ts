@@ -241,6 +241,13 @@ export interface TranslationDictionary {
   detailEligibilityTitle: string;
   detailDocumentsTitle: string;
   detailDocsChecklistHelp: string;
+  docCategoryCommon: string;
+  docCategoryCommonDesc: string;
+  docCategorySpecial: string;
+  docCategorySpecialDesc: string;
+  wizardBplAcronym: string;
+  wizardDisabilityAcronym: string;
+  wizardShgAcronym: string;
   detailDocReady: string;
   detailDocPending: string;
   detailApplicationProcessTitle: string;
@@ -589,6 +596,13 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailEligibilityTitle: "Who is Eligible",
     detailDocumentsTitle: "Required Documents Checklist",
     detailDocsChecklistHelp: "Mark the documents you have ready before visiting CSC or Anganwadi:",
+    docCategoryCommon: "Common Identity & Bank Documents",
+    docCategoryCommonDesc: "Standard documents you likely already have at home:",
+    docCategorySpecial: "Special Government Certificates",
+    docCategorySpecialDesc: "Issued by local Tehsil, CSC center, or Health Department:",
+    wizardBplAcronym: "BPL = Below Poverty Line (Ration card holder families)",
+    wizardDisabilityAcronym: "PwD = Person with Disability (40%+ disability certificate / UDID card)",
+    wizardShgAcronym: "SHG = Self Help Group (Women's livelihood group / Sakhi Mandal)",
     detailDocReady: "Ready",
     detailDocPending: "Pending",
     detailApplicationProcessTitle: "How and Where to Apply",
@@ -934,6 +948,13 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailEligibilityTitle: "कौन पात्र है (पात्रता शर्तें)",
     detailDocumentsTitle: "जरूरी कागजात की चेकलिस्ट",
     detailDocsChecklistHelp: "आवेदन करने से पहले अपने उपलब्ध दस्तावेजों पर सही का निशान लगाएं:",
+    docCategoryCommon: "सामान्य पहचान व बैंक दस्तावेज (Common Documents)",
+    docCategoryCommonDesc: "यह सामान्य दस्तावेज जो आमतौर पर आपके पास घर पर पहले से उपलब्ध होते हैं:",
+    docCategorySpecial: "विशेष सरकारी प्रमाण पत्र (Special Certificates)",
+    docCategorySpecialDesc: "यह प्रमाण पत्र तहसील, सीएससी केंद्र या अस्पताल/संस्थान द्वारा जारी किए जाते हैं:",
+    wizardBplAcronym: "BPL = गरीबी रेखा से नीचे (बीपीएल / अंत्योदय राशन कार्ड धारक परिवार)",
+    wizardDisabilityAcronym: "PwD = दिव्यांगजन (40% या अधिक दिव्यांगता प्रमाण पत्र / UDID कार्ड धारक)",
+    wizardShgAcronym: "SHG = स्वयं सहायता समूह (महिला सखी मंडल / आजीविका समूह सदस्य)",
     detailDocReady: "तैयार",
     detailDocPending: "शेष",
     detailApplicationProcessTitle: "आवेदन कैसे करें (चरणबद्ध प्रक्रिया)",

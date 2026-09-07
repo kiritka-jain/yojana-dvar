@@ -57,33 +57,33 @@ const DEFAULT_PROFILE: ProfileInput = {
   limit: 10
 };
 
-// Common Document Translations Dictionary for 100% Hindi Fidelity
-const COMMON_DOC_TRANSLATIONS: Record<string, { hi: string; hint_hi: string }> = {
-  'aadhaar': { hi: 'आधार कार्ड (Aadhaar Card)', hint_hi: 'पहचान व पते के सत्यापन हेतु' },
-  'bank passbook': { hi: 'बैंक पासबुक / खाता विवरण (Bank Passbook)', hint_hi: 'डीबीटी अनुदान सीधे बैंक खाते में प्राप्त करने हेतु' },
-  'bank account': { hi: 'बैंक खाता विवरण (Bank Details)', hint_hi: 'आधार से लिंक बैंक खाता संख्या व IFSC कोड' },
-  'income certificate': { hi: 'आय प्रमाण पत्र (Income Certificate)', hint_hi: 'तहसीलदार या सक्षम अधिकारी द्वारा जारी आय प्रमाण' },
-  'caste certificate': { hi: 'जाति प्रमाण पत्र (Caste Certificate)', hint_hi: 'आरक्षित श्रेणी प्रमाण पत्र (यदि लागू हो)' },
-  'domicile': { hi: 'मूल निवास प्रमाण पत्र (Domicile Certificate)', hint_hi: 'राज्य में स्थायी निवास का प्रमाण' },
-  'residence': { hi: 'निवास प्रमाण पत्र (Residence Certificate)', hint_hi: 'स्थानीय निवास सत्यापन हेतु' },
-  'passport': { hi: 'पासपोर्ट साइज फोटो (Passport Photos)', hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो' },
-  'photo': { hi: 'पासपोर्ट साइज फोटो (Passport Photos)', hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो' },
-  'bpl': { hi: 'बीपीएल राशन कार्ड (BPL / Antyodaya Card)', hint_hi: 'गरीबी रेखा कार्ड या अंत्योदय अन्न योजना कार्ड' },
-  'ration card': { hi: 'राशन कार्ड (Ration Card)', hint_hi: 'परिवार के सदस्यों के नाम सहित राशन कार्ड' },
-  'disability': { hi: 'दिव्यांगता प्रमाण पत्र (Disability / UDID Card)', hint_hi: 'सीएमओ द्वारा जारी 40%+ दिव्यांगता कार्ड' },
-  'birth certificate': { hi: 'जन्म प्रमाण पत्र (Birth Certificate)', hint_hi: 'बालिका/आवेदक की जन्म तिथि का प्रमाण' },
-  'age proof': { hi: 'आयु प्रमाण पत्र (Age Proof)', hint_hi: '10वीं अंकतालिका या जन्म प्रमाण पत्र' },
-  'educational': { hi: 'शैक्षणिक योग्यता प्रमाण पत्र (Educational Certificate)', hint_hi: 'अंकतालिका एवं विद्यालय/कॉलेज प्रमाण पत्र' },
-  'marksheet': { hi: 'अंकतालिका / प्रमाण पत्र (Marksheet)', hint_hi: 'कक्षा उत्तीर्ण करने का प्रमाण' },
-  'mcp card': { hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड' },
-  'mother and child': { hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड' },
-  'jan aadhaar': { hi: 'जन आधार कार्ड (Jan Aadhaar Card)', hint_hi: 'राजस्थान परिवार पहचान कार्ड' },
-  'land records': { hi: 'भूमि दस्तावेज / खतौनी (Land Records / RoR)', hint_hi: 'जमीन की जमाबंदी या पट्टा प्रति' },
-  'death certificate': { hi: 'पति का मृत्यु प्रमाण पत्र (Death Certificate)', hint_hi: 'नगर निगम या ग्राम पंचायत द्वारा जारी' },
-  'self-declaration': { hi: 'स्व-घोषणा पत्र (Self-Declaration)', hint_hi: 'शपथ पत्र या निर्धारित प्रारूप पर घोषणा' },
-  'affidavit': { hi: 'शपथ पत्र (Affidavit)', hint_hi: 'नोटरी या शपथ आयुक्त द्वारा सत्यापित' },
-  'mobile number': { hi: 'आधार लिंक मोबाइल नंबर (Mobile Number)', hint_hi: 'ओटीपी सत्यापन व एसएमएस सूचनाओं हेतु' },
-  'voter id': { hi: 'मतदाता पहचान पत्र (Voter ID)', hint_hi: 'वैकल्पिक पहचान पत्र' },
+// Common Document Translations Dictionary for 100% Hindi Fidelity & Issuance Helper Badges
+const COMMON_DOC_TRANSLATIONS: Record<string, { hi: string; hint_hi: string; authority_hi: string; authority_en: string; isSpecial: boolean }> = {
+  'aadhaar': { hi: 'आधार कार्ड (Aadhaar Card)', hint_hi: 'पहचान व पते के सत्यापन हेतु', authority_hi: 'UIDAI / आधार सेवा केंद्र', authority_en: 'UIDAI / Aadhaar Center', isSpecial: false },
+  'bank passbook': { hi: 'बैंक पासबुक / खाता विवरण (Bank Passbook)', hint_hi: 'डीबीटी अनुदान सीधे बैंक खाते में प्राप्त करने हेतु', authority_hi: 'बैंक शाखा / डाकघर', authority_en: 'Bank Branch / Post Office', isSpecial: false },
+  'bank account': { hi: 'बैंक खाता विवरण (Bank Details)', hint_hi: 'आधार से लिंक बैंक खाता संख्या व IFSC कोड', authority_hi: 'बैंक शाखा / डाकघर', authority_en: 'Bank Branch / Post Office', isSpecial: false },
+  'income certificate': { hi: 'आय प्रमाण पत्र (Income Certificate)', hint_hi: 'पारिवारिक वार्षिक आय सीमा सत्यापन', authority_hi: 'तहसीलदार / CSC केंद्र', authority_en: 'Tehsildar / CSC Center', isSpecial: true },
+  'caste certificate': { hi: 'जाति प्रमाण पत्र (Caste Certificate)', hint_hi: 'आरक्षित श्रेणी प्रमाण पत्र (यदि लागू हो)', authority_hi: 'एसडीएम / ई-डिस्ट्रिक्ट केंद्र', authority_en: 'SDM / e-District Center', isSpecial: true },
+  'domicile': { hi: 'मूल निवास प्रमाण पत्र (Domicile Certificate)', hint_hi: 'राज्य में स्थायी निवास का प्रमाण', authority_hi: 'तहसीलदार / जन सेवा केंद्र', authority_en: 'Tehsildar / CSC Center', isSpecial: true },
+  'residence': { hi: 'निवास प्रमाण पत्र (Residence Certificate)', hint_hi: 'स्थानीय निवास सत्यापन हेतु', authority_hi: 'तहसीलदार / जन सेवा केंद्र', authority_en: 'Tehsildar / CSC Center', isSpecial: true },
+  'passport': { hi: 'पासपोर्ट साइज फोटो (Passport Photos)', hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो', authority_hi: 'घर पर उपलब्ध / फोटो स्टूडियो', authority_en: 'Recent Photograph', isSpecial: false },
+  'photo': { hi: 'पासपोर्ट साइज फोटो (Passport Photos)', hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो', authority_hi: 'घर पर उपलब्ध / फोटो स्टूडियो', authority_en: 'Recent Photograph', isSpecial: false },
+  'bpl': { hi: 'बीपीएल राशन कार्ड (BPL / Antyodaya Card)', hint_hi: 'गरीबी रेखा कार्ड या अंत्योदय अन्न योजना कार्ड', authority_hi: 'खाद्य एवं रसद विभाग', authority_en: 'Food & Civil Supplies Dept', isSpecial: false },
+  'ration card': { hi: 'राशन कार्ड (Ration Card)', hint_hi: 'परिवार के सदस्यों के नाम सहित राशन कार्ड', authority_hi: 'खाद्य एवं रसद विभाग', authority_en: 'Food & Civil Supplies Dept', isSpecial: false },
+  'disability': { hi: 'दिव्यांगता प्रमाण पत्र (Disability / UDID Card)', hint_hi: 'सीएमओ द्वारा जारी 40%+ दिव्यांगता कार्ड', authority_hi: 'मुख्य चिकित्सा अधिकारी (CMO)', authority_en: 'Chief Medical Officer (CMO)', isSpecial: true },
+  'birth certificate': { hi: 'जन्म प्रमाण पत्र (Birth Certificate)', hint_hi: 'बालिका/आवेदक की जन्म तिथि का प्रमाण', authority_hi: 'नगर निगम / ग्राम पंचायत', authority_en: 'Municipal / Panchayat Office', isSpecial: true },
+  'age proof': { hi: 'आयु प्रमाण पत्र (Age Proof)', hint_hi: '10वीं अंकतालिका या जन्म प्रमाण पत्र', authority_hi: 'विद्यालय / जन्म रजिस्ट्रार', authority_en: 'School / Registrar', isSpecial: false },
+  'educational': { hi: 'शैक्षणिक योग्यता प्रमाण पत्र (Educational Certificate)', hint_hi: 'अंकतालिका एवं विद्यालय/कॉलेज प्रमाण पत्र', authority_hi: 'संबंधित विद्यालय / कॉलेज', authority_en: 'School / University', isSpecial: true },
+  'marksheet': { hi: 'अंकतालिका / प्रमाण पत्र (Marksheet)', hint_hi: 'कक्षा उत्तीर्ण करने का प्रमाण', authority_hi: 'शिक्षा बोर्ड / कॉलेज', authority_en: 'Education Board / College', isSpecial: true },
+  'mcp card': { hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड', authority_hi: 'आंगनवाड़ी / सरकारी अस्पताल', authority_en: 'Anganwadi / Govt Hospital', isSpecial: true },
+  'mother and child': { hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड', authority_hi: 'आंगनवाड़ी / सरकारी अस्पताल', authority_en: 'Anganwadi / Govt Hospital', isSpecial: true },
+  'jan aadhaar': { hi: 'जन आधार कार्ड (Jan Aadhaar Card)', hint_hi: 'राजस्थान परिवार पहचान कार्ड', authority_hi: 'राजस्थान ई-मित्र केंद्र', authority_en: 'Rajasthan e-Mitra', isSpecial: false },
+  'land records': { hi: 'भूमि दस्तावेज / खतौनी (Land Records / RoR)', hint_hi: 'जमीन की जमाबंदी या पट्टा प्रति', authority_hi: 'राजस्व विभाग / लेखपाल', authority_en: 'Revenue Dept / Patwari', isSpecial: true },
+  'death certificate': { hi: 'पति का मृत्यु प्रमाण पत्र (Death Certificate)', hint_hi: 'नगर निगम या ग्राम पंचायत द्वारा जारी', authority_hi: 'नगर निगम / ग्राम पंचायत', authority_en: 'Municipal / Panchayat Office', isSpecial: true },
+  'self-declaration': { hi: 'स्व-घोषणा पत्र (Self-Declaration)', hint_hi: 'शपथ पत्र या निर्धारित प्रारूप पर घोषणा', authority_hi: 'स्व-हस्ताक्षरित प्रारूप', authority_en: 'Self-Attested Format', isSpecial: false },
+  'affidavit': { hi: 'शपथ पत्र (Affidavit)', hint_hi: 'नोटरी या शपथ आयुक्त द्वारा सत्यापित', authority_hi: 'नोटरी / शपथ आयुक्त', authority_en: 'Notary / Oath Commissioner', isSpecial: true },
+  'mobile number': { hi: 'आधार लिंक मोबाइल नंबर (Mobile Number)', hint_hi: 'ओटीपी सत्यापन व एसएमएस सूचनाओं हेतु', authority_hi: 'सक्रिय मोबाइल सिम कार्ड', authority_en: 'Active Mobile SIM', isSpecial: false },
+  'voter id': { hi: 'मतदाता पहचान पत्र (Voter ID)', hint_hi: 'वैकल्पिक पहचान पत्र', authority_hi: 'चुनाव आयोग (ECI)', authority_en: 'Election Commission (ECI)', isSpecial: false },
 };
 
 function parseDocuments(docString?: string): string[] {
@@ -94,15 +94,24 @@ function parseDocuments(docString?: string): string[] {
     .filter((d) => d.length > 2);
 }
 
-function localizeDocumentName(doc: string, lang: 'en' | 'hi'): { name: string; hint?: string } {
-  if (lang !== 'hi') return { name: doc };
+function localizeDocumentName(doc: string, lang: 'en' | 'hi'): { name: string; hint?: string; authority?: string; isSpecial: boolean } {
   const lower = doc.toLowerCase().trim();
   for (const [key, val] of Object.entries(COMMON_DOC_TRANSLATIONS)) {
     if (lower.includes(key)) {
-      return { name: val.hi, hint: val.hint_hi };
+      return { 
+        name: lang === 'hi' ? val.hi : doc, 
+        hint: lang === 'hi' ? val.hint_hi : undefined,
+        authority: lang === 'hi' ? val.authority_hi : val.authority_en,
+        isSpecial: val.isSpecial
+      };
     }
   }
-  return { name: doc };
+  const isSpecialFallback = lower.includes('certificate') || lower.includes('marksheet') || lower.includes('proof') || lower.includes('affidavit') || lower.includes('praman');
+  return { 
+    name: doc,
+    isSpecial: isSpecialFallback,
+    authority: isSpecialFallback ? (lang === 'hi' ? 'सक्षम अधिकारी / संस्थान' : 'Issuing Authority') : (lang === 'hi' ? 'घर पर उपलब्ध' : 'Available at Home')
+  };
 }
 
 function localizeBeneficiaryType(type: string | undefined, lang: 'en' | 'hi'): string {
@@ -269,6 +278,20 @@ export const SchemeDetail: React.FC = () => {
   const documentsList = useMemo(() => {
     return parseDocuments(scheme?.documents_required);
   }, [scheme?.documents_required]);
+
+  const { commonDocsList, specialDocsList } = useMemo(() => {
+    const common: string[] = [];
+    const special: string[] = [];
+    documentsList.forEach((doc) => {
+      const info = localizeDocumentName(doc, siteLanguage);
+      if (info.isSpecial) {
+        special.push(doc);
+      } else {
+        common.push(doc);
+      }
+    });
+    return { commonDocsList: common, specialDocsList: special };
+  }, [documentsList, siteLanguage]);
 
   const readyDocsCount = useMemo(() => {
     return documentsList.filter((doc) => !!checkedDocs[doc]).length;
@@ -788,44 +811,134 @@ export const SchemeDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Interactive Document Checklist Items with Localized Names & Context Hints */}
+            {/* Categorized Document Checklist Items */}
             {documentsList.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {documentsList.map((doc, idx) => {
-                  const isChecked = !!checkedDocs[doc];
-                  const docInfo = localizeDocumentName(doc, siteLanguage);
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => toggleDocCheck(doc)}
-                      className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all duration-200 ${
-                        isChecked
-                          ? 'bg-forest-50/90 border-forest-300 text-forest-950 font-semibold shadow-2xs ring-1 ring-forest-300/50'
-                          : 'bg-white border-cream-300 text-charcoal-700 hover:bg-cream-50 hover:border-cream-400'
-                      }`}
-                    >
-                      {isChecked ? (
-                        <CheckSquare className="w-5 h-5 text-forest-600 flex-shrink-0 mt-0.5" />
-                      ) : (
-                        <Square className="w-5 h-5 text-charcoal-400 flex-shrink-0 mt-0.5" />
-                      )}
-                      <div className="space-y-0.5">
-                        <span className="text-xs sm:text-sm leading-snug block font-medium">
-                          {docInfo.name}
-                        </span>
-                        {docInfo.hint && (
-                          <span className="text-[11px] text-charcoal-500 block">
-                            💡 {docInfo.hint}
-                          </span>
-                        )}
-                        <span className="text-[10px] text-charcoal-500 block pt-0.5">
-                          {isChecked ? `✓ ${t('detailDocReady')}` : `○ ${t('detailDocPending')}`}
-                        </span>
+              <div className="space-y-6">
+                {/* 1. Common Documents Section */}
+                {commonDocsList.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2 border-b border-cream-200/80 pb-2">
+                      <div>
+                        <h3 className="text-xs sm:text-sm font-bold text-charcoal-900 flex items-center gap-1.5">
+                          <span>📁</span>
+                          <span>{t('docCategoryCommon')}</span>
+                        </h3>
+                        <p className="text-[11px] sm:text-xs text-charcoal-500 mt-0.5">
+                          {t('docCategoryCommonDesc')}
+                        </p>
                       </div>
-                    </button>
-                  );
-                })}
+                      <span className="text-[11px] font-bold text-forest-800 bg-forest-50 border border-forest-200 px-2.5 py-0.5 rounded-full">
+                        {commonDocsList.filter((d) => !!checkedDocs[d]).length} / {commonDocsList.length} {t('detailDocReady')}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {commonDocsList.map((doc, idx) => {
+                        const isChecked = !!checkedDocs[doc];
+                        const docInfo = localizeDocumentName(doc, siteLanguage);
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => toggleDocCheck(doc)}
+                            className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all duration-200 ${
+                              isChecked
+                                ? 'bg-forest-50/90 border-forest-300 text-forest-950 font-semibold shadow-2xs ring-1 ring-forest-300/50'
+                                : 'bg-white border-cream-300 text-charcoal-700 hover:bg-cream-50 hover:border-cream-400'
+                            }`}
+                          >
+                            {isChecked ? (
+                              <CheckSquare className="w-5 h-5 text-forest-600 flex-shrink-0 mt-0.5" />
+                            ) : (
+                              <Square className="w-5 h-5 text-charcoal-400 flex-shrink-0 mt-0.5" />
+                            )}
+                            <div className="space-y-1 flex-1">
+                              <span className="text-xs sm:text-sm leading-snug block font-bold text-charcoal-900">
+                                {docInfo.name}
+                              </span>
+                              {docInfo.hint && (
+                                <span className="text-[11px] text-charcoal-600 block leading-tight">
+                                  💡 {docInfo.hint}
+                                </span>
+                              )}
+                              {docInfo.authority && (
+                                <span className="inline-flex items-center text-[10px] font-semibold text-charcoal-600 bg-cream-100/90 border border-cream-300 px-2 py-0.5 rounded-md mt-1">
+                                  🏛️ {docInfo.authority}
+                                </span>
+                              )}
+                              <span className="text-[10px] text-charcoal-500 block pt-0.5">
+                                {isChecked ? `✓ ${t('detailDocReady')}` : `○ ${t('detailDocPending')}`}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. Special Certificates Section */}
+                {specialDocsList.length > 0 && (
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center justify-between gap-2 border-b border-cream-200/80 pb-2">
+                      <div>
+                        <h3 className="text-xs sm:text-sm font-bold text-charcoal-900 flex items-center gap-1.5">
+                          <span>📜</span>
+                          <span>{t('docCategorySpecial')}</span>
+                        </h3>
+                        <p className="text-[11px] sm:text-xs text-charcoal-500 mt-0.5">
+                          {t('docCategorySpecialDesc')}
+                        </p>
+                      </div>
+                      <span className="text-[11px] font-bold text-amber-900 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
+                        {specialDocsList.filter((d) => !!checkedDocs[d]).length} / {specialDocsList.length} {t('detailDocReady')}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {specialDocsList.map((doc, idx) => {
+                        const isChecked = !!checkedDocs[doc];
+                        const docInfo = localizeDocumentName(doc, siteLanguage);
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => toggleDocCheck(doc)}
+                            className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all duration-200 ${
+                              isChecked
+                                ? 'bg-forest-50/90 border-forest-300 text-forest-950 font-semibold shadow-2xs ring-1 ring-forest-300/50'
+                                : 'bg-white border-cream-300 text-charcoal-700 hover:bg-cream-50 hover:border-cream-400'
+                            }`}
+                          >
+                            {isChecked ? (
+                              <CheckSquare className="w-5 h-5 text-forest-600 flex-shrink-0 mt-0.5" />
+                            ) : (
+                              <Square className="w-5 h-5 text-charcoal-400 flex-shrink-0 mt-0.5" />
+                            )}
+                            <div className="space-y-1 flex-1">
+                              <span className="text-xs sm:text-sm leading-snug block font-bold text-charcoal-900">
+                                {docInfo.name}
+                              </span>
+                              {docInfo.hint && (
+                                <span className="text-[11px] text-charcoal-600 block leading-tight">
+                                  💡 {docInfo.hint}
+                                </span>
+                              )}
+                              {docInfo.authority && (
+                                <span className="inline-flex items-center text-[10px] font-bold text-amber-950 bg-amber-100/80 border border-amber-300 px-2 py-0.5 rounded-md mt-1">
+                                  🏛️ {docInfo.authority}
+                                </span>
+                              )}
+                              <span className="text-[10px] text-charcoal-500 block pt-0.5">
+                                {isChecked ? `✓ ${t('detailDocReady')}` : `○ ${t('detailDocPending')}`}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="p-4 rounded-2xl bg-cream-50 border border-cream-200 flex items-center gap-3 text-xs sm:text-sm text-charcoal-600">

@@ -927,11 +927,16 @@ export const Wizard: React.FC = () => {
             {/* Field: BPL Card Visual Option Cards */}
             <div className="space-y-3 p-5 sm:p-6 rounded-3xl bg-cream-50/70 border border-saffron-200/80 shadow-xs">
               <div>
-                <h3 className="text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5">
-                  <span>💳</span>
-                  <span>{t('fieldBpl')}</span>
-                </h3>
-                <p className="text-xs text-charcoal-500 mt-0.5 leading-relaxed">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5">
+                    <span>💳</span>
+                    <span>{t('fieldBpl')}</span>
+                  </h3>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-saffron-900 bg-saffron-100/90 border border-saffron-300 px-2.5 py-0.5 rounded-full">
+                    💡 {t('wizardBplAcronym')}
+                  </span>
+                </div>
+                <p className="text-xs text-charcoal-500 mt-1 leading-relaxed">
                   {t('fieldBplHelper')}
                 </p>
               </div>
@@ -986,11 +991,16 @@ export const Wizard: React.FC = () => {
             {/* Field: Disability (PwD) Visual Option Cards */}
             <div className="space-y-3 p-5 sm:p-6 rounded-3xl bg-cream-50/70 border border-saffron-200/80 shadow-xs">
               <div>
-                <h3 className="text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5">
-                  <span>♿</span>
-                  <span>{t('fieldDisability')}</span>
-                </h3>
-                <p className="text-xs text-charcoal-500 mt-0.5 leading-relaxed">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5">
+                    <span>♿</span>
+                    <span>{t('fieldDisability')}</span>
+                  </h3>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-900 bg-blue-100/90 border border-blue-300 px-2.5 py-0.5 rounded-full">
+                    💡 {t('wizardDisabilityAcronym')}
+                  </span>
+                </div>
+                <p className="text-xs text-charcoal-500 mt-1 leading-relaxed">
                   {t('fieldDisabilityHelper')}
                 </p>
               </div>
