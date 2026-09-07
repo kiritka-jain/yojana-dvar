@@ -114,6 +114,43 @@ def test_realistic_age_bounds(json_catalog):
         assert age_min <= age_max, f"age_min ({age_min}) exceeds age_max ({age_max}) in '{name}'"
 
 
+def test_audited_scheme_age_bounds(json_catalog):
+    """
+    Ticket YD-DATA-2.1 Acceptance Criteria:
+    Verifies audited upper and lower age bounds for specific schemes:
+      - gaura-devi-kanya-dhan-yojana: 14 to 22 (Class 12th students)
+      - moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme: 17 to 25
+      - mukhyamantri-kanya-utthan-yojana: 0 to 25
+      - mukhya-mantri-kanya-sumangala-yojana: 0 to 25
+      - working-women-hostel-scheme: 18 to 60 (replaces invalid 0-8 bug)
+      - kanya-sumangala-mukhyamantri-kanya-vivah-yojana: 18 to 45
+      - kudumbashree-women-empowerment-livelihood-mission: 18 to 65
+      - mission-shakti-odisha: 18 to 65
+      - pm-street-vendors-atmanirbhar-nidhi: 18 to 70
+    """
+    schemes_by_id = {rec["scheme_id"]: rec for rec in json_catalog}
+
+    expected_bounds = {
+        "gaura-devi-kanya-dhan-yojana": (14, 22),
+        "moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme": (17, 25),
+        "mukhyamantri-kanya-utthan-yojana": (0, 25),
+        "mukhya-mantri-kanya-sumangala-yojana": (0, 25),
+        "working-women-hostel-scheme": (18, 60),
+        "kanya-sumangala-mukhyamantri-kanya-vivah-yojana": (18, 45),
+        "kudumbashree-women-empowerment-livelihood-mission": (18, 65),
+        "mission-shakti-odisha": (18, 65),
+        "pm-street-vendors-atmanirbhar-nidhi": (18, 70),
+    }
+
+    for sid, (exp_min, exp_max) in expected_bounds.items():
+        assert sid in schemes_by_id, f"Scheme {sid} missing from catalog"
+        actual_min = schemes_by_id[sid]["age_min"]
+        actual_max = schemes_by_id[sid]["age_max"]
+        assert (actual_min, actual_max) == (exp_min, exp_max), (
+            f"Scheme {sid} expected age range ({exp_min}, {exp_max}), but got ({actual_min}, {actual_max})"
+        )
+
+
 def test_income_cap_validity(json_catalog):
     """Verifies non-negative income_max."""
     for rec in json_catalog:

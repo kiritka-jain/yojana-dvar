@@ -51,6 +51,23 @@ MALE_EXCLUSIVE_KEYWORDS = [
     "for men and boys", "boys and young men only"
 ]
 
+# Audited Explicit Scheme Age Bounds (Ticket YD-DATA-2.1)
+SCHEME_EXPLICIT_AGE_BOUNDS = {
+    "gaura-devi-kanya-dhan-yojana": (14, 22),
+    "moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme": (17, 25),
+    "mukhyamantri-kanya-utthan-yojana": (0, 25),
+    "mukhya-mantri-kanya-sumangala-yojana": (0, 25),
+    "working-women-hostel-scheme": (18, 60),
+    "kanya-sumangala-mukhyamantri-kanya-vivah-yojana": (18, 45),
+    "kudumbashree-women-empowerment-livelihood-mission": (18, 65),
+    "mission-shakti-odisha": (18, 65),
+    "pm-street-vendors-atmanirbhar-nidhi": (18, 70),
+    "gruha-lakshmi-scheme": (18, 100),
+    "mahalakshmi-scheme": (18, 100),
+    "orunodoi-20-scheme": (18, 100),
+    "griha-aadhar-scheme": (18, 100),
+}
+
 # Canonical Life-Stage Tags (Section 6.1 / Ticket 2.3)
 CANONICAL_LIFE_STAGES = ["maternal", "student", "entrepreneur", "senior", "general"]
 
@@ -1038,6 +1055,12 @@ def merge_and_deduplicate_schemes(records: list) -> list:
         else:
             schemes_by_id[rec_id] = merge_scheme_records(schemes_by_id[rec_id], rec)
             collision_count += 1
+
+    # Enforce audited scheme age bounds (Ticket YD-DATA-2.1)
+    for rec in schemes_by_id.values():
+        rec_id = rec.get("scheme_id")
+        if rec_id in SCHEME_EXPLICIT_AGE_BOUNDS:
+            rec["age_min"], rec["age_max"] = SCHEME_EXPLICIT_AGE_BOUNDS[rec_id]
 
     deduplicated = sorted(list(schemes_by_id.values()), key=lambda x: x.get("name", ""))
     print(f"✓ Deduplicated {len(records)} records into {len(deduplicated)} unique schemes ({collision_count} merge collision(s) resolved)")
