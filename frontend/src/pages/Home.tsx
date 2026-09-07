@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import {
-  Search,
-  Mic,
   Sparkles,
   CheckCircle2,
   ArrowRight,
@@ -14,28 +12,12 @@ import {
 export const Home: React.FC = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [voiceNotice, setVoiceNotice] = useState(false);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/results?q=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      navigate('/find');
-    }
-  };
-
-  const handleVoiceClick = () => {
-    setVoiceNotice(true);
-    setTimeout(() => setVoiceNotice(false), 3000);
-  };
 
   return (
     <div className="space-y-10 sm:space-y-14">
 
-      {/* 1. Hero Search & Category Discovery Section */}
-      <section className="relative pt-6 pb-4 sm:pt-10 sm:pb-6 overflow-hidden">
+      {/* 1. Hero Introduction & Category Discovery Section */}
+      <section className="relative pt-6 pb-2 sm:pt-10 sm:pb-4 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6">
 
           {/* Top Badge */}
@@ -53,47 +35,9 @@ export const Home: React.FC = () => {
           </h1>
 
           {/* Simplified, High-Contrast Subtitle */}
-          <p className="text-base sm:text-lg text-charcoal-700 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
+          <p className="text-base sm:text-lg text-charcoal-700 max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed font-medium">
             {t('heroSubtitle')}
           </p>
-
-          {/* Search / Voice Bar */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="max-w-2xl mx-auto bg-white rounded-2xl shadow-card hover:shadow-card-hover border border-saffron-200 p-2 sm:p-2.5 flex items-center gap-2 transition-all duration-300 mb-4 relative"
-          >
-            <div className="pl-3 text-charcoal-400">
-              <Search className="w-5 h-5" />
-            </div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('heroSearchPlaceholder')}
-              className="flex-1 bg-transparent py-2.5 px-2 text-sm sm:text-base text-charcoal-900 placeholder:text-charcoal-400 focus:outline-none"
-            />
-            <button
-              type="button"
-              title={t('heroVoiceTooltip')}
-              onClick={handleVoiceClick}
-              className="p-2.5 rounded-xl text-saffron-600 hover:bg-saffron-50 transition-colors focus:outline-none cursor-pointer"
-            >
-              <Mic className="w-5 h-5" />
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-3 rounded-xl bg-saffron-500 hover:bg-saffron-600 text-white font-medium text-sm sm:text-base shadow-sm transition-all hover:scale-102 active:scale-98 cursor-pointer"
-            >
-              {t('heroSearchButton')}
-            </button>
-          </form>
-
-          {/* Voice Notice Toast */}
-          {voiceNotice && (
-            <div className="max-w-md mx-auto mb-4 p-2.5 rounded-xl bg-saffron-50 border border-saffron-300 text-saffron-900 text-xs font-medium animate-fadeIn">
-              🎙️ {t('voiceListeningAlert')}
-            </div>
-          )}
 
           {/* 1-Tap Quick Category Chips */}
           <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">

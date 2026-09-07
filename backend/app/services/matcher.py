@@ -2,7 +2,7 @@ import json
 import os
 import time
 import uuid
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from app.models.profile import ProfileInput, SchemeMatchResult, MatchResponse
 
 def _find_catalog_path() -> str:
