@@ -252,6 +252,17 @@ export interface TranslationDictionary {
   detailApplyStep3Desc: string;
   detailCscCenterTitle: string;
   detailCscCenterDesc: string;
+  offlineHelpTitle: string;
+  offlineHelpSubtitle: string;
+  offlinePoint1Title: string;
+  offlinePoint1Role: string;
+  offlinePoint1Action: string;
+  offlinePoint2Title: string;
+  offlinePoint2Role: string;
+  offlinePoint2Action: string;
+  offlinePoint3Title: string;
+  offlinePoint3Role: string;
+  offlinePoint3Action: string;
   detailDocsAllReady: string;
   detailDocsMissingTip: string;
   detailOfficialPortalCTA: string;
@@ -589,6 +600,17 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailApplyStep3Desc: "Save your application acknowledgement number to track status and receive funds directly in your bank account.",
     detailCscCenterTitle: "💡 Offline Assistance & Form Filing Support",
     detailCscCenterDesc: "If you need help filling out online forms or scanning documents, visit your nearest Common Service Center (CSC), Anganwadi Kendra, or Gram Panchayat office.",
+    offlineHelpTitle: "Where to Apply Locally? (Offline Citizen Help Points)",
+    offlineHelpSubtitle: "If you cannot fill out online forms or lack internet access, visit these 3 trusted local touchpoints in your village or ward:",
+    offlinePoint1Title: "1. Anganwadi Center / ASHA Worker",
+    offlinePoint1Role: "Maternity (PMMVY), child nutrition, girl education & health schemes",
+    offlinePoint1Action: "Meet your local Anganwadi worker or ASHA didi for physical form filling, MCP card verification, and offline document submission.",
+    offlinePoint2Title: "2. Gram Panchayat Bhawan / Secretary",
+    offlinePoint2Role: "Widow pension (IGNWPS), old-age pension, PMAY rural housing & MGNREGA",
+    offlinePoint2Action: "Visit the Panchayat office to verify local residence/income eligibility and submit verified application forms through the village secretary.",
+    offlinePoint3Title: "3. Common Service Center (CSC / e-Mitra)",
+    offlinePoint3Role: "All central & state online portal submissions, income/caste certificates & biometric e-KYC",
+    offlinePoint3Action: "Pay nominal government rates (₹20-50) to get documents scanned, Aadhaar authenticated, forms submitted, and printed acknowledgements.",
     detailDocsAllReady: "All Documents Ready!",
     detailDocsMissingTip: "Missing some documents? You can apply for income, caste, and domicile certificates at your nearest Tehsil office or CSC center.",
     detailOfficialPortalCTA: "Apply on Official Government Portal",
@@ -923,6 +945,17 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailApplyStep3Desc: "आवेदन संख्या सुरक्षित रखें ताकि स्थिति ट्रैक कर सकें और डीबीटी (DBT) लाभ सीधे बैंक खाते में पहुंचे।",
     detailCscCenterTitle: "💡 नजदीकी सहायता व ऑफलाइन आवेदन केंद्र",
     detailCscCenterDesc: "यदि ऑनलाइन आवेदन या दस्तावेज अपलोड में कठिनाई हो, तो अपने नजदीकी जन सेवा केंद्र (CSC), आंगनवाड़ी केंद्र या ग्राम पंचायत कार्यालय में कागजात ले जाएं।",
+    offlineHelpTitle: "गांव या कस्बे में कहां से आवेदन करें? (ऑफ़लाइन सहायता केंद्र)",
+    offlineHelpSubtitle: "यदि ऑनलाइन फॉर्म भरने या इंटरनेट चलाने में परेशानी हो, तो अपने नजदीकी इन 3 स्थानों पर संपर्क करें:",
+    offlinePoint1Title: "1. आंगनवाड़ी केंद्र / आशा दीदी (Anganwadi / ASHA)",
+    offlinePoint1Role: "मातृत्व पोषण (PMMVY), कन्या जन्म, किशोरी व स्वास्थ्य योजनाओं हेतु",
+    offlinePoint1Action: "आंगनवाड़ी सेविका या आशा दीदी से मिलकर कागजी फॉर्म भरें, एमसीपी (MCP) कार्ड सत्यापित कराएं और ऑफलाइन जमा करें।",
+    offlinePoint2Title: "2. ग्राम पंचायत भवन / पंचायत सचिव (Gram Panchayat)",
+    offlinePoint2Role: "विधवा पेंशन (IGNWPS), वृद्धावस्था पेंशन, आवास व मनरेगा कार्ड हेतु",
+    offlinePoint2Action: "पंचायत कार्यालय में सचिव या ग्राम प्रधान/मुखिया से मिलकर पात्रता प्रमाणन व ऑफलाइन फॉर्म अग्रेषित कराएं।",
+    offlinePoint3Title: "3. जन सेवा केंद्र / CSC / ई-मित्र (Common Service Center)",
+    offlinePoint3Role: "सभी ऑनलाइन पोर्टल फॉर्म, आय/जाति/मूल निवास प्रमाण पत्र व बायोमेट्रिक KYC",
+    offlinePoint3Action: "मात्र ₹20 से ₹50 के सरकारी शुल्क पर दस्तावेज स्कैन कराएं, फॉर्म भरवाएं और पक्की रसीद (Acknowledgement) प्राप्त करें।",
     detailDocsAllReady: "सभी जरूरी कागजात तैयार हैं!",
     detailDocsMissingTip: "कागजात पूरे नहीं हैं? आप आय, जाति व निवास प्रमाण पत्र नजदीकी तहसील या जन सेवा केंद्र से बनवा सकते हैं।",
     detailOfficialPortalCTA: "आधिकारिक पोर्टल पर ऑनलाइन आवेदन करें",

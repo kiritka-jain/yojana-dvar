@@ -38,7 +38,10 @@ import {
   HelpCircle,
   FileText,
   Volume2,
-  VolumeX
+  VolumeX,
+  HeartHandshake,
+  Landmark,
+  Laptop
 } from 'lucide-react';
 
 const DEFAULT_PROFILE: ProfileInput = {
@@ -910,14 +913,95 @@ export const SchemeDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Offline Assistance Box (CSC / Anganwadi / Panchayat Kendra) */}
-            <div className="p-5 rounded-2xl bg-blue-50/80 border border-blue-200 text-xs sm:text-sm text-blue-950 space-y-1.5 shadow-2xs">
-              <span className="font-bold text-sm text-blue-900 block flex items-center gap-2">
-                <span>{t('detailCscCenterTitle')}</span>
-              </span>
-              <p className="leading-relaxed text-blue-900/90">
-                {t('detailCscCenterDesc')}
-              </p>
+            {/* ========================================================================= */}
+            {/* OFFLINE ASSISTANCE MODULE: गांव / वार्ड में कहां से आवेदन करें?          */}
+            {/* ========================================================================= */}
+            <div className="space-y-4 pt-2 border-t border-cream-200">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-saffron-600 flex-shrink-0" />
+                  <h3 className="text-sm sm:text-base font-bold text-charcoal-900">
+                    {t('offlineHelpTitle')}
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm text-charcoal-600">
+                  {t('offlineHelpSubtitle')}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                {/* Touchpoint 1: Anganwadi / ASHA Worker */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-rose-50/70 border border-rose-200 text-charcoal-800 space-y-3 flex flex-col justify-between shadow-2xs">
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center font-bold">
+                      <HeartHandshake className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xs sm:text-sm text-rose-950 leading-snug">
+                        {t('offlinePoint1Title')}
+                      </h4>
+                      <span className="text-[11px] font-semibold text-rose-800 block mt-0.5">
+                        {t('offlinePoint1Role')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-charcoal-700 leading-relaxed font-medium">
+                      {t('offlinePoint1Action')}
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-rose-200/60 flex items-center gap-1.5 text-[11px] font-bold text-rose-900">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-rose-600 flex-shrink-0" />
+                    <span>{siteLanguage === 'hi' ? '100% निःशुल्क मार्गदर्शन' : '100% Free Guidance'}</span>
+                  </div>
+                </div>
+
+                {/* Touchpoint 2: Gram Panchayat Secretary / Bhawan */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-charcoal-800 space-y-3 flex flex-col justify-between shadow-2xs">
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                      <Landmark className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xs sm:text-sm text-emerald-950 leading-snug">
+                        {t('offlinePoint2Title')}
+                      </h4>
+                      <span className="text-[11px] font-semibold text-emerald-800 block mt-0.5">
+                        {t('offlinePoint2Role')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-charcoal-700 leading-relaxed font-medium">
+                      {t('offlinePoint2Action')}
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-emerald-200/60 flex items-center gap-1.5 text-[11px] font-bold text-emerald-900">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                    <span>{siteLanguage === 'hi' ? 'पात्रता सत्यापन व अनुशंसा' : 'Eligibility & Verification'}</span>
+                  </div>
+                </div>
+
+                {/* Touchpoint 3: Common Service Center (CSC / e-Mitra) */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-blue-50/70 border border-blue-200 text-charcoal-800 space-y-3 flex flex-col justify-between shadow-2xs">
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                      <Laptop className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xs sm:text-sm text-blue-950 leading-snug">
+                        {t('offlinePoint3Title')}
+                      </h4>
+                      <span className="text-[11px] font-semibold text-blue-800 block mt-0.5">
+                        {t('offlinePoint3Role')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-charcoal-700 leading-relaxed font-medium">
+                      {t('offlinePoint3Action')}
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-blue-200/60 flex items-center gap-1.5 text-[11px] font-bold text-blue-900">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
+                    <span>{siteLanguage === 'hi' ? 'डिजिटल फॉर्म व पक्की रसीद' : 'Portal Upload & Receipt'}</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Official Link Action Buttons */}
