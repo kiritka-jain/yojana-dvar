@@ -98,6 +98,28 @@ class EligibilityMatcher:
         else:
             reasons.append(f"Age {profile.age} is within eligible range ({age_min}–{age_max} years)")
 
+        # 3.1 Life-Stage Incompatibility Hard Gate (Ticket YD-ENG-2.2)
+        tags_raw = scheme.get("life_stage_tags", "[\"general\"]")
+        try:
+            life_stage_tags = json.loads(tags_raw) if isinstance(tags_raw, str) else tags_raw
+        except Exception:
+            life_stage_tags = ["general"]
+
+        user_life_stage = profile.life_stage.strip().lower()
+        clean_tags = [str(t).strip().lower() for t in life_stage_tags if str(t).strip()]
+
+        # (a) Exclusive Student Scheme Incompatibility Gate:
+        # If scheme is exclusively for students and user age > 30 or user life_stage == "senior" -> Disqualify
+        if set(clean_tags) == {"student"}:
+            if profile.age > 30 or user_life_stage == "senior":
+                return False, 0, []
+
+        # (b) Maternal Scheme Incompatibility Gate:
+        # Maternal schemes are strictly for women in maternal age (18–50) and never seniors
+        if set(clean_tags) == {"maternal"} or "maternal" in str(scheme.get("category", "")).lower():
+            if profile.age < 18 or profile.age > 50 or user_life_stage == "senior":
+                return False, 0, []
+
         # 4. State Coverage Check
         scheme_state = str(scheme.get("state", "All")).strip()
         eligible_states_raw = scheme.get("eligible_states", "[\"All\"]")

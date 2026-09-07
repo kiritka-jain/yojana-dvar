@@ -312,3 +312,75 @@ def test_newborn_infant_age_0_matching(matcher):
     # Adult-only scheme should NOT be matched for age 0
     adult_matches = [s for s in res.schemes if s.age_min > 0]
     assert len(adult_matches) == 0
+
+
+# =============================================================================
+# 5. Ticket YD-ENG-2.2: Life-Stage Incompatibility Gate Tests
+# =============================================================================
+
+def test_senior_profile_incompatible_with_student_and_maternal_schemes(matcher):
+    """
+    Ticket YD-ENG-2.2 Acceptance Criteria:
+    A 65-year-old female profile (Uttarakhand, Senior) must NEVER match student scholarships
+    or maternal care schemes.
+    """
+    p_senior = ProfileInput(age=65, gender="Female", state="Uttarakhand", life_stage="senior", income=30000, is_bpl=True)
+    res = matcher.match_profile(p_senior)
+    assert res.count > 0
+
+    # Assert 0 student schemes returned
+    for scheme in res.schemes:
+        tags = [t.lower() for t in scheme.life_stage_tags if isinstance(t, str)] if isinstance(scheme.life_stage_tags, list) else []
+        assert "student" not in tags or "general" in tags or "senior" in tags, (
+            f"Senior citizen matched exclusive student scheme: {scheme.scheme_id} ({scheme.name})"
+        )
+        assert scheme.scheme_id not in [
+            "gaura-devi-kanya-dhan-yojana",
+            "moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme",
+            "kanyashree-prakalpa",
+            "post-graduate-indira-gandhi-scholarship-for-single-girl-child",
+            "pradhan-mantri-matru-vandana-yojana"
+        ]
+
+
+def test_age_35_excluded_from_exclusive_student_schemes(matcher, base_scheme):
+    """
+    Users aged > 30 must not be matched with exclusive student schemes.
+    """
+    base_scheme["life_stage_tags"] = '["student"]'
+    base_scheme["age_min"] = 14
+    base_scheme["age_max"] = 40  # Even if catalog max age allows up to 40
+
+    p_student_young = ProfileInput(age=20, gender="Female", state="All", life_stage="student")
+    eligible_young, _, _ = matcher.evaluate_scheme(p_student_young, base_scheme)
+    assert eligible_young is True
+
+    p_student_older = ProfileInput(age=35, gender="Female", state="All", life_stage="student")
+    eligible_older, _, _ = matcher.evaluate_scheme(p_student_older, base_scheme)
+    assert eligible_older is False
+
+
+def test_maternal_scheme_age_and_senior_incompatibility(matcher, base_scheme):
+    """
+    Maternal schemes must be strictly gated between 18 and 50 years, and never match senior profiles.
+    """
+    base_scheme["life_stage_tags"] = '["maternal"]'
+    base_scheme["category"] = "Maternal & Child Health"
+    base_scheme["age_min"] = 0
+    base_scheme["age_max"] = 100
+
+    # 1. Age 25 pregnant woman -> Eligible
+    p_maternal = ProfileInput(age=25, gender="Female", state="All", life_stage="maternal")
+    assert matcher.evaluate_scheme(p_maternal, base_scheme)[0] is True
+
+    # 2. Age 16 minor (general/student) -> Ineligible for maternal scheme
+    p_minor = ProfileInput(age=16, gender="Female", state="All", life_stage="student")
+    assert matcher.evaluate_scheme(p_minor, base_scheme)[0] is False
+
+    # 3. Age 55 woman (general) -> Ineligible for maternal scheme
+    p_older = ProfileInput(age=55, gender="Female", state="All", life_stage="general")
+    assert matcher.evaluate_scheme(p_older, base_scheme)[0] is False
+
+    # 4. Senior citizen (age 65, senior) -> Ineligible for maternal scheme
+    p_senior = ProfileInput(age=65, gender="Female", state="All", life_stage="senior")
+    assert matcher.evaluate_scheme(p_senior, base_scheme)[0] is False
