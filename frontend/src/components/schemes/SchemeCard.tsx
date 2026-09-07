@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { SchemeMatchResult } from '../../services/api';
 import { isLocalBookmarked, toggleLocalBookmark } from '../../services/api';
+import { getLocalizedSchemeField } from '../../i18n/schemeTranslations';
 
 interface SchemeCardProps {
   scheme: SchemeMatchResult;
@@ -35,13 +36,17 @@ export function parseLifeStageTags(rawTags: any): string[] {
 }
 
 export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [bookmarked, setBookmarked] = useState<boolean>(false);
 
   useEffect(() => {
     setBookmarked(isLocalBookmarked(scheme.scheme_id));
   }, [scheme.scheme_id]);
+
+  const displayName = getLocalizedSchemeField(scheme, 'name', language);
+  const displayMinistry = getLocalizedSchemeField(scheme, 'ministry', language);
+  const displayBenefits = getLocalizedSchemeField(scheme, 'benefits', language);
 
   const handleCardNavigate = () => {
     navigate(`/schemes/${scheme.scheme_id}`);
@@ -60,7 +65,7 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
     const newState = toggleLocalBookmark(scheme.scheme_id);
     setBookmarked(newState);
     if (onBookmarkChange) {
-      onBookmarkChange(scheme.scheme_id, newState, scheme.name);
+      onBookmarkChange(scheme.scheme_id, newState, displayName);
     }
   };
 
@@ -72,7 +77,7 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
       tabIndex={0}
       onClick={handleCardNavigate}
       onKeyDown={handleKeyDown}
-      aria-label={`${scheme.name} - ${scheme.ministry}`}
+      aria-label={`${displayName} - ${displayMinistry}`}
       className="cursor-pointer rounded-3xl border border-cream-300 bg-white p-6 shadow-card hover:shadow-card-hover hover:border-saffron-300 hover:-translate-y-1 focus:outline-none focus:ring-3 focus:ring-saffron-400 transition-all duration-200 flex flex-col justify-between group relative"
     >
       <div>
@@ -114,12 +119,12 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
         {/* ========================================================================= */}
         <div className="space-y-1 mb-4">
           <h3 className="text-lg sm:text-xl font-bold text-charcoal-900 group-hover:text-saffron-700 transition-colors leading-snug line-clamp-2">
-            {scheme.name}
+            {displayName}
           </h3>
 
           <p className="text-xs text-charcoal-700 flex items-center gap-1.5 font-semibold">
             <Building2 className="w-3.5 h-3.5 flex-shrink-0 text-saffron-600" />
-            <span className="line-clamp-1">{scheme.ministry}</span>
+            <span className="line-clamp-1">{displayMinistry}</span>
           </p>
         </div>
 
@@ -134,7 +139,7 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
                 {t('cardKeyBenefits')}
               </span>
               <p className="text-xs sm:text-sm font-medium text-forest-950 leading-relaxed line-clamp-3">
-                {scheme.benefits}
+                {displayBenefits}
               </p>
             </div>
           </div>

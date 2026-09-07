@@ -23,6 +23,8 @@ import {
   Loader2
 } from 'lucide-react';
 
+import { getLocalizedSchemeField } from '../i18n/schemeTranslations';
+
 export const Bookmarks: React.FC = () => {
   const { t, language } = useLanguage();
   const { token, isAuthenticated } = useAuth();
@@ -129,7 +131,7 @@ export const Bookmarks: React.FC = () => {
     return Array.from(set);
   }, [bookmarks]);
 
-  // Filtered bookmarks list
+  // Filtered bookmarks list with bilingual search matching
   const filteredBookmarks = useMemo(() => {
     return bookmarks.filter((b) => {
       if (selectedCategory !== 'all' && b.category !== selectedCategory) {
@@ -137,15 +139,25 @@ export const Bookmarks: React.FC = () => {
       }
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
+        const localizedName = getLocalizedSchemeField(b, 'name', language).toLowerCase();
+        const localizedBenefits = getLocalizedSchemeField(b, 'benefits', language).toLowerCase();
+        const localizedMinistry = getLocalizedSchemeField(b, 'ministry', language).toLowerCase();
+        const rawName = (b.name || '').toLowerCase();
+        const rawBenefits = (b.benefits || '').toLowerCase();
+        const rawMinistry = (b.ministry || '').toLowerCase();
+
         const matches = 
-          b.name.toLowerCase().includes(q) ||
-          (b.benefits && b.benefits.toLowerCase().includes(q)) ||
-          (b.ministry && b.ministry.toLowerCase().includes(q));
+          rawName.includes(q) ||
+          localizedName.includes(q) ||
+          rawBenefits.includes(q) ||
+          localizedBenefits.includes(q) ||
+          rawMinistry.includes(q) ||
+          localizedMinistry.includes(q);
         if (!matches) return false;
       }
       return true;
     });
-  }, [bookmarks, selectedCategory, searchQuery]);
+  }, [bookmarks, selectedCategory, searchQuery, language]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 relative">
