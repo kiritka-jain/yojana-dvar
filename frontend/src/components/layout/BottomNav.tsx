@@ -32,7 +32,7 @@ export const BottomNav: React.FC = () => {
       return path === '/';
     }
     if (tab === 'find') {
-      return path === '/find' || path === '/wizard' || path === '/results';
+      return path === '/find' || path === '/wizard' || path === '/results' || path.startsWith('/schemes/');
     }
     if (tab === 'bookmarks') {
       return path === '/bookmarks';

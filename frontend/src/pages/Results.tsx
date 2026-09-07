@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, useSearchParams, Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { SchemeCard, parseLifeStageTags } from '../components/schemes/SchemeCard';
 import { 
@@ -14,7 +14,7 @@ import {
   ArrowLeft, 
   Sparkles, 
   RotateCcw, 
-  X,
+  X, 
   BookmarkCheck,
   ChevronLeft,
   ChevronRight
@@ -22,6 +22,16 @@ import {
 import { INDIAN_STATES, UNION_TERRITORIES } from '../constants/states';
 
 export type CategoryFilterType = 'all' | 'education' | 'maternity' | 'business' | 'pension';
+
+export const normalizeCategoryParam = (param: string | null): CategoryFilterType => {
+  if (!param) return 'all';
+  const p = param.toLowerCase().trim();
+  if (['education', 'scholarship', 'scholarships', 'student', 'students', 'kanya'].includes(p)) return 'education';
+  if (['maternity', 'maternal', 'mother', 'mothers', 'pregnant', 'pregnancy', 'health', 'infant', 'child'].includes(p)) return 'maternity';
+  if (['business', 'entrepreneur', 'entrepreneurship', 'shg', 'startup', 'startups', 'credit', 'financial', 'livelihood'].includes(p)) return 'business';
+  if (['pension', 'pensions', 'senior', 'elderly', 'widow', 'widows', 'social_security'].includes(p)) return 'pension';
+  return 'all';
+};
 
 export const matchesState = (scheme: SchemeMatchResult, selectedState: string): boolean => {
   if (!selectedState || selectedState.toLowerCase() === 'all') return true;
@@ -188,22 +198,30 @@ const PAGE_SIZE = 9;
 export const Results: React.FC = () => {
   const { t, language } = useLanguage();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const catalogTopRef = useRef<HTMLDivElement>(null);
 
   const locationState = location.state as { matchData?: MatchResponse; profile?: ProfileInput } | undefined;
+
+  const initialCategory = normalizeCategoryParam(searchParams.get('category'));
+  const initialSearch = searchParams.get('q') || '';
+  const initialState = searchParams.get('state') || locationState?.profile?.state || 'all';
+  const rawScope = searchParams.get('scope');
+  const initialScope: 'all' | 'central' | 'state' = rawScope === 'central' || rawScope === 'state' ? rawScope : 'all';
+  const initialPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
 
   const [schemes, setSchemes] = useState<SchemeMatchResult[]>([]);
   const [loading, setLoading] = useState<boolean>(!locationState?.matchData);
 
   // Filter & Sort State
-  const [selectedCategory, setSelectedCategory] = useState<CategoryFilterType>('all');
-  const [selectedScope, setSelectedScope] = useState<'all' | 'central' | 'state'>('all');
-  const [selectedState, setSelectedState] = useState<string>(locationState?.profile?.state || 'all');
-  const [searchFilter, setSearchFilter] = useState<string>('');
-  const [debouncedSearch, setDebouncedSearch] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFilterType>(initialCategory);
+  const [selectedScope, setSelectedScope] = useState<'all' | 'central' | 'state'>(initialScope);
+  const [selectedState, setSelectedState] = useState<string>(initialState);
+  const [searchFilter, setSearchFilter] = useState<string>(initialSearch);
+  const [debouncedSearch, setDebouncedSearch] = useState<string>(initialSearch);
 
   // Pagination State
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(initialPage);
 
   // Toast Notification State for Bookmarks
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -216,9 +234,62 @@ export const Results: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchFilter]);
 
-  // Reset page to 1 whenever filters change
+  // Sync state when URL searchParams changes externally (navigation, browser back/forward, chips)
   useEffect(() => {
-    setCurrentPage(1);
+    const cat = normalizeCategoryParam(searchParams.get('category'));
+    const q = searchParams.get('q') || '';
+    const st = searchParams.get('state') || locationState?.profile?.state || 'all';
+    const rawSc = searchParams.get('scope');
+    const sc: 'all' | 'central' | 'state' = rawSc === 'central' || rawSc === 'state' ? rawSc : 'all';
+    const pg = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
+
+    setSelectedCategory((prev) => (prev !== cat ? cat : prev));
+    setSearchFilter((prev) => (prev !== q ? q : prev));
+    setDebouncedSearch((prev) => (prev !== q ? q : prev));
+    setSelectedState((prev) => (prev !== st ? st : prev));
+    setSelectedScope((prev) => (prev !== sc ? sc : prev));
+    setCurrentPage((prev) => (prev !== pg ? pg : prev));
+  }, [searchParams, locationState?.profile?.state]);
+
+  // Reflect active filter state into URL query parameters
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory !== 'all') {
+      params.set('category', selectedCategory);
+    }
+    if (debouncedSearch.trim()) {
+      params.set('q', debouncedSearch.trim());
+    }
+    if (selectedState !== 'all') {
+      params.set('state', selectedState);
+    }
+    if (selectedScope !== 'all') {
+      params.set('scope', selectedScope);
+    }
+    if (currentPage > 1) {
+      params.set('page', String(currentPage));
+    }
+
+    const currentQuery = searchParams.toString();
+    const newQuery = params.toString();
+    if (currentQuery !== newQuery) {
+      setSearchParams(params, { replace: true });
+    }
+  }, [selectedCategory, debouncedSearch, selectedState, selectedScope, currentPage, searchParams, setSearchParams]);
+
+  // Reset page to 1 whenever non-pagination filters change
+  const prevFiltersRef = useRef({ selectedCategory, selectedScope, selectedState, debouncedSearch });
+  useEffect(() => {
+    const prev = prevFiltersRef.current;
+    if (
+      prev.selectedCategory !== selectedCategory ||
+      prev.selectedScope !== selectedScope ||
+      prev.selectedState !== selectedState ||
+      prev.debouncedSearch !== debouncedSearch
+    ) {
+      prevFiltersRef.current = { selectedCategory, selectedScope, selectedState, debouncedSearch };
+      setCurrentPage(1);
+    }
   }, [selectedCategory, selectedScope, selectedState, debouncedSearch]);
 
   useEffect(() => {
@@ -231,26 +302,27 @@ export const Results: React.FC = () => {
     const loadDefaultSchemes = async () => {
       setLoading(true);
       try {
-        const defaultProfile: ProfileInput = {
-          state: 'Uttar Pradesh',
-          age: 26,
-          gender: 'Female',
-          caste: 'General',
-          income: 120000,
-          residence: 'All',
-          life_stage: 'maternal',
-          is_bpl: false,
-          has_disability: false,
-          limit: 38
-        };
-        const res = await matchSchemes(defaultProfile);
-        setSchemes(res.schemes);
-      } catch {
+        const searchRes = await searchSchemes('', '', '', 100);
+        setSchemes(searchRes.schemes);
+      } catch (searchErr) {
+        console.error("Failed to load catalog schemes via search, trying fallback:", searchErr);
         try {
-          const searchRes = await searchSchemes('', '', '', 50);
-          setSchemes(searchRes.schemes);
-        } catch (searchErr) {
-          console.error("Failed to load fallback schemes:", searchErr);
+          const defaultProfile: ProfileInput = {
+            state: 'all',
+            age: 25,
+            gender: 'Female',
+            caste: 'General',
+            income: 150000,
+            residence: 'All',
+            life_stage: 'all',
+            is_bpl: false,
+            has_disability: false,
+            limit: 50
+          };
+          const res = await matchSchemes(defaultProfile);
+          setSchemes(res.schemes);
+        } catch (fallbackErr) {
+          console.error("Failed to load fallback schemes:", fallbackErr);
         }
       } finally {
         setLoading(false);
@@ -357,6 +429,7 @@ export const Results: React.FC = () => {
     setSearchFilter('');
     setDebouncedSearch('');
     setCurrentPage(1);
+    setSearchParams(new URLSearchParams(), { replace: true });
   };
 
   const isFiltered = selectedScope !== 'all' || selectedState !== 'all' || selectedCategory !== 'all' || debouncedSearch.trim() !== '';

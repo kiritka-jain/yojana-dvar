@@ -59,7 +59,7 @@ export const Navbar: React.FC = () => {
             <Link
               to="/find"
               className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                isActive('/find') || isActive('/wizard') || isActive('/results')
+                isActive('/find') || isActive('/wizard') || isActive('/results') || location.pathname.startsWith('/schemes/')
                   ? 'bg-saffron-100 text-saffron-800 font-bold' 
                   : 'text-charcoal-700 hover:text-saffron-700 hover:bg-cream-100'
               }`}
@@ -174,7 +174,7 @@ export const Navbar: React.FC = () => {
                 to="/find"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
-                  isActive('/find') || isActive('/wizard') ? 'bg-forest-100 text-forest-900 font-semibold' : 'text-charcoal-800'
+                  isActive('/find') || isActive('/wizard') || isActive('/results') || location.pathname.startsWith('/schemes/') ? 'bg-saffron-100 text-saffron-900 font-semibold' : 'text-charcoal-800'
                 }`}
               >
                 {t('navFindSchemes')}
