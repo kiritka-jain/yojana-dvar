@@ -12,6 +12,7 @@ import type {
   ExplainResponse, 
   ProfileInput 
 } from '../services/api';
+import { getLocalizedSchemeField } from '../i18n/schemeTranslations';
 import { 
   ArrowLeft, 
   Sparkles, 
@@ -50,6 +51,35 @@ const DEFAULT_PROFILE: ProfileInput = {
   limit: 10
 };
 
+// Common Document Translations Dictionary for 100% Hindi Fidelity
+const COMMON_DOC_TRANSLATIONS: Record<string, { hi: string; hint_hi: string }> = {
+  'aadhaar': { hi: 'आधार कार्ड (Aadhaar Card)', hint_hi: 'पहचान व पते के सत्यापन हेतु' },
+  'bank passbook': { hi: 'बैंक पासबुक / खाता विवरण (Bank Passbook)', hint_hi: 'डीबीटी अनुदान सीधे बैंक खाते में प्राप्त करने हेतु' },
+  'bank account': { hi: 'बैंक खाता विवरण (Bank Details)', hint_hi: 'आधार से लिंक बैंक खाता संख्या व IFSC कोड' },
+  'income certificate': { hi: 'आय प्रमाण पत्र (Income Certificate)', hint_hi: 'तहसीलदार या सक्षम अधिकारी द्वारा जारी आय प्रमाण' },
+  'caste certificate': { hi: 'जाति प्रमाण पत्र (Caste Certificate)', hint_hi: 'आरक्षित श्रेणी प्रमाण पत्र (यदि लागू हो)' },
+  'domicile': { hi: 'मूल निवास प्रमाण पत्र (Domicile Certificate)', hint_hi: 'राज्य में स्थायी निवास का प्रमाण' },
+  'residence': { hi: 'निवास प्रमाण पत्र (Residence Certificate)', hint_hi: 'स्थानीय निवास सत्यापन हेतु' },
+  'passport': { hi: 'पासपोर्ट साइज फोटो (Passport Photos)', hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो' },
+  'photo': { hi: 'पासपोर्ट साइज फोटो (Passport Photos)', hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो' },
+  'bpl': { hi: 'बीपीएल राशन कार्ड (BPL / Antyodaya Card)', hint_hi: 'गरीबी रेखा कार्ड या अंत्योदय अन्न योजना कार्ड' },
+  'ration card': { hi: 'राशन कार्ड (Ration Card)', hint_hi: 'परिवार के सदस्यों के नाम सहित राशन कार्ड' },
+  'disability': { hi: 'दिव्यांगता प्रमाण पत्र (Disability / UDID Card)', hint_hi: 'सीएमओ द्वारा जारी 40%+ दिव्यांगता कार्ड' },
+  'birth certificate': { hi: 'जन्म प्रमाण पत्र (Birth Certificate)', hint_hi: 'बालिका/आवेदक की जन्म तिथि का प्रमाण' },
+  'age proof': { hi: 'आयु प्रमाण पत्र (Age Proof)', hint_hi: '10वीं अंकतालिका या जन्म प्रमाण पत्र' },
+  'educational': { hi: 'शैक्षणिक योग्यता प्रमाण पत्र (Educational Certificate)', hint_hi: 'अंकतालिका एवं विद्यालय/कॉलेज प्रमाण पत्र' },
+  'marksheet': { hi: 'अंकतालिका / प्रमाण पत्र (Marksheet)', hint_hi: 'कक्षा उत्तीर्ण करने का प्रमाण' },
+  'mcp card': { hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड' },
+  'mother and child': { hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड' },
+  'jan aadhaar': { hi: 'जन आधार कार्ड (Jan Aadhaar Card)', hint_hi: 'राजस्थान परिवार पहचान कार्ड' },
+  'land records': { hi: 'भूमि दस्तावेज / खतौनी (Land Records / RoR)', hint_hi: 'जमीन की जमाबंदी या पट्टा प्रति' },
+  'death certificate': { hi: 'पति का मृत्यु प्रमाण पत्र (Death Certificate)', hint_hi: 'नगर निगम या ग्राम पंचायत द्वारा जारी' },
+  'self-declaration': { hi: 'स्व-घोषणा पत्र (Self-Declaration)', hint_hi: 'शपथ पत्र या निर्धारित प्रारूप पर घोषणा' },
+  'affidavit': { hi: 'शपथ पत्र (Affidavit)', hint_hi: 'नोटरी या शपथ आयुक्त द्वारा सत्यापित' },
+  'mobile number': { hi: 'आधार लिंक मोबाइल नंबर (Mobile Number)', hint_hi: 'ओटीपी सत्यापन व एसएमएस सूचनाओं हेतु' },
+  'voter id': { hi: 'मतदाता पहचान पत्र (Voter ID)', hint_hi: 'वैकल्पिक पहचान पत्र' },
+};
+
 function parseDocuments(docString?: string): string[] {
   if (!docString) return [];
   return docString
@@ -58,9 +88,33 @@ function parseDocuments(docString?: string): string[] {
     .filter((d) => d.length > 2);
 }
 
+function localizeDocumentName(doc: string, lang: 'en' | 'hi'): { name: string; hint?: string } {
+  if (lang !== 'hi') return { name: doc };
+  const lower = doc.toLowerCase().trim();
+  for (const [key, val] of Object.entries(COMMON_DOC_TRANSLATIONS)) {
+    if (lower.includes(key)) {
+      return { name: val.hi, hint: val.hint_hi };
+    }
+  }
+  return { name: doc };
+}
+
+function localizeBeneficiaryType(type: string | undefined, lang: 'en' | 'hi'): string {
+  if (!type) return '';
+  if (lang !== 'hi') return type;
+  const lower = type.toLowerCase();
+  if (lower.includes('pregnant') || lower.includes('lactating')) return 'गर्भवती एवं धात्री माताएं (Pregnant & Lactating Mothers)';
+  if (lower.includes('widow')) return 'विधवा महिलाएं (Widows)';
+  if (lower.includes('student') || lower.includes('girl child') || lower.includes('girls')) return 'छात्राएं एवं बालिकाएं (Girl Students / Girls)';
+  if (lower.includes('entrepreneur') || lower.includes('shg') || lower.includes('women')) return 'महिलाएं एवं महिला उद्यमी (Women / SHGs)';
+  if (lower.includes('senior') || lower.includes('elderly')) return 'वरिष्ठ नागरिक महिलाएं (Senior Women)';
+  if (lower.includes('pwd') || lower.includes('disability')) return 'दिव्यांग महिलाएं (Women with Disabilities)';
+  if (lower.includes('farmer') || lower.includes('rural')) return 'महिला किसान एवं ग्रामीण महिलाएं (Rural Women)';
+  return type;
+}
+
 function parseEligibilityPoints(eligibilityText?: string): string[] {
   if (!eligibilityText) return [];
-  // Split on bullets, semicolons, or sentence delimiters
   const points = eligibilityText
     .split(/(?:•|\n|;|\.\s+)/)
     .map((p) => p.trim())
@@ -135,6 +189,27 @@ export const SchemeDetail: React.FC = () => {
       });
   }, [scheme?.scheme_id, siteLanguage]);
 
+  // Localized Fields from Translation Registry
+  const displayName = useMemo(() => {
+    if (!scheme) return '';
+    return getLocalizedSchemeField(scheme, 'name', siteLanguage);
+  }, [scheme, siteLanguage]);
+
+  const displayMinistry = useMemo(() => {
+    if (!scheme) return '';
+    return getLocalizedSchemeField(scheme, 'ministry', siteLanguage);
+  }, [scheme, siteLanguage]);
+
+  const displayCategory = useMemo(() => {
+    if (!scheme) return '';
+    return getLocalizedSchemeField(scheme, 'category', siteLanguage);
+  }, [scheme, siteLanguage]);
+
+  const displayBenefits = useMemo(() => {
+    if (!scheme) return '';
+    return getLocalizedSchemeField(scheme, 'benefits', siteLanguage);
+  }, [scheme, siteLanguage]);
+
   // Resilient fallback summary text if API is offline or generating
   const displaySummaryText = useMemo(() => {
     if (explanation?.summary && explanation.summary.trim().length > 0) {
@@ -143,10 +218,10 @@ export const SchemeDetail: React.FC = () => {
     if (!scheme) return '';
 
     if (siteLanguage === 'hi') {
-      return `${scheme.name} के अंतर्गत पात्र नागरिकों को ${scheme.benefits} प्रदान किया जाता है। यह योजना विशेष रूप से लक्षित लाभार्थियों को सामाजिक व आर्थिक सुरक्षा देने के लिए शुरू की गई है।`;
+      return `${displayName} के अंतर्गत पात्र लाभार्थियों को ${displayBenefits} प्रदान किया जाता है। यह योजना विशेष रूप से लक्षित नागरिकों को सामाजिक व आर्थिक सुरक्षा देने के लिए शुरू की गई है।`;
     }
-    return `Under ${scheme.name}, eligible beneficiaries receive ${scheme.benefits}. This initiative directly provides financial assistance and welfare support.`;
-  }, [scheme, explanation?.summary, siteLanguage]);
+    return `Under ${displayName}, eligible beneficiaries receive ${displayBenefits}. This initiative directly provides financial assistance and welfare support.`;
+  }, [scheme, displayName, displayBenefits, explanation?.summary, siteLanguage]);
 
   // Bookmark Toggle
   const handleBookmarkToggle = () => {
@@ -179,9 +254,98 @@ export const SchemeDetail: React.FC = () => {
     return Math.round((readyDocsCount / documentsList.length) * 100);
   }, [documentsList, readyDocsCount]);
 
-  const eligibilityPoints = useMemo(() => {
-    return parseEligibilityPoints(scheme?.eligibility_text);
-  }, [scheme?.eligibility_text]);
+  // Localized Snapshot Attributes
+  const displayCaste = useMemo(() => {
+    if (!scheme?.caste_categories || scheme.caste_categories.toLowerCase() === 'all') {
+      return siteLanguage === 'hi' ? 'सभी वर्ग (All Categories)' : 'All Categories';
+    }
+    if (siteLanguage === 'hi') {
+      return scheme.caste_categories
+        .replace(/General/gi, 'सामान्य')
+        .replace(/SC/gi, 'अनुसूचित जाति (SC)')
+        .replace(/ST/gi, 'अनुसूचित जनजाति (ST)')
+        .replace(/OBC/gi, 'अन्य पिछड़ा वर्ग (OBC)')
+        .replace(/Minority/gi, 'अल्पसंख्यक');
+    }
+    return scheme.caste_categories;
+  }, [scheme?.caste_categories, siteLanguage]);
+
+  const displayResidence = useMemo(() => {
+    if (!scheme?.residence || scheme.residence.toLowerCase() === 'both' || scheme.residence.toLowerCase() === 'all') {
+      return siteLanguage === 'hi' ? 'ग्रामीण व शहरी (Rural & Urban)' : 'Rural & Urban';
+    }
+    if (scheme.residence.toLowerCase() === 'rural') {
+      return siteLanguage === 'hi' ? 'केवल ग्रामीण (Rural)' : 'Rural Only';
+    }
+    if (scheme.residence.toLowerCase() === 'urban') {
+      return siteLanguage === 'hi' ? 'केवल शहरी (Urban)' : 'Urban Only';
+    }
+    return scheme.residence;
+  }, [scheme?.residence, siteLanguage]);
+
+  const displayGender = useMemo(() => {
+    if (!scheme?.gender || scheme.gender.toLowerCase() === 'female') {
+      return siteLanguage === 'hi' ? 'केवल महिलाएं (Female)' : 'Female';
+    }
+    if (scheme.gender.toLowerCase() === 'all') {
+      return siteLanguage === 'hi' ? 'सभी नागरिक (All)' : 'All';
+    }
+    return scheme.gender;
+  }, [scheme?.gender, siteLanguage]);
+
+  const isCentral = !scheme?.state || scheme.state.toLowerCase() === 'all' || scheme.state.toLowerCase() === 'all india';
+
+  // Structured localized eligibility points for Tab 2
+  const localizedEligibilityPoints = useMemo(() => {
+    if (!scheme) return [];
+    if (siteLanguage === 'hi') {
+      const points: string[] = [];
+      
+      // Age condition
+      if (scheme.age_min !== undefined || scheme.age_max !== undefined) {
+        const minA = scheme.age_min ?? 0;
+        const maxA = scheme.age_max ?? 100;
+        points.push(`आयु सीमा: आवेदक की आयु ${minA} से ${maxA} वर्ष के मध्य होनी चाहिए।`);
+      }
+
+      // Gender & Target Group
+      if (scheme.gender && scheme.gender.toLowerCase() === 'female') {
+        points.push(`लिंग पात्रता: यह योजना विशेष रूप से महिला लाभार्थियों एवं बालिकाओं के लिए है।`);
+      }
+
+      // State Residence
+      if (isCentral) {
+        points.push(`निवास पात्रता: संपूर्ण भारत के सभी राज्यों एवं केंद्र शासित प्रदेशों की नागरिक पात्र हैं।`);
+      } else {
+        points.push(`निवास पात्रता: आवेदक ${scheme.state} राज्य की स्थायी / मूल निवासी होनी चाहिए।`);
+      }
+
+      // Income limit
+      if (scheme.income_max && scheme.income_max > 0) {
+        points.push(`आय सीमा: पारिवारिक वार्षिक आय ₹${scheme.income_max.toLocaleString('en-IN')} से अधिक नहीं होनी चाहिए।`);
+      } else {
+        points.push(`आय सीमा: कोई अनिवार्य अधिकतम आय सीमा प्रतिबंध नहीं है।`);
+      }
+
+      // Priority criteria
+      if (scheme.requires_bpl) {
+        points.push(`राशन कार्ड: बीपीएल (BPL), अंत्योदय अथवा आर्थिक रूप से कमजोर वर्ग (EWS) परिवारों को प्राथमिकता दी जाती है।`);
+      }
+      if (scheme.requires_disability) {
+        points.push(`दिव्यांगता श्रेणी: 40% या अधिक दिव्यांगता (UDID कार्ड धारक) महिला लाभार्थियों के लिए विशेष सहायता उपलब्ध है।`);
+      }
+
+      // Append any specific additional lines if present in catalog eligibility text
+      const rawPoints = parseEligibilityPoints(scheme.eligibility_text);
+      if (rawPoints.length > 0 && points.length <= 2) {
+        points.push(...rawPoints);
+      }
+      return points;
+    }
+
+    // English Fallback
+    return parseEligibilityPoints(scheme.eligibility_text);
+  }, [scheme, siteLanguage, isCentral]);
 
   // Loading Skeleton State
   if (loading) {
@@ -232,8 +396,6 @@ export const SchemeDetail: React.FC = () => {
     );
   }
 
-  const isCentral = !scheme.state || scheme.state.toLowerCase() === 'all' || scheme.state.toLowerCase() === 'all india';
-
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 relative">
       
@@ -282,9 +444,9 @@ export const SchemeDetail: React.FC = () => {
               {isCentral ? `🏛️ ${t('tagCentral')}` : `📍 ${scheme.state} ${t('tagState')}`}
             </span>
 
-            {scheme.category && (
+            {displayCategory && (
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-saffron-50 text-saffron-800 border border-saffron-200">
-                🌱 {scheme.category}
+                🌱 {displayCategory}
               </span>
             )}
           </div>
@@ -306,11 +468,11 @@ export const SchemeDetail: React.FC = () => {
         {/* Scheme Title & Ministry */}
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-charcoal-900 tracking-tight leading-tight">
-            {scheme.name}
+            {displayName}
           </h1>
           <p className="text-xs sm:text-sm text-charcoal-700 mt-1.5 flex items-center gap-1.5 font-bold">
             <Building2 className="w-4 h-4 text-saffron-600 flex-shrink-0" />
-            <span>{scheme.ministry}</span>
+            <span>{displayMinistry}</span>
           </p>
         </div>
 
@@ -392,7 +554,7 @@ export const SchemeDetail: React.FC = () => {
                 <span>{siteLanguage === 'hi' ? 'मुख्य सहायता व वित्तीय लाभ' : 'Key Assistance & Financial Grants'}</span>
               </div>
               <p className="text-sm sm:text-base leading-relaxed font-semibold text-forest-900">
-                {scheme.benefits}
+                {displayBenefits}
               </p>
             </div>
 
@@ -422,7 +584,8 @@ export const SchemeDetail: React.FC = () => {
               <div className="p-4 rounded-2xl bg-cream-100/70 border border-cream-200 flex items-center gap-3 text-xs sm:text-sm text-charcoal-700">
                 <Tag className="w-4 h-4 text-saffron-600 flex-shrink-0" />
                 <span>
-                  <strong className="text-charcoal-900">{siteLanguage === 'hi' ? 'लक्षित लाभार्थी:' : 'Target Beneficiaries:'}</strong> {scheme.beneficiary_type}
+                  <strong className="text-charcoal-900">{siteLanguage === 'hi' ? 'लक्षित लाभार्थी:' : 'Target Beneficiaries:'}</strong>{' '}
+                  {localizeBeneficiaryType(scheme.beneficiary_type, siteLanguage)}
                 </span>
               </div>
             )}
@@ -471,7 +634,7 @@ export const SchemeDetail: React.FC = () => {
                   <span>{t('detailCaste')}</span>
                 </div>
                 <div className="font-bold text-charcoal-900 text-sm line-clamp-1">
-                  {scheme.caste_categories || (siteLanguage === 'hi' ? 'सभी वर्ग' : 'All Categories')}
+                  {displayCaste}
                 </div>
               </div>
 
@@ -481,7 +644,7 @@ export const SchemeDetail: React.FC = () => {
                   <span>{t('detailResidence')}</span>
                 </div>
                 <div className="font-bold text-charcoal-900 text-sm">
-                  {scheme.residence || (siteLanguage === 'hi' ? 'ग्रामीण व शहरी' : 'Rural & Urban')}
+                  {displayResidence}
                 </div>
               </div>
             </div>
@@ -502,7 +665,7 @@ export const SchemeDetail: React.FC = () => {
               )}
               {scheme.gender && (
                 <span className="px-3 py-1 rounded-xl text-xs font-bold bg-cream-100 text-charcoal-800 border border-cream-300">
-                  {siteLanguage === 'hi' ? 'लिंग:' : 'Gender:'} {scheme.gender}
+                  {siteLanguage === 'hi' ? 'लिंग:' : 'Gender:'} {displayGender}
                 </span>
               )}
             </div>
@@ -513,7 +676,7 @@ export const SchemeDetail: React.FC = () => {
                 {siteLanguage === 'hi' ? 'विस्तृत पात्रता विवरण:' : 'Detailed Eligibility Criteria:'}
               </h3>
               <div className="space-y-2.5">
-                {eligibilityPoints.map((point, idx) => (
+                {localizedEligibilityPoints.map((point, idx) => (
                   <div 
                     key={idx} 
                     className="p-3.5 rounded-2xl bg-cream-50/80 border border-cream-200 flex items-start gap-3 text-xs sm:text-sm text-charcoal-800 leading-relaxed"
@@ -570,11 +733,12 @@ export const SchemeDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Interactive Document Checklist Items */}
+            {/* Interactive Document Checklist Items with Localized Names & Context Hints */}
             {documentsList.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {documentsList.map((doc, idx) => {
                   const isChecked = !!checkedDocs[doc];
+                  const docInfo = localizeDocumentName(doc, siteLanguage);
                   return (
                     <button
                       key={idx}
@@ -592,8 +756,15 @@ export const SchemeDetail: React.FC = () => {
                         <Square className="w-5 h-5 text-charcoal-400 flex-shrink-0 mt-0.5" />
                       )}
                       <div className="space-y-0.5">
-                        <span className="text-xs sm:text-sm leading-snug block">{doc}</span>
-                        <span className="text-[10px] text-charcoal-500 block">
+                        <span className="text-xs sm:text-sm leading-snug block font-medium">
+                          {docInfo.name}
+                        </span>
+                        {docInfo.hint && (
+                          <span className="text-[11px] text-charcoal-500 block">
+                            💡 {docInfo.hint}
+                          </span>
+                        )}
+                        <span className="text-[10px] text-charcoal-500 block pt-0.5">
                           {isChecked ? `✓ ${t('detailDocReady')}` : `○ ${t('detailDocPending')}`}
                         </span>
                       </div>
@@ -733,4 +904,5 @@ export const SchemeDetail: React.FC = () => {
 };
 
 export default SchemeDetail;
+
 
