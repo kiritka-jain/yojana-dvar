@@ -6,8 +6,7 @@ import {
   CheckCircle2,
   ArrowRight,
   ShieldCheck,
-  Lock,
-  Clock
+  Lock
 } from 'lucide-react';
 
 export const Home: React.FC = () => {
@@ -36,44 +35,9 @@ export const Home: React.FC = () => {
           </h1>
 
           {/* Simplified, High-Contrast Subtitle */}
-          <p className="text-base sm:text-lg text-charcoal-700 max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed font-medium">
+          <p className="text-base sm:text-lg text-charcoal-700 max-w-2xl mx-auto leading-relaxed font-medium">
             {t('heroSubtitle')}
           </p>
-
-          {/* 1-Tap Quick Category Discovery Chips (Accessible 48px+ tap targets) */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 max-w-2xl mx-auto">
-            <span className="text-xs font-semibold text-charcoal-500 hidden sm:inline mr-1">
-              {t('heroQuickSearch')}
-            </span>
-            <button
-              type="button"
-              onClick={() => navigate('/results?category=education')}
-              className="min-h-[48px] px-4 py-2.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-sm font-medium transition-all hover:scale-102 active:scale-98 cursor-pointer flex items-center justify-center shadow-xs"
-            >
-              {t('heroChipScholarship')}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/results?category=maternity')}
-              className="min-h-[48px] px-4 py-2.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-sm font-medium transition-all hover:scale-102 active:scale-98 cursor-pointer flex items-center justify-center shadow-xs"
-            >
-              {t('heroChipMaternity')}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/results?category=business')}
-              className="min-h-[48px] px-4 py-2.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-sm font-medium transition-all hover:scale-102 active:scale-98 cursor-pointer flex items-center justify-center shadow-xs"
-            >
-              {t('heroChipBusiness')}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/results?category=pension')}
-              className="min-h-[48px] px-4 py-2.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-sm font-medium transition-all hover:scale-102 active:scale-98 cursor-pointer flex items-center justify-center shadow-xs"
-            >
-              {t('heroChipPension')}
-            </button>
-          </div>
 
         </div>
       </section>
@@ -84,22 +48,6 @@ export const Home: React.FC = () => {
           {/* Subtle decorative glow */}
           <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 rounded-full bg-terracotta/20 blur-2xl pointer-events-none" />
-
-          {/* Quick Feature Badges (3-Minute, 100% Free, No Login) */}
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 relative z-10">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs sm:text-sm font-semibold border border-white/30 shadow-xs">
-              <Clock className="w-4 h-4 text-amber-300 flex-shrink-0" />
-              <span>{t('badgeQuickTime')}</span>
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs sm:text-sm font-semibold border border-white/30 shadow-xs">
-              <CheckCircle2 className="w-4 h-4 text-emerald-300 flex-shrink-0" />
-              <span>{t('badgeFreeService')}</span>
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs sm:text-sm font-semibold border border-white/30 shadow-xs">
-              <Lock className="w-4 h-4 text-sky-200 flex-shrink-0" />
-              <span>{t('badgeNoLogin')}</span>
-            </span>
-          </div>
 
           {/* Title & Subtitle */}
           <div className="space-y-3 max-w-2xl mx-auto relative z-10">

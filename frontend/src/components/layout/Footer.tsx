@@ -22,10 +22,6 @@ export const Footer: React.FC = () => {
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm text-charcoal-600 max-w-md leading-relaxed">
-              {t('heroSubtitle')}
-            </p>
-
             {/* Integrated Compact Advisory Note */}
             <div className="inline-flex items-start gap-2 p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 max-w-md">
               <ShieldCheck className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
