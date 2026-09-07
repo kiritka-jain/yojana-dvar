@@ -259,6 +259,14 @@ export interface TranslationDictionary {
   detailSchemeNotFound: string;
   detailSchemeNotFoundDesc: string;
 
+  // Text-to-Speech (TTS) Audio Narration
+  ttsListen: string;
+  ttsSpeaking: string;
+  ttsStop: string;
+  ttsNotSupported: string;
+  ttsPlayTooltip: string;
+  ttsStopTooltip: string;
+
   // AI Explanation Component
   aiExplainTitle: string;
   aiExplainSubtitle: string;
@@ -588,6 +596,14 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailSchemeNotFound: "Scheme Not Found",
     detailSchemeNotFoundDesc: "The requested welfare scheme could not be found in our database.",
 
+    // Text-to-Speech (TTS) Audio Narration
+    ttsListen: "Listen",
+    ttsSpeaking: "Speaking...",
+    ttsStop: "Stop",
+    ttsNotSupported: "Audio narration is not supported on this browser.",
+    ttsPlayTooltip: "Listen to scheme details in audio",
+    ttsStopTooltip: "Stop audio narration",
+
     // AI Explanation Component
     aiExplainTitle: "Plain-Language Summary",
     aiExplainSubtitle: "Easy-to-understand explanation of benefits and required steps",
@@ -913,6 +929,14 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailOfficialWebsite: "मंत्रालय की आधिकारिक वेबसाइट",
     detailSchemeNotFound: "योजना नहीं मिली",
     detailSchemeNotFoundDesc: "अनुरोधित सरकारी योजना कैटलॉग में नहीं मिली।",
+
+    // Text-to-Speech (TTS) Audio Narration
+    ttsListen: "सुनें",
+    ttsSpeaking: "सुनाया जा रहा है...",
+    ttsStop: "रोकें",
+    ttsNotSupported: "आपके ब्राउज़र में वॉइस सुविधा उपलब्ध नहीं है।",
+    ttsPlayTooltip: "योजना के मुख्य लाभ और विवरण बोलकर सुनें",
+    ttsStopTooltip: "आवाज बंद करें",
 
     // AI Explanation Component
     aiExplainTitle: "योजना का सरल सार",

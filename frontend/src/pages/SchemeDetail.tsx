@@ -13,6 +13,7 @@ import type {
   ProfileInput 
 } from '../services/api';
 import { getLocalizedSchemeField } from '../i18n/schemeTranslations';
+import { useSpeech } from '../utils/speech';
 import { 
   ArrowLeft, 
   Sparkles, 
@@ -35,7 +36,9 @@ import {
   Tag,
   ShieldCheck,
   HelpCircle,
-  FileText
+  FileText,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 
 const DEFAULT_PROFILE: ProfileInput = {
@@ -148,6 +151,10 @@ export const SchemeDetail: React.FC = () => {
   const [explanation, setExplanation] = useState<ExplainResponse | null>(null);
   const [explainLoading, setExplainLoading] = useState<boolean>(false);
 
+  // Web Speech Text-to-Speech Controller Hook
+  const { speak, stop, isSpeaking, supported: speechSupported } = useSpeech();
+  const isSchemeSpeaking = isSpeaking(scheme?.scheme_id);
+
   // Fetch Scheme Details
   useEffect(() => {
     if (!id) return;
@@ -222,6 +229,21 @@ export const SchemeDetail: React.FC = () => {
     }
     return `Under ${displayName}, eligible beneficiaries receive ${displayBenefits}. This initiative directly provides financial assistance and welfare support.`;
   }, [scheme, displayName, displayBenefits, explanation?.summary, siteLanguage]);
+
+  // Audio Narration Handler
+  const handleAudioNarration = () => {
+    if (isSchemeSpeaking) {
+      stop();
+    } else {
+      const textToSpeak = siteLanguage === 'hi'
+        ? `${displayName}। ${displayMinistry}। ${displaySummaryText}`
+        : `${displayName}. ${displayMinistry}. ${displaySummaryText}`;
+      speak(textToSpeak, {
+        id: scheme?.scheme_id,
+        lang: siteLanguage
+      });
+    }
+  };
 
   // Bookmark Toggle
   const handleBookmarkToggle = () => {
@@ -451,18 +473,48 @@ export const SchemeDetail: React.FC = () => {
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={handleBookmarkToggle}
-            aria-label={bookmarked ? t('btnBookmarked') : t('btnBookmark')}
-            className={`min-w-[48px] min-h-[48px] p-2.5 rounded-2xl border transition-all flex items-center justify-center ${
-              bookmarked 
-                ? 'bg-saffron-100 text-saffron-700 border-saffron-300 shadow-xs' 
-                : 'border-cream-300 text-charcoal-700 hover:bg-cream-100 hover:text-saffron-700'
-            }`}
-          >
-            <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-saffron-500 text-saffron-600' : ''}`} />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Audio Narration Button */}
+            {speechSupported && (
+              <button
+                type="button"
+                onClick={handleAudioNarration}
+                aria-label={isSchemeSpeaking ? t('ttsStopTooltip') : t('ttsPlayTooltip')}
+                title={isSchemeSpeaking ? t('ttsStopTooltip') : t('ttsPlayTooltip')}
+                className={`min-h-[48px] px-4 py-2 rounded-2xl border transition-all flex items-center justify-center gap-2 font-bold text-xs sm:text-sm ${
+                  isSchemeSpeaking
+                    ? 'bg-saffron-500 text-white border-saffron-600 shadow-md ring-2 ring-saffron-300 animate-pulse'
+                    : 'bg-saffron-50/90 hover:bg-saffron-100 text-saffron-800 border-saffron-200 shadow-2xs'
+                }`}
+              >
+                {isSchemeSpeaking ? (
+                  <>
+                    <VolumeX className="w-4 h-4 text-white flex-shrink-0" />
+                    <span>{t('ttsStop')}</span>
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="w-4 h-4 text-saffron-700 flex-shrink-0" />
+                    <span>{t('ttsListen')}</span>
+                  </>
+                )}
+              </button>
+            )}
+
+            {/* Bookmark Toggle Button */}
+            <button
+              type="button"
+              onClick={handleBookmarkToggle}
+              aria-label={bookmarked ? t('btnBookmarked') : t('btnBookmark')}
+              className={`min-w-[48px] min-h-[48px] p-2.5 rounded-2xl border transition-all flex items-center justify-center ${
+                bookmarked 
+                  ? 'bg-saffron-100 text-saffron-700 border-saffron-300 shadow-xs' 
+                  : 'border-cream-300 text-charcoal-700 hover:bg-cream-100 hover:text-saffron-700'
+              }`}
+            >
+              <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-saffron-500 text-saffron-600' : ''}`} />
+            </button>
+          </div>
         </div>
 
         {/* Scheme Title & Ministry */}

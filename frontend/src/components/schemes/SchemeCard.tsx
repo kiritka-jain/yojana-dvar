@@ -6,11 +6,14 @@ import {
   CheckCircle2, 
   ArrowRight, 
   Building2,
-  Gift
+  Gift,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import type { SchemeMatchResult } from '../../services/api';
 import { isLocalBookmarked, toggleLocalBookmark } from '../../services/api';
 import { getLocalizedSchemeField } from '../../i18n/schemeTranslations';
+import { useSpeech } from '../../utils/speech';
 
 interface SchemeCardProps {
   scheme: SchemeMatchResult;
@@ -39,6 +42,9 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [bookmarked, setBookmarked] = useState<boolean>(false);
+  const { speak, stop, isSpeaking, supported } = useSpeech();
+
+  const isCardSpeaking = isSpeaking(scheme.scheme_id);
 
   useEffect(() => {
     setBookmarked(isLocalBookmarked(scheme.scheme_id));
@@ -69,6 +75,22 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
     }
   };
 
+  const handleAudioNarration = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isCardSpeaking) {
+      stop();
+    } else {
+      const speechText = language === 'hi'
+        ? `${displayName}। ${displayMinistry}। मुख्य लाभ: ${displayBenefits}।`
+        : `${displayName}. ${displayMinistry}. Key Benefits: ${displayBenefits}.`;
+      speak(speechText, {
+        id: scheme.scheme_id,
+        lang: language
+      });
+    }
+  };
+
   const isCentral = !scheme.state || scheme.state.toLowerCase() === 'all' || scheme.state.toLowerCase() === 'all india';
 
   return (
@@ -82,9 +104,9 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
     >
       <div>
         {/* ========================================================================= */}
-        {/* ELEMENT 1 & 2: Top Row (Binary Eligibility Badge + Scope Pill + Bookmark)  */}
+        {/* ELEMENT 1 & 2: Top Row (Binary Eligibility Badge + Scope Pill + Actions)   */}
         {/* ========================================================================= */}
-        <div className="flex items-center justify-between gap-3 mb-3.5">
+        <div className="flex items-center justify-between gap-2 mb-3.5 flex-wrap">
           <div className="flex flex-wrap items-center gap-2">
             {/* Element 2: Binary Eligibility Badge */}
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 ring-1 ring-emerald-200 shadow-2xs">
@@ -98,20 +120,50 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
             </span>
           </div>
 
-          {/* Bookmark Toggle Button */}
-          <button
-            type="button"
-            onClick={handleBookmarkClick}
-            aria-label={bookmarked ? t('btnBookmarked') : t('btnBookmark')}
-            title={bookmarked ? t('btnBookmarked') : t('btnBookmark')}
-            className={`min-w-[44px] min-h-[44px] sm:min-w-[48px] sm:min-h-[48px] p-2.5 rounded-xl transition-all duration-200 flex items-center justify-center flex-shrink-0 ${
-              bookmarked 
-                ? 'bg-saffron-100 text-saffron-700 border border-saffron-300 scale-105 shadow-xs' 
-                : 'text-charcoal-600 hover:text-saffron-700 hover:bg-cream-100 border border-cream-200/60'
-            }`}
-          >
-            <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-saffron-500 text-saffron-600' : 'text-charcoal-700'}`} />
-          </button>
+          {/* Action Buttons (TTS Listen + Bookmark) */}
+          <div className="flex items-center gap-1.5">
+            {/* TTS Audio Narration Button */}
+            {supported && (
+              <button
+                type="button"
+                onClick={handleAudioNarration}
+                aria-label={isCardSpeaking ? t('ttsStopTooltip') : t('ttsPlayTooltip')}
+                title={isCardSpeaking ? t('ttsStopTooltip') : t('ttsPlayTooltip')}
+                className={`min-h-[40px] px-3 py-1.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 flex-shrink-0 ${
+                  isCardSpeaking
+                    ? 'bg-saffron-500 text-white shadow-md ring-2 ring-saffron-300 animate-pulse'
+                    : 'text-saffron-800 bg-saffron-50 hover:bg-saffron-100 hover:text-saffron-900 border border-saffron-200'
+                }`}
+              >
+                {isCardSpeaking ? (
+                  <>
+                    <VolumeX className="w-3.5 h-3.5 text-white" />
+                    <span className="text-xs font-bold">{t('ttsStop')}</span>
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="w-3.5 h-3.5 text-saffron-700" />
+                    <span className="text-xs font-bold">{t('ttsListen')}</span>
+                  </>
+                )}
+              </button>
+            )}
+
+            {/* Bookmark Toggle Button */}
+            <button
+              type="button"
+              onClick={handleBookmarkClick}
+              aria-label={bookmarked ? t('btnBookmarked') : t('btnBookmark')}
+              title={bookmarked ? t('btnBookmarked') : t('btnBookmark')}
+              className={`min-w-[40px] min-h-[40px] p-2 rounded-xl transition-all duration-200 flex items-center justify-center flex-shrink-0 ${
+                bookmarked 
+                  ? 'bg-saffron-100 text-saffron-700 border border-saffron-300 scale-105 shadow-xs' 
+                  : 'text-charcoal-600 hover:text-saffron-700 hover:bg-cream-100 border border-cream-200/60'
+              }`}
+            >
+              <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-saffron-500 text-saffron-600' : 'text-charcoal-700'}`} />
+            </button>
+          </div>
         </div>
 
         {/* ========================================================================= */}
