@@ -48,7 +48,10 @@ const EDUCATION_OPTIONS = [
 ];
 
 export const isLifeStageAllowed = (stageKey: string, age: number): { allowed: boolean; reason?: string } => {
-  if (stageKey === 'maternal' && age < 18) {
+  if (stageKey === 'student' && age > 35) {
+    return { allowed: false, reason: 'age_restricted' };
+  }
+  if (stageKey === 'maternal' && (age < 18 || age > 50)) {
     return { allowed: false, reason: 'age_restricted' };
   }
   if (stageKey === 'widow' && age < 18) {
@@ -907,7 +910,7 @@ export const Wizard: React.FC = () => {
                           </span>
                           {isDisabled && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100/90 border border-amber-300/80 px-2 py-0.5 rounded-md flex-shrink-0">
-                              ⚠️ {ls.val === 'senior' ? t('fieldLifeStageSeniorAgeRestricted') : ls.val === 'widow' ? t('fieldLifeStageWidowAgeRestricted') : ls.val === 'entrepreneur' ? t('fieldLifeStageEntrepreneurAgeRestricted') : t('fieldLifeStageMaternalAgeRestricted')}
+                              ⚠️ {ls.val === 'senior' ? t('fieldLifeStageSeniorAgeRestricted') : ls.val === 'widow' ? t('fieldLifeStageWidowAgeRestricted') : ls.val === 'entrepreneur' ? t('fieldLifeStageEntrepreneurAgeRestricted') : ls.val === 'student' ? t('fieldLifeStageStudentAgeRestricted') : t('fieldLifeStageMaternalAgeRestricted')}
                             </span>
                           )}
                         </div>

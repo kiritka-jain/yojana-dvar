@@ -132,6 +132,7 @@ export interface TranslationDictionary {
 
   fieldLifeStage: string;
   fieldLifeStageStudent: string;
+  fieldLifeStageStudentAgeRestricted: string;
   fieldLifeStageMaternal: string;
   fieldLifeStageMaternalAgeRestricted: string;
   fieldLifeStageEntrepreneur: string;
@@ -461,8 +462,9 @@ export const translations: Record<Language, TranslationDictionary> = {
 
     fieldLifeStage: "Current Stage of Life",
     fieldLifeStageStudent: "Student / Higher Education",
+    fieldLifeStageStudentAgeRestricted: "Requires age ≤ 35",
     fieldLifeStageMaternal: "Pregnant / Expecting Mother",
-    fieldLifeStageMaternalAgeRestricted: "Requires age 18+",
+    fieldLifeStageMaternalAgeRestricted: "Requires age 18–50",
     fieldLifeStageEntrepreneur: "Self-Employed / SHG Member",
     fieldLifeStageEntrepreneurAgeRestricted: "Requires age 18+",
     fieldLifeStageSenior: "Senior Citizen (60+)",
@@ -786,8 +788,9 @@ export const translations: Record<Language, TranslationDictionary> = {
 
     fieldLifeStage: "वर्तमान परिस्थिति",
     fieldLifeStageStudent: "छात्रा / उच्च शिक्षा (Student)",
+    fieldLifeStageStudentAgeRestricted: "अधिकतम 35 वर्ष तक",
     fieldLifeStageMaternal: "गर्भवती / धात्री माता (Maternal)",
-    fieldLifeStageMaternalAgeRestricted: "18+ वर्ष आवश्यक",
+    fieldLifeStageMaternalAgeRestricted: "18–50 वर्ष आवश्यक",
     fieldLifeStageEntrepreneur: "महिला उद्यमी / SHG सदस्य (Business)",
     fieldLifeStageEntrepreneurAgeRestricted: "18+ वर्ष आवश्यक",
     fieldLifeStageSenior: "वरिष्ठ नागरिक (Senior 60+)",
