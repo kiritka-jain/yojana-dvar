@@ -515,8 +515,8 @@ def extract_caste_categories(text: str) -> list:
         if "OBC" not in categories:
             categories.append("OBC")
 
-    # Check General
-    if "general" in text_clean or "all caste" in text_clean:
+    # Check General / EWS
+    if "general" in text_clean or "all caste" in text_clean or "ews" in text_clean:
         if "General" not in categories:
             categories.append("General")
 
@@ -562,11 +562,14 @@ def extract_boolean_flags(text: str) -> dict:
     ]
     requires_bpl = any(kw in text_clean for kw in bpl_keywords)
 
-    # Disability Indicators
-    disability_keywords = [
-        "disability", "disabled", "divyang", "specially abled", "handicap", "orthopedic"
-    ]
-    requires_disability = any(kw in text_clean for kw in disability_keywords)
+    # Disability Indicators (only if not an optional alternate clause like 'or disability certificate')
+    if "or disability certificate" in text_clean or "or divyang certificate" in text_clean:
+        requires_disability = False
+    else:
+        disability_keywords = [
+            "disability", "disabled", "divyang", "specially abled", "handicap", "orthopedic"
+        ]
+        requires_disability = any(kw in text_clean for kw in disability_keywords)
 
     return {
         "requires_bpl": requires_bpl,
@@ -799,10 +802,33 @@ def transform_json_record(item: dict) -> dict:
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }
 
+def normalize_canonical_name(name: str) -> str:
+    """Normalizes a scheme name by stripping parenthetical acronyms, non-alphanumeric characters, and whitespace."""
+    if not name:
+        return ""
+    n = name.lower().strip()
+    n = re.sub(r'\(.*?\)', '', n)
+    n = re.sub(r'[^a-z0-9]', '', n)
+    return n
+
+def get_canonical_slug(existing_id: str, incoming_id: str, scheme_name: str) -> str:
+    """Determines the most descriptive, canonical slug for a scheme record."""
+    standard_slug = slugify(scheme_name)
+    if existing_id and incoming_id and existing_id == incoming_id and not existing_id.startswith("hf-scheme-"):
+        return existing_id
+    candidates = [existing_id, incoming_id, standard_slug]
+    valid = [c for c in candidates if c and not c.startswith("hf-scheme-")]
+    if standard_slug in valid:
+        return standard_slug
+    if valid:
+        return max(valid, key=len)
+    return standard_slug or existing_id or incoming_id
+
 def merge_scheme_records(existing: dict, incoming: dict) -> dict:
     """
-    Intelligently merges two scheme records sharing the same scheme_id (Ticket 3.1).
+    Intelligently merges two scheme records sharing the same scheme_id or canonical name (Ticket 1.1 / 3.1).
     Applies field-specific conflict resolution rules:
+      - Canonical Slug: selects cleanest, descriptive slug.
       - Narratives: selects longer, more comprehensive text.
       - Ministry/Department/Category: prefers specific names over generic defaults.
       - URLs: prefers valid HTTPS/HTTP URLs over empty/placeholder strings.
@@ -815,6 +841,12 @@ def merge_scheme_records(existing: dict, incoming: dict) -> dict:
     # 1. Names and Core Identifiers
     if not merged.get("name") and incoming.get("name"):
         merged["name"] = incoming["name"]
+
+    merged["scheme_id"] = get_canonical_slug(
+        existing.get("scheme_id", ""),
+        incoming.get("scheme_id", ""),
+        merged.get("name", "")
+    )
 
     # 2. Narrative Fields (Prefer longer, more informative content)
     narrative_fields = [
@@ -945,7 +977,6 @@ def merge_scheme_records(existing: dict, incoming: dict) -> dict:
         merged["age_min"] = new_min
         merged["age_max"] = new_max
     else:
-        # Fall back to existing bounds if conflicting tighter bounds cross over
         merged["age_min"] = ex_min
         merged["age_max"] = ex_max
 
@@ -977,20 +1008,35 @@ def merge_scheme_records(existing: dict, incoming: dict) -> dict:
 
 def merge_and_deduplicate_schemes(records: list) -> list:
     """
-    Deduplicates a list of transformed scheme records by scheme_id, applying
-    intelligent field conflict resolution via merge_scheme_records (Ticket 3.1).
+    Deduplicates a list of transformed scheme records by canonical name normalization
+    and scheme_id, applying intelligent field conflict resolution via merge_scheme_records (Ticket 1.1).
     """
-    schemes_by_id = {}
+    schemes_by_key = {}
     collision_count = 0
 
     for rec in records:
-        sid = rec.get("scheme_id")
-        if not sid:
+        sid = str(rec.get("scheme_id", "")).strip()
+        name = str(rec.get("name", "")).strip()
+        if not sid and not name:
             continue
-        if sid not in schemes_by_id:
-            schemes_by_id[sid] = rec
+
+        norm_name = normalize_canonical_name(name)
+        primary_key = norm_name if norm_name else sid
+
+        if primary_key not in schemes_by_key:
+            schemes_by_key[primary_key] = rec
         else:
-            schemes_by_id[sid] = merge_scheme_records(schemes_by_id[sid], rec)
+            schemes_by_key[primary_key] = merge_scheme_records(schemes_by_key[primary_key], rec)
+            collision_count += 1
+
+    # Secondary resolution: ensure unique scheme_ids among all deduplicated records
+    schemes_by_id = {}
+    for rec in schemes_by_key.values():
+        rec_id = rec.get("scheme_id")
+        if rec_id not in schemes_by_id:
+            schemes_by_id[rec_id] = rec
+        else:
+            schemes_by_id[rec_id] = merge_scheme_records(schemes_by_id[rec_id], rec)
             collision_count += 1
 
     deduplicated = sorted(list(schemes_by_id.values()), key=lambda x: x.get("name", ""))
@@ -1120,6 +1166,13 @@ def main():
             writer.writeheader()
             writer.writerows(final_schemes)
         print(f"✓ Saved processed CSV catalog:  {out_csv_path}")
+
+    # Save to data/processed/schemes_women.ndjson
+    out_ndjson_path = os.path.join(DATA_PROCESSED_DIR, "schemes_women.ndjson")
+    with open(out_ndjson_path, "w", encoding="utf-8") as f:
+        for s in final_schemes:
+            f.write(json.dumps(s, ensure_ascii=False) + "\n")
+    print(f"✓ Saved processed NDJSON catalog: {out_ndjson_path}")
 
     print("==================================================")
     print("✓ Ticket 4.1 Synchronized Catalog & ETL Complete!")

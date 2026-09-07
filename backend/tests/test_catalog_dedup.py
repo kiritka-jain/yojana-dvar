@@ -213,7 +213,62 @@ def test_merge_and_deduplicate_schemes_uniqueness():
     deduped = merge_and_deduplicate_schemes(records)
     assert len(deduped) == 2
     
-    pmmvy = next(s for s in deduped if s["scheme_id"] == "pm-matru-vandana")
+    pmmvy = next(s for s in deduped if "matru" in s["scheme_id"])
     assert pmmvy["description"] == "Much longer comprehensive description of PMMVY maternity benefits."
     assert pmmvy["requires_bpl"] is True
     assert set(json.loads(pmmvy["life_stage_tags"])) == {"maternal", "general"}
+
+
+def test_merge_different_slugs_same_canonical_name():
+    """Verify that records with different slugs but same canonical name are merged (Ticket 1.1)."""
+    records = [
+        {
+            "scheme_id": "pradhan-mantri-matru-vandana-yojana",
+            "name": "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+            "description": "Kaggle record description",
+            "ministry": "Ministry of Women and Child Development",
+            "life_stage_tags": json.dumps(["maternal"])
+        },
+        {
+            "scheme_id": "pmmvy-central",
+            "name": "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+            "description": "Seed CSV record description",
+            "ministry": "Ministry of Women and Child Development",
+            "life_stage_tags": json.dumps(["general"])
+        },
+        {
+            "scheme_id": "hf-scheme-001",
+            "name": "Post Graduate Indira Gandhi Scholarship for Single Girl Child",
+            "description": "HF json record",
+            "ministry": "UGC",
+            "life_stage_tags": json.dumps(["student"])
+        },
+        {
+            "scheme_id": "post-graduate-indira-gandhi-scholarship-for-single-girl-child",
+            "name": "Post Graduate Indira Gandhi Scholarship for Single Girl Child",
+            "description": "Kaggle record",
+            "ministry": "Ministry of Education",
+            "life_stage_tags": json.dumps(["student"])
+        }
+    ]
+    deduped = merge_and_deduplicate_schemes(records)
+    assert len(deduped) == 2
+    slugs = [s["scheme_id"] for s in deduped]
+    assert "pradhan-mantri-matru-vandana-yojana" in slugs
+    assert "post-graduate-indira-gandhi-scholarship-for-single-girl-child" in slugs
+
+
+def test_processed_catalog_has_zero_duplicates():
+    """Verify that the actual processed catalog contains zero duplicate names or slugs."""
+    catalog_path = os.path.join(os.path.dirname(__file__), "../data/processed/schemes_women.json")
+    assert os.path.exists(catalog_path), f"Processed catalog missing at {catalog_path}"
+    with open(catalog_path, "r", encoding="utf-8") as f:
+        schemes = json.load(f)
+
+    slugs = [s["scheme_id"] for s in schemes]
+    names = [s["name"] for s in schemes]
+
+    assert len(slugs) == len(set(slugs)), f"Duplicate slugs found: {[s for s in slugs if slugs.count(s) > 1]}"
+    assert len(names) == len(set(names)), f"Duplicate names found: {[n for n in names if names.count(n) > 1]}"
+    assert len(schemes) == 30, f"Expected exactly 30 unique schemes, found {len(schemes)}"
+

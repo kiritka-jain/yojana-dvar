@@ -28,6 +28,17 @@ def _find_catalog_path() -> str:
 
 PROCESSED_CATALOG_PATH = _find_catalog_path()
 
+SCHEME_ID_ALIASES: Dict[str, str] = {
+    "pmmvy-central": "pradhan-mantri-matru-vandana-yojana",
+    "ssy-central": "sukanya-samriddhi-yojana",
+    "step-central": "support-to-training-and-employment-programme-for-women",
+    "standup-india-women": "stand-up-india-scheme-for-women-entrepreneurs",
+    "ignwps-pension": "indira-gandhi-national-widow-pension-scheme",
+    "hf-scheme-001": "post-graduate-indira-gandhi-scholarship-for-single-girl-child",
+    "hf-scheme-002": "mahila-samman-savings-certificate",
+    "hf-scheme-003": "working-women-hostel-scheme",
+}
+
 class EligibilityMatcher:
     """Deterministic rule-based eligibility match engine for Yojana Dvar."""
 
@@ -44,6 +55,17 @@ class EligibilityMatcher:
             else:
                 self._catalog_cache = []
         return self._catalog_cache
+
+    def get_scheme_by_id(self, scheme_id: str) -> Optional[Dict[str, Any]]:
+        """Resolves a scheme by its canonical ID or legacy alias."""
+        target_id = scheme_id.strip().lower()
+        resolved_id = SCHEME_ID_ALIASES.get(target_id, target_id)
+        catalog = self.get_catalog()
+        for scheme in catalog:
+            sid = str(scheme.get("scheme_id", "")).strip().lower()
+            if sid == resolved_id or sid == target_id:
+                return scheme
+        return None
 
     def evaluate_scheme(self, profile: ProfileInput, scheme: Dict[str, Any]) -> Tuple[bool, int, List[str]]:
         """

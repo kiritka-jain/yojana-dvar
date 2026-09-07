@@ -139,16 +139,12 @@ async def search_schemes(
 )
 async def get_scheme_by_id(scheme_id: str):
     """
-    Retrieve full details for a specific scheme by ID slug.
+    Retrieve full details for a specific scheme by ID slug or alias.
     Raises HTTP 404 if scheme does not exist.
     """
-    catalog = matcher_service.get_catalog()
-    target_id = scheme_id.strip().lower()
-    
-    for scheme in catalog:
-        sid = str(scheme.get("scheme_id", "")).strip().lower()
-        if sid == target_id:
-            return scheme
+    scheme = matcher_service.get_scheme_by_id(scheme_id)
+    if scheme:
+        return scheme
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,

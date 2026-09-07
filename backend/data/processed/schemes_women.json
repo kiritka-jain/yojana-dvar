@@ -25,7 +25,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.985676+00:00"
+    "updated_at": "2026-09-07T02:47:32.575882+00:00"
   },
   {
     "scheme_id": "gaura-devi-kanya-dhan-yojana",
@@ -53,7 +53,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.986295+00:00"
+    "updated_at": "2026-09-07T02:47:32.576557+00:00"
   },
   {
     "scheme_id": "griha-aadhar-scheme",
@@ -81,7 +81,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.986409+00:00"
+    "updated_at": "2026-09-07T02:47:32.576682+00:00"
   },
   {
     "scheme_id": "gruha-lakshmi-scheme",
@@ -109,7 +109,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.984000+00:00"
+    "updated_at": "2026-09-07T02:47:32.574065+00:00"
   },
   {
     "scheme_id": "indira-gandhi-national-widow-pension-scheme",
@@ -118,40 +118,12 @@
     "ministry": "Ministry of Rural Development",
     "department": "National Social Assistance Programme (NSAP)",
     "state": "All",
-    "category": "Social welfare & Empowerment",
-    "beneficiary_type": "Widows from BPL households",
+    "category": "Pension & Social Security",
+    "beneficiary_type": "Widows aged 40-79 years belonging to BPL households",
     "benefits": "Monthly direct bank transfer pension of Rs 300 (central component) plus matching state top-up (often reaching Rs 1,000 to Rs 2,500/month depending on state).",
     "eligibility_text": "Widow aged between 40 and 79 years living below the poverty line (BPL) as verified by local authorities or SECC lists.",
     "documents_required": "Husband's Death Certificate, Aadhaar Card, BPL Ration Card, Bank Passbook, Age Verification Proof.",
     "application_process": "Apply through the local Gram Panchayat office, Block Development Office (BDO), or online on the NSAP Portal (nsap.nic.in).",
-    "apply_url": "https://nsap.nic.in/",
-    "official_url": "https://nsap.nic.in/",
-    "age_min": 40,
-    "age_max": 79,
-    "gender": "Female",
-    "caste_categories": "[\"All\"]",
-    "income_max": 0,
-    "residence": "All",
-    "eligible_states": "[\"All\"]",
-    "requires_bpl": true,
-    "requires_disability": false,
-    "life_stage_tags": "[\"widow\", \"senior\"]",
-    "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.982108+00:00"
-  },
-  {
-    "scheme_id": "ignwps-pension",
-    "name": "Indira Gandhi National Widow Pension Scheme (IGNWPS)",
-    "description": "Widow aged between 40 and 79 years who belongs to a household below the poverty line (BPL) as per central guidelines.",
-    "ministry": "Ministry of Rural Development",
-    "department": "National Social Assistance Programme (NSAP)",
-    "state": "All",
-    "category": "Pension & Social Security",
-    "beneficiary_type": "Widows aged 40-79 years belonging to BPL households",
-    "benefits": "Monthly pension of Rs 300 to Rs 1,000 (with state contribution top-up) directly disbursed to beneficiary bank accounts.",
-    "eligibility_text": "Widow aged between 40 and 79 years who belongs to a household below the poverty line (BPL) as per central guidelines.",
-    "documents_required": "Death Certificate of Husband, BPL Ration Card, Aadhaar Card, Bank Account Details, Age Proof",
-    "application_process": "Apply online at https://nsap.nic.in/.",
     "apply_url": "https://nsap.nic.in/",
     "official_url": "https://nsap.nic.in/",
     "age_min": 40,
@@ -163,9 +135,9 @@
     "eligible_states": "[\"All\"]",
     "requires_bpl": true,
     "requires_disability": false,
-    "life_stage_tags": "[\"widow\", \"senior\"]",
+    "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.986901+00:00"
+    "updated_at": "2026-09-07T02:47:32.599792+00:00"
   },
   {
     "scheme_id": "kanya-sumangala-mukhyamantri-kanya-vivah-yojana",
@@ -193,7 +165,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.986009+00:00"
+    "updated_at": "2026-09-07T02:47:32.576243+00:00"
   },
   {
     "scheme_id": "kanyashree-prakalpa",
@@ -221,7 +193,7 @@
     "requires_disability": true,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.983600+00:00"
+    "updated_at": "2026-09-07T02:47:32.573632+00:00"
   },
   {
     "scheme_id": "kudumbashree-women-empowerment-livelihood-mission",
@@ -249,7 +221,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.984544+00:00"
+    "updated_at": "2026-09-07T02:47:32.574672+00:00"
   },
   {
     "scheme_id": "mahalakshmi-scheme",
@@ -277,15 +249,15 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.984175+00:00"
+    "updated_at": "2026-09-07T02:47:32.574250+00:00"
   },
   {
     "scheme_id": "mahila-samman-savings-certificate",
     "name": "Mahila Samman Savings Certificate (MSSC)",
     "description": "Government-guaranteed short-term savings certificate designed exclusively for women and girls offering attractive fixed returns.",
-    "ministry": "Ministry of Finance",
+    "ministry": "Department of Posts / Ministry of Finance",
     "department": "Department of Economic Affairs",
-    "state": "All",
+    "state": "All India",
     "category": "Banking, Financial Services and Insurance",
     "beneficiary_type": "Women and Girls",
     "benefits": "7.5% fixed interest rate compounded quarterly. Deposit limits from Rs 1,000 up to Rs 2 Lakh for a 2-year tenor. Partial withdrawal of up to 40% allowed after 1 year.",
@@ -305,35 +277,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.982559+00:00"
-  },
-  {
-    "scheme_id": "hf-scheme-002",
-    "name": "Mahila Samman Savings Certificate (MSSC)",
-    "description": "One-time small savings scheme for women and girls offering guaranteed 7.5% fixed interest per annum for a 2-year tenor.",
-    "ministry": "Department of Posts / Ministry of Finance",
-    "department": "Financial Security & Savings",
-    "state": "All India",
-    "category": "Financial Security & Savings",
-    "beneficiary_type": "Women & Girls",
-    "benefits": "7.5% fixed interest rate compounded quarterly. Deposit up to Rs 2 Lakhs. Partial withdrawal up to 40% allowed after 1 year.",
-    "eligibility_text": "One-time small savings scheme for women and girls offering guaranteed 7.5% fixed interest per annum for a 2-year tenor.",
-    "documents_required": "Aadhaar Card, PAN Card, KYC Form, Passport size photo",
-    "application_process": "Submit application via official portal: https://www.indiapost.gov.in/",
-    "apply_url": "https://www.indiapost.gov.in/",
-    "official_url": "https://www.indiapost.gov.in/",
-    "age_min": 0,
-    "age_max": 100,
-    "gender": "Female",
-    "caste_categories": "[\"All\"]",
-    "income_max": 0,
-    "residence": "All",
-    "eligible_states": "[\"All\"]",
-    "requires_bpl": false,
-    "requires_disability": false,
-    "life_stage_tags": "[\"general\"]",
-    "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.987173+00:00"
+    "updated_at": "2026-09-07T02:47:32.599830+00:00"
   },
   {
     "scheme_id": "maiya-samman-yojana",
@@ -361,7 +305,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.985838+00:00"
+    "updated_at": "2026-09-07T02:47:32.576058+00:00"
   },
   {
     "scheme_id": "mission-shakti-odisha",
@@ -389,7 +333,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.985113+00:00"
+    "updated_at": "2026-09-07T02:47:32.575273+00:00"
   },
   {
     "scheme_id": "moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme",
@@ -417,7 +361,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.983479+00:00"
+    "updated_at": "2026-09-07T02:47:32.573499+00:00"
   },
   {
     "scheme_id": "mukhya-mantri-kanya-sumangala-yojana",
@@ -445,7 +389,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.983296+00:00"
+    "updated_at": "2026-09-07T02:47:32.573271+00:00"
   },
   {
     "scheme_id": "mukhyamantri-chiranjeevi-swasthya-bima-yojana",
@@ -473,7 +417,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"maternal\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.984955+00:00"
+    "updated_at": "2026-09-07T02:47:32.575103+00:00"
   },
   {
     "scheme_id": "mukhyamantri-kanya-utthan-yojana",
@@ -501,7 +445,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.984752+00:00"
+    "updated_at": "2026-09-07T02:47:32.574884+00:00"
   },
   {
     "scheme_id": "mukhyamantri-ladli-behna-yojana",
@@ -529,7 +473,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"senior\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.983706+00:00"
+    "updated_at": "2026-09-07T02:47:32.573748+00:00"
   },
   {
     "scheme_id": "mukhyamantri-mahila-samman-yojana",
@@ -557,7 +501,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.986152+00:00"
+    "updated_at": "2026-09-07T02:47:32.576403+00:00"
   },
   {
     "scheme_id": "mukhyamantri-mahila-utkarsh-yojana",
@@ -585,7 +529,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.985245+00:00"
+    "updated_at": "2026-09-07T02:47:32.575416+00:00"
   },
   {
     "scheme_id": "mukhyamantri-majhi-ladki-bahin-yojana",
@@ -613,7 +557,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.983805+00:00"
+    "updated_at": "2026-09-07T02:47:32.573856+00:00"
   },
   {
     "scheme_id": "orunodoi-20-scheme",
@@ -641,7 +585,7 @@
     "requires_disability": true,
     "life_stage_tags": "[\"senior\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.985518+00:00"
+    "updated_at": "2026-09-07T02:47:32.575712+00:00"
   },
   {
     "scheme_id": "pm-street-vendors-atmanirbhar-nidhi",
@@ -669,15 +613,15 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.983125+00:00"
+    "updated_at": "2026-09-07T02:47:32.573082+00:00"
   },
   {
     "scheme_id": "post-graduate-indira-gandhi-scholarship-for-single-girl-child",
     "name": "Post Graduate Indira Gandhi Scholarship for Single Girl Child",
     "description": "Financial scholarship to promote higher education among single girl children and offset the direct and indirect costs of university studies.",
-    "ministry": "Ministry of Education",
+    "ministry": "University Grants Commission (UGC) / Ministry of Education",
     "department": "University Grants Commission (UGC)",
-    "state": "All",
+    "state": "All India",
     "category": "Education & Learning",
     "beneficiary_type": "Single Girl Children pursuing Post-Graduation",
     "benefits": "Direct scholarship stipend of Rs 36,200 per annum (Rs 3,100 per month) for 2 years of regular master's degree program.",
@@ -686,34 +630,6 @@
     "application_process": "Register and submit scholarship form online through the National Scholarship Portal (scholarships.gov.in).",
     "apply_url": "https://scholarships.gov.in/",
     "official_url": "https://scholarships.gov.in/",
-    "age_min": 0,
-    "age_max": 30,
-    "gender": "Female",
-    "caste_categories": "[\"All\"]",
-    "income_max": 0,
-    "residence": "All",
-    "eligible_states": "[\"All\"]",
-    "requires_bpl": false,
-    "requires_disability": false,
-    "life_stage_tags": "[\"student\"]",
-    "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.982933+00:00"
-  },
-  {
-    "scheme_id": "hf-scheme-001",
-    "name": "Post Graduate Indira Gandhi Scholarship for Single Girl Child",
-    "description": "Scholarship of Rs 36,200 per annum for 2 years to support single girl child pursuing PG degree courses in non-professional streams.",
-    "ministry": "University Grants Commission (UGC) / Ministry of Education",
-    "department": "Higher Education",
-    "state": "All India",
-    "category": "Higher Education",
-    "beneficiary_type": "Women & Girls",
-    "benefits": "Rs 3,100 per month (Rs 36,200 p.a.) for 2 years duration of PG course.",
-    "eligibility_text": "Scholarship of Rs 36,200 per annum for 2 years to support single girl child pursuing PG degree courses in non-professional streams.",
-    "documents_required": "Proof of Single Girl Child (Affidavit on stamp paper), Aadhaar Card, Graduation Marksheet, PG Admission Verification",
-    "application_process": "Submit application via official portal: https://scholarships.gov.in/",
-    "apply_url": "https://scholarships.gov.in/",
-    "official_url": "https://www.ugc.gov.in/",
     "age_min": 18,
     "age_max": 30,
     "gender": "Female",
@@ -725,7 +641,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.987132+00:00"
+    "updated_at": "2026-09-07T02:47:32.599813+00:00"
   },
   {
     "scheme_id": "pradhan-mantri-matru-vandana-yojana",
@@ -734,46 +650,18 @@
     "ministry": "Ministry of Women and Child Development",
     "department": "Department of Women and Child Development",
     "state": "All",
-    "category": "Social welfare & Empowerment",
+    "category": "Maternal & Child Health",
     "beneficiary_type": "Pregnant Women and Lactating Mothers",
     "benefits": "Direct cash benefit of Rs 5,000 in two installments for the first child, and Rs 6,000 in a single installment for a second child if the infant is a girl child.",
     "eligibility_text": "Pregnant and lactating women aged 19 to 45 years. Must belong to SC, ST, BPL, EWS, or hold MGNREGA card or disability certificate. Excludes regular government employees.",
     "documents_required": "Aadhaar Card of mother and husband, Mother and Child Protection (MCP) Card, Bank Account Details linked with Aadhaar, Income/BPL Certificate.",
     "application_process": "Register online via the PMMVY Citizen Portal (pmmvy.wcd.gov.in) or offline at nearest Anganwadi Center / approved health facility (ASHA worker).",
     "apply_url": "https://pmmvy.wcd.gov.in/",
-    "official_url": "https://pmmvy.wcd.gov.in/",
-    "age_min": 19,
-    "age_max": 45,
-    "gender": "Female",
-    "caste_categories": "[\"SC\", \"ST\"]",
-    "income_max": 0,
-    "residence": "All",
-    "eligible_states": "[\"All\"]",
-    "requires_bpl": true,
-    "requires_disability": true,
-    "life_stage_tags": "[\"maternal\"]",
-    "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.980998+00:00"
-  },
-  {
-    "scheme_id": "pmmvy-central",
-    "name": "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
-    "description": "Pregnant Women and Lactating Mothers (PW&LM) aged 19 years and above for first live child. Must belong to BPL, SC/ST, or hold MGNREGA job card.",
-    "ministry": "Ministry of Women and Child Development",
-    "department": "Department of Women and Child Development",
-    "state": "All",
-    "category": "Maternal & Child Health",
-    "beneficiary_type": "Pregnant women and lactating mothers",
-    "benefits": "Financial benefit of Rs 5,000 in two installments directly into bank/post office account for first live child, and Rs 6,000 for second child if girl child.",
-    "eligibility_text": "Pregnant Women and Lactating Mothers (PW&LM) aged 19 years and above for first live child. Must belong to BPL, SC/ST, or hold MGNREGA job card.",
-    "documents_required": "Aadhaar Card, Bank Account Details, Mother and Child Protection (MCP) Card, Identity Proof, BPL Ration Card / Income Certificate",
-    "application_process": "Apply online at https://pmmvy.wcd.gov.in/.",
-    "apply_url": "https://pmmvy.wcd.gov.in/",
     "official_url": "https://wcd.gov.in/schemes/pradhan-mantri-matru-vandana-yojana",
     "age_min": 19,
     "age_max": 45,
     "gender": "Female",
-    "caste_categories": "[\"All\"]",
+    "caste_categories": "[\"General\", \"SC\", \"ST\"]",
     "income_max": 250000,
     "residence": "All",
     "eligible_states": "[\"All\"]",
@@ -781,7 +669,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"maternal\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.986661+00:00"
+    "updated_at": "2026-09-07T02:47:32.599699+00:00"
   },
   {
     "scheme_id": "pradhan-mantri-ujjwala-yojana",
@@ -809,40 +697,12 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\", \"general\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.982266+00:00"
-  },
-  {
-    "scheme_id": "standup-india-women",
-    "name": "Stand Up India Scheme for Women Entrepreneurs",
-    "description": "SC/ST and/or woman entrepreneur above 18 years of age. Enterprise must be greenfield (first time venture). In non-individual entities, 51% shareholding must be held by woman or SC/ST.",
-    "ministry": "Ministry of Finance",
-    "department": "Department of Financial Services",
-    "state": "All",
-    "category": "Entrepreneurship & Loans",
-    "beneficiary_type": "SC/ST and Women entrepreneurs",
-    "benefits": "Bank loans between Rs 10 Lakh and Rs 1 Crore for setting up a greenfield enterprise in manufacturing, services, or trading sector.",
-    "eligibility_text": "SC/ST and/or woman entrepreneur above 18 years of age. Enterprise must be greenfield (first time venture). In non-individual entities, 51% shareholding must be held by woman or SC/ST.",
-    "documents_required": "Aadhaar Card, PAN Card, Project Profile, Bank Statements, Proof of Business Address, Category Certificate",
-    "application_process": "Apply online at https://www.standupmitra.in/.",
-    "apply_url": "https://www.standupmitra.in/",
-    "official_url": "https://www.standupmitra.in/",
-    "age_min": 18,
-    "age_max": 70,
-    "gender": "Female",
-    "caste_categories": "[\"All\"]",
-    "income_max": 0,
-    "residence": "All",
-    "eligible_states": "[\"All\"]",
-    "requires_bpl": false,
-    "requires_disability": false,
-    "life_stage_tags": "[\"entrepreneur\"]",
-    "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.986846+00:00"
+    "updated_at": "2026-09-07T02:47:32.572147+00:00"
   },
   {
     "scheme_id": "stand-up-india-scheme-for-women-entrepreneurs",
     "name": "Stand-Up India Scheme for Women Entrepreneurs",
-    "description": "Facilitates bank loans between Rs 10 Lakh and Rs 1 Crore to at least one SC/ST borrower and at least one woman borrower per bank branch for greenfield enterprises.",
+    "description": "SC/ST and/or woman entrepreneur above 18 years of age. Enterprise must be greenfield (first time venture). In non-individual entities, 51% shareholding must be held by woman or SC/ST.",
     "ministry": "Ministry of Finance",
     "department": "Department of Financial Services",
     "state": "All",
@@ -855,7 +715,7 @@
     "apply_url": "https://www.standupmitra.in/",
     "official_url": "https://www.standupmitra.in/",
     "age_min": 18,
-    "age_max": 100,
+    "age_max": 70,
     "gender": "Female",
     "caste_categories": "[\"SC\", \"ST\"]",
     "income_max": 0,
@@ -865,7 +725,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.981972+00:00"
+    "updated_at": "2026-09-07T02:47:32.599773+00:00"
   },
   {
     "scheme_id": "sukanya-samriddhi-yojana",
@@ -893,35 +753,7 @@
     "requires_disability": false,
     "life_stage_tags": "[\"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.981629+00:00"
-  },
-  {
-    "scheme_id": "ssy-central",
-    "name": "Sukanya Samriddhi Yojana (SSY)",
-    "description": "Girl child who is an Indian resident aged below 10 years. Account opened by parents or legal guardians. Maximum 2 accounts per family.",
-    "ministry": "Ministry of Finance",
-    "department": "Department of Economic Affairs",
-    "state": "All",
-    "category": "Girl Child & Education",
-    "beneficiary_type": "Girl child below 10 years of age",
-    "benefits": "High tax-free interest rate (currently 8.2% p.a.), tax savings under Section 80C, partial withdrawal for higher education at age 18, maturity at 21 years.",
-    "eligibility_text": "Girl child who is an Indian resident aged below 10 years. Account opened by parents or legal guardians. Maximum 2 accounts per family.",
-    "documents_required": "Birth Certificate of Girl Child, Identity & Address Proof of Guardian, Passport size photos",
-    "application_process": "Apply online at https://www.indiapost.gov.in/Financial/Pages/Content/Sukanya-Samriddhi-Account.aspx.",
-    "apply_url": "https://www.indiapost.gov.in/Financial/Pages/Content/Sukanya-Samriddhi-Account.aspx",
-    "official_url": "https://nsiindia.gov.in/",
-    "age_min": 0,
-    "age_max": 10,
-    "gender": "Female",
-    "caste_categories": "[\"All\"]",
-    "income_max": 0,
-    "residence": "All",
-    "eligible_states": "[\"All\"]",
-    "requires_bpl": false,
-    "requires_disability": false,
-    "life_stage_tags": "[\"student\"]",
-    "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.986723+00:00"
+    "updated_at": "2026-09-07T02:47:32.599728+00:00"
   },
   {
     "scheme_id": "support-to-training-and-employment-programme-for-women",
@@ -930,46 +762,18 @@
     "ministry": "Ministry of Women and Child Development",
     "department": "Bureau of Women Empowerment",
     "state": "All",
-    "category": "Skills & Employment",
-    "beneficiary_type": "Women and Artisans",
+    "category": "Skill Development & Employment",
+    "beneficiary_type": "Women aged 16 years and above",
     "benefits": "Free modular training across traditional and modern skill sectors (handlooms, agro-processing, IT, healthcare, stitching), stipend during training, and placement support.",
-    "eligibility_text": "Women aged 16 years and above, with priority for rural, urban poor, SC/ST, widows, and distressed female breadwinners.",
-    "documents_required": "Aadhaar Card, Age proof, Residential Certificate, Income Certificate.",
+    "eligibility_text": "Women aged 16 years and above looking for skill development and employment, prioritizing marginalized, SC/ST, and rural women.",
+    "documents_required": "Aadhaar Card, Age Proof, Educational Certificate (if any), Caste Certificate",
     "application_process": "Apply through registered NGOs, State Women Development Corporations, or district skill development training centers.",
     "apply_url": "https://wcd.gov.in/schemes/support-training-and-employment-programme-women-step",
     "official_url": "https://wcd.gov.in/schemes/support-training-and-employment-programme-women-step",
     "age_min": 16,
-    "age_max": 100,
-    "gender": "Female",
-    "caste_categories": "[\"SC\", \"ST\"]",
-    "income_max": 0,
-    "residence": "All",
-    "eligible_states": "[\"All\"]",
-    "requires_bpl": false,
-    "requires_disability": false,
-    "life_stage_tags": "[\"entrepreneur\"]",
-    "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.981792+00:00"
-  },
-  {
-    "scheme_id": "step-central",
-    "name": "Support to Training and Employment Programme for Women (STEP)",
-    "description": "Women aged 16 years and above looking for skill development and employment, prioritizing marginalized, SC/ST, and rural women.",
-    "ministry": "Ministry of Women and Child Development",
-    "department": "Bureau of Women Empowerment",
-    "state": "All",
-    "category": "Skill Development & Employment",
-    "beneficiary_type": "Women aged 16 years and above",
-    "benefits": "Free skill training in traditional sectors (agriculture, horticulture, handlooms, handicrafts, tailors, IT) and support for wage employment/self-employment.",
-    "eligibility_text": "Women aged 16 years and above looking for skill development and employment, prioritizing marginalized, SC/ST, and rural women.",
-    "documents_required": "Aadhaar Card, Age Proof, Educational Certificate (if any), Caste Certificate",
-    "application_process": "Apply online at https://wcd.gov.in/schemes/support-training-and-employment-programme-women-step.",
-    "apply_url": "https://wcd.gov.in/schemes/support-training-and-employment-programme-women-step",
-    "official_url": "https://wcd.gov.in/",
-    "age_min": 16,
     "age_max": 60,
     "gender": "Female",
-    "caste_categories": "[\"All\"]",
+    "caste_categories": "[\"SC\", \"ST\"]",
     "income_max": 180000,
     "residence": "All",
     "eligible_states": "[\"All\"]",
@@ -977,16 +781,16 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.986786+00:00"
+    "updated_at": "2026-09-07T02:47:32.599752+00:00"
   },
   {
     "scheme_id": "working-women-hostel-scheme",
     "name": "Working Women Hostel Scheme (Sakhi Niwas)",
     "description": "Promotes availability of safe and affordable accommodation with daycare and crèche facilities for women in employment away from home.",
     "ministry": "Ministry of Women and Child Development",
-    "department": "Mission Shakti - SAMBAL",
-    "state": "All",
-    "category": "Housing & Shelter",
+    "department": "Safe Housing & Employment Support",
+    "state": "All India",
+    "category": "Safe Housing & Employment Support",
     "beneficiary_type": "Working Women, Trainees, and Job Seekers",
     "benefits": "Safe, furnished lodging at subsidized rentals, daycare center for children up to 8 years, 24x7 security, dining, and recreation facilities.",
     "eligibility_text": "Working women whose gross monthly salary does not exceed Rs 50,000 in metro cities or Rs 35,000 in other areas. Single women, widows, divorcees given preference.",
@@ -998,42 +802,14 @@
     "age_max": 8,
     "gender": "Female",
     "caste_categories": "[\"All\"]",
-    "income_max": 600000,
+    "income_max": 500000,
     "residence": "Urban",
     "eligible_states": "[\"All\"]",
     "requires_bpl": false,
     "requires_disability": false,
-    "life_stage_tags": "[\"student\", \"senior\", \"general\"]",
+    "life_stage_tags": "[\"entrepreneur\", \"general\", \"senior\", \"student\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.982746+00:00"
-  },
-  {
-    "scheme_id": "hf-scheme-003",
-    "name": "Working Women Hostel Scheme (Sakhi Niwas)",
-    "description": "Safe, affordable hostel accommodation with day care facilities for children of working women in urban, semi-urban, and rural areas.",
-    "ministry": "Ministry of Women and Child Development",
-    "department": "Safe Housing & Employment Support",
-    "state": "All India",
-    "category": "Safe Housing & Employment Support",
-    "beneficiary_type": "Women & Girls",
-    "benefits": "Subsidized secure lodging, daycare center (Crèche) for children up to 8 years, mess facilities, and 24/7 security.",
-    "eligibility_text": "Safe, affordable hostel accommodation with day care facilities for children of working women in urban, semi-urban, and rural areas.",
-    "documents_required": "Employment Certificate / Salary Slip, Aadhaar Card, Passport photo, Identity Card from Employer",
-    "application_process": "Submit application via official portal: https://wcd.nic.in/schemes/working-women-hostel",
-    "apply_url": "https://wcd.nic.in/schemes/working-women-hostel",
-    "official_url": "https://wcd.nic.in/",
-    "age_min": 18,
-    "age_max": 60,
-    "gender": "Female",
-    "caste_categories": "[\"All\"]",
-    "income_max": 500000,
-    "residence": "All",
-    "eligible_states": "[\"All\"]",
-    "requires_bpl": false,
-    "requires_disability": false,
-    "life_stage_tags": "[\"student\", \"entrepreneur\", \"general\"]",
-    "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.987213+00:00"
+    "updated_at": "2026-09-07T02:47:32.599850+00:00"
   },
   {
     "scheme_id": "ysr-cheyutha-scheme",
@@ -1061,6 +837,6 @@
     "requires_disability": false,
     "life_stage_tags": "[\"entrepreneur\"]",
     "is_active": true,
-    "updated_at": "2026-09-06T08:38:45.985374+00:00"
+    "updated_at": "2026-09-07T02:47:32.575555+00:00"
   }
 ]

@@ -15,13 +15,13 @@ def test_age_boundary_matching(matcher):
     # 5 year old girl should qualify for SSY
     profile_child = ProfileInput(age=5, gender="Female", state="All", life_stage="student")
     res_child = matcher.match_profile(profile_child)
-    ssy_matches = [s for s in res_child.schemes if s.scheme_id == "ssy-central"]
+    ssy_matches = [s for s in res_child.schemes if s.scheme_id in ["sukanya-samriddhi-yojana", "ssy-central"]]
     assert len(ssy_matches) == 1
     
     # 15 year old girl should NOT qualify for SSY (age max is 10)
     profile_teen = ProfileInput(age=15, gender="Female", state="All", life_stage="student")
     res_teen = matcher.match_profile(profile_teen)
-    ssy_matches_teen = [s for s in res_teen.schemes if s.scheme_id == "ssy-central"]
+    ssy_matches_teen = [s for s in res_teen.schemes if s.scheme_id in ["sukanya-samriddhi-yojana", "ssy-central"]]
     assert len(ssy_matches_teen) == 0
 
 def test_income_max_boundary(matcher):
@@ -29,13 +29,13 @@ def test_income_max_boundary(matcher):
     # Low Income woman (Rs 50,000) qualifies for PMMVY (max 2,50,000)
     profile_low_income = ProfileInput(age=25, gender="Female", state="All", income=50000, is_bpl=True, life_stage="maternal")
     res_low = matcher.match_profile(profile_low_income)
-    pmmvy_matches = [s for s in res_low.schemes if s.scheme_id == "pmmvy-central"]
+    pmmvy_matches = [s for s in res_low.schemes if s.scheme_id in ["pradhan-mantri-matru-vandana-yojana", "pmmvy-central"]]
     assert len(pmmvy_matches) == 1
 
     # High Income woman (Rs 10,00,000) should NOT qualify for income-capped PMMVY
     profile_high_income = ProfileInput(age=25, gender="Female", state="All", income=1000000, is_bpl=False, life_stage="maternal")
     res_high = matcher.match_profile(profile_high_income)
-    pmmvy_high_matches = [s for s in res_high.schemes if s.scheme_id == "pmmvy-central"]
+    pmmvy_high_matches = [s for s in res_high.schemes if s.scheme_id in ["pradhan-mantri-matru-vandana-yojana", "pmmvy-central"]]
     assert len(pmmvy_high_matches) == 0
 
 def test_state_specific_filtering(matcher):
@@ -57,7 +57,7 @@ def test_life_stage_score_boost(matcher):
     profile_maternal = ProfileInput(age=26, gender="Female", state="Bihar", is_bpl=True, life_stage="maternal")
     res = matcher.match_profile(profile_maternal)
     
-    pmmvy = next(s for s in res.schemes if s.scheme_id == "pmmvy-central")
+    pmmvy = next(s for s in res.schemes if s.scheme_id in ["pradhan-mantri-matru-vandana-yojana", "pmmvy-central"])
     assert pmmvy.match_score >= 80
     assert any("life stage" in reason.lower() for reason in pmmvy.match_reasons)
 
@@ -305,7 +305,7 @@ def test_newborn_infant_age_0_matching(matcher):
     assert res.count > 0
 
     # Sukanya Samriddhi Yojana (age 0-10) should be matched
-    ssy_matches = [s for s in res.schemes if s.scheme_id == "ssy-central"]
+    ssy_matches = [s for s in res.schemes if s.scheme_id in ["sukanya-samriddhi-yojana", "ssy-central"]]
     assert len(ssy_matches) == 1
     assert any("Infant / Newborn" in reason for reason in ssy_matches[0].match_reasons)
 

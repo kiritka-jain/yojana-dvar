@@ -7,13 +7,15 @@ import {
   Sparkles,
   CheckCircle2,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Lock
 } from 'lucide-react';
 
 export const Home: React.FC = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [voiceNotice, setVoiceNotice] = useState(false);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,11 +26,16 @@ export const Home: React.FC = () => {
     }
   };
 
-  return (
-    <div className="space-y-16 sm:space-y-24">
+  const handleVoiceClick = () => {
+    setVoiceNotice(true);
+    setTimeout(() => setVoiceNotice(false), 3000);
+  };
 
-      {/* 1. Hero Section */}
-      <section className="relative pt-6 pb-10 sm:pt-12 sm:pb-16 overflow-hidden">
+  return (
+    <div className="space-y-10 sm:space-y-14">
+
+      {/* 1. Hero Search & Category Discovery Section */}
+      <section className="relative pt-6 pb-4 sm:pt-10 sm:pb-6 overflow-hidden">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6">
 
           {/* Top Badge */}
@@ -53,7 +60,7 @@ export const Home: React.FC = () => {
           {/* Search / Voice Bar */}
           <form
             onSubmit={handleSearchSubmit}
-            className="max-w-2xl mx-auto bg-white rounded-2xl shadow-card hover:shadow-card-hover border border-saffron-200 p-2 sm:p-2.5 flex items-center gap-2 transition-all duration-300 mb-4"
+            className="max-w-2xl mx-auto bg-white rounded-2xl shadow-card hover:shadow-card-hover border border-saffron-200 p-2 sm:p-2.5 flex items-center gap-2 transition-all duration-300 mb-4 relative"
           >
             <div className="pl-3 text-charcoal-400">
               <Search className="w-5 h-5" />
@@ -68,7 +75,7 @@ export const Home: React.FC = () => {
             <button
               type="button"
               title={t('heroVoiceTooltip')}
-              onClick={() => alert(t('voiceListeningAlert'))}
+              onClick={handleVoiceClick}
               className="p-2.5 rounded-xl text-saffron-600 hover:bg-saffron-50 transition-colors focus:outline-none cursor-pointer"
             >
               <Mic className="w-5 h-5" />
@@ -81,113 +88,99 @@ export const Home: React.FC = () => {
             </button>
           </form>
 
+          {/* Voice Notice Toast */}
+          {voiceNotice && (
+            <div className="max-w-md mx-auto mb-4 p-2.5 rounded-xl bg-saffron-50 border border-saffron-300 text-saffron-900 text-xs font-medium animate-fadeIn">
+              🎙️ {t('voiceListeningAlert')}
+            </div>
+          )}
+
           {/* 1-Tap Quick Category Chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto mb-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
             <span className="text-xs font-semibold text-charcoal-500 hidden sm:inline">
               {t('heroQuickSearch')}
             </span>
             <button
               type="button"
               onClick={() => navigate('/results?category=education')}
-              className="px-3 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
             >
               {t('heroChipScholarship')}
             </button>
             <button
               type="button"
               onClick={() => navigate('/results?category=maternity')}
-              className="px-3 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
             >
               {t('heroChipMaternity')}
             </button>
             <button
               type="button"
               onClick={() => navigate('/results?category=business')}
-              className="px-3 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
             >
               {t('heroChipBusiness')}
             </button>
             <button
               type="button"
               onClick={() => navigate('/results?category=pension')}
-              className="px-3 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-full bg-cream-100 hover:bg-cream-200 border border-charcoal-200/60 text-charcoal-800 text-xs sm:text-sm font-medium transition-colors hover:scale-102 cursor-pointer"
             >
               {t('heroChipPension')}
             </button>
           </div>
 
-          {/* Direct 1-Tap Wizard Link */}
-          <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-charcoal-600">
-            <span>{t('heroDirectWizardPrompt')}</span>
-            <button
-              type="button"
-              onClick={() => navigate('/find')}
-              className="text-saffron-700 font-semibold hover:underline inline-flex items-center gap-1 cursor-pointer"
-            >
+        </div>
+      </section>
+
+      {/* 2. Middle Hero Feature: Centered "Ready to Discover Your Entitlements?" CTA Card */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="rounded-3xl gradient-civic p-8 sm:p-12 text-white shadow-xl text-center space-y-6">
+          <div className="space-y-3 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-saffron-200" />
               <span>{t('heroStartWizard')}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 2. Key Trust & Accessibility Badges */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl p-6 border border-saffron-100 shadow-card flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-saffron-50 text-saffron-600 flex items-center justify-center font-bold text-xl flex-shrink-0">
-              <CheckCircle2 className="w-6 h-6 text-saffron-600" />
             </div>
-            <div>
-              <h3 className="font-bold text-charcoal-900 text-base">{t('statFreeAccess')}</h3>
-              <p className="text-xs text-charcoal-500 mt-0.5">{t('statFreeAccessSub')}</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 border border-forest-100 shadow-card flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-forest-50 text-forest-600 flex items-center justify-center font-bold text-xl flex-shrink-0">
-              <ShieldCheck className="w-6 h-6 text-forest-600" />
-            </div>
-            <div>
-              <h3 className="font-bold text-charcoal-900 text-base">{t('statGovtSchemes')}</h3>
-              <p className="text-xs text-charcoal-500 mt-0.5">{t('statGovtSchemesSub')}</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 border border-amber-100 shadow-card flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xl flex-shrink-0">
-              <Sparkles className="w-6 h-6 text-amber-600" />
-            </div>
-            <div>
-              <h3 className="font-bold text-charcoal-900 text-base">{t('statNoAadhaar')}</h3>
-              <p className="text-xs text-charcoal-500 mt-0.5">{t('statNoAadhaarSub')}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Big Call-to-Action Box */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl gradient-civic p-8 sm:p-12 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-3 max-w-xl text-center md:text-left">
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
               {t('ctaBannerTitle')}
             </h2>
-            <p className="text-sm sm:text-base text-saffron-100 leading-relaxed">
+            <p className="text-sm sm:text-base text-saffron-100 leading-relaxed font-medium max-w-xl mx-auto">
               {t('ctaBannerSubtitle')}
             </p>
           </div>
-          <button
-            onClick={() => navigate('/find')}
-            className="flex-shrink-0 px-8 py-4 rounded-2xl bg-white text-saffron-700 hover:bg-cream-100 font-bold text-base shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-2"
-          >
-            <span>{t('heroStartWizard')}</span>
-            <ArrowRight className="w-5 h-5" />
-          </button>
+
+          {/* Centered Big Action Button */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => navigate('/find')}
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white text-saffron-700 hover:bg-cream-100 font-bold text-base shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
+            >
+              <span>{t('heroStartWizard')}</span>
+              <ArrowRight className="w-5 h-5 text-saffron-600" />
+            </button>
+          </div>
+
+          {/* Compact Trust Badges Integrated Underneath */}
+          <div className="pt-4 border-t border-white/20 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs text-saffron-100 font-medium">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-300 flex-shrink-0" />
+              <span>{t('statFreeAccess')}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-300 flex-shrink-0" />
+              <span>{t('statGovtSchemes')}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Lock className="w-4 h-4 text-amber-300 flex-shrink-0" />
+              <span>{t('statNoAadhaar')}</span>
+            </div>
+          </div>
         </div>
       </section>
 
     </div>
   );
 };
+
+export default Home;

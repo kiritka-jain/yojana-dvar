@@ -22,15 +22,7 @@ async def explain_scheme_eligibility(request: ExplainRequest):
     Accepts scheme ID, applicant profile, and preferred language ('en' or 'hi').
     Returns personalized plain-language explanation, benefits, document checklist, and disclaimer.
     """
-    catalog = matcher_service.get_catalog()
-    target_id = request.scheme_id.strip().lower()
-
-    # Find scheme in catalog
-    target_scheme = None
-    for scheme in catalog:
-        if str(scheme.get("scheme_id", "")).strip().lower() == target_id:
-            target_scheme = scheme
-            break
+    target_scheme = matcher_service.get_scheme_by_id(request.scheme_id)
 
     if not target_scheme:
         raise HTTPException(
@@ -44,14 +36,17 @@ async def explain_scheme_eligibility(request: ExplainRequest):
             profile=request.profile,
             language=request.language
         )
+        explanation.scheme_id = request.scheme_id
         return explanation
     except Exception as e:
         # Guarantee HTTP 200 with static fallback to protect UX (Ticket 4.3)
-        return gemini_service._generate_fallback_explanation(
+        fb = gemini_service._generate_fallback_explanation(
             scheme=target_scheme,
             profile=request.profile,
             lang=request.language
         )
+        fb.scheme_id = request.scheme_id
+        return fb
 
 @router.post(
     "/explain/portfolio",

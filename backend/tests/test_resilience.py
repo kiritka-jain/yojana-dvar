@@ -44,7 +44,7 @@ def test_gemini_api_timeout_fallback():
                 assert response.status_code == 200
                 data = response.json()
                 assert data["is_fallback"] is True
-                assert data["scheme_id"] == "pmmvy-central"
+                assert data["scheme_id"] in ["pmmvy-central", "pradhan-mantri-matru-vandana-yojana"]
                 assert "disclaimer" in data
                 assert "Pradhan Mantri Matru Vandana Yojana" in data["summary"]
     finally:

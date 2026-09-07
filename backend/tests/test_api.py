@@ -91,7 +91,7 @@ def test_match_personas_integration():
     sunita_data = res_sunita.json()
     assert sunita_data["count"] >= 3
     sunita_scheme_ids = [s["scheme_id"] for s in sunita_data["schemes"]]
-    assert "pmmvy-central" in sunita_scheme_ids
+    assert "pmmvy-central" in sunita_scheme_ids or "pradhan-mantri-matru-vandana-yojana" in sunita_scheme_ids
 
     # 2. Priya Sharma
     priya_profile = {
@@ -276,7 +276,7 @@ def test_get_scheme_by_id_success():
     response = client.get("/schemes/pmmvy-central")
     assert response.status_code == 200
     data = response.json()
-    assert data["scheme_id"] == "pmmvy-central"
+    assert data["scheme_id"] in ["pmmvy-central", "pradhan-mantri-matru-vandana-yojana"]
     assert "Pradhan Mantri Matru Vandana Yojana" in data["name"]
 
 def test_get_scheme_by_id_not_found():

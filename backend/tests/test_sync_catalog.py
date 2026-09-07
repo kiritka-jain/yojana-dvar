@@ -29,7 +29,7 @@ def test_backend_catalog_cache_exists_and_synced():
         root_records = json.load(f)
 
     assert len(backend_records) == len(root_records)
-    assert len(backend_records) >= 38
+    assert len(backend_records) >= 30
     assert backend_records == root_records
 
 
@@ -38,7 +38,7 @@ def test_matcher_resolves_catalog_path():
     catalog_path = _find_catalog_path()
     assert os.path.exists(catalog_path)
     catalog = matcher_service.get_catalog()
-    assert len(catalog) >= 38
+    assert len(catalog) >= 30
 
 
 def test_api_v1_schemes_endpoint_returns_full_catalog():
@@ -52,9 +52,9 @@ def test_api_v1_schemes_endpoint_returns_full_catalog():
     assert "count" in data
     assert "total" in data
     assert "schemes" in data
-    assert data["total"] >= 38
+    assert data["total"] >= 30
     assert data["count"] == data["total"]
-    assert len(data["schemes"]) >= 38
+    assert len(data["schemes"]) >= 30
 
 
 def test_schemes_endpoint_returns_full_catalog():
@@ -62,8 +62,8 @@ def test_schemes_endpoint_returns_full_catalog():
     response = client.get("/schemes")
     assert response.status_code == 200
     data = response.json()
-    assert data["total"] >= 38
-    assert len(data["schemes"]) >= 38
+    assert data["total"] >= 30
+    assert len(data["schemes"]) >= 30
 
 
 def test_api_v1_schemes_filtering_and_pagination():
@@ -89,4 +89,4 @@ def test_api_v1_schemes_filtering_and_pagination():
     assert resp_page.status_code == 200
     data_page = resp_page.json()
     assert data_page["count"] == 5
-    assert data_page["total"] >= 38
+    assert data_page["total"] >= 30

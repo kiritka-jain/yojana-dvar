@@ -96,17 +96,14 @@ async def add_user_bookmark(
     Acceptance Criteria (Ticket 5.3).
     """
     # Lookup scheme metadata from catalog
-    catalog = matcher_service.get_catalog()
-    target_id = request.scheme_id.strip().lower()
+    s = matcher_service.get_scheme_by_id(request.scheme_id)
     scheme_meta = None
-    for s in catalog:
-        if str(s.get("scheme_id", "")).strip().lower() == target_id:
-            scheme_meta = {
-                "name": s.get("name"),
-                "category": s.get("category"),
-                "ministry": s.get("ministry")
-            }
-            break
+    if s:
+        scheme_meta = {
+            "name": s.get("name"),
+            "category": s.get("category"),
+            "ministry": s.get("ministry")
+        }
 
     saved_bookmark = firestore_service.add_bookmark(
         uid=user.uid,
@@ -129,13 +126,11 @@ async def list_user_bookmarks(
     Acceptance Criteria (Ticket 5.3).
     """
     raw_bookmarks = firestore_service.list_bookmarks(uid=user.uid)
-    catalog = matcher_service.get_catalog()
-    catalog_map = {str(s.get("scheme_id", "")).strip().lower(): s for s in catalog}
 
     enriched_bookmarks: List[BookmarkItem] = []
     for b in raw_bookmarks:
-        sid = str(b.get("scheme_id", "")).strip().lower()
-        matched_scheme = catalog_map.get(sid)
+        sid = str(b.get("scheme_id", "")).strip()
+        matched_scheme = matcher_service.get_scheme_by_id(sid)
         enriched_bookmarks.append(
             BookmarkItem(
                 scheme_id=b.get("scheme_id", ""),
