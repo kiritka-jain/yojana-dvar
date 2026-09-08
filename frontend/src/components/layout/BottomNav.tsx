@@ -26,7 +26,7 @@ export const BottomNav: React.FC = () => {
   return (
     <nav
       aria-label={language === 'hi' ? 'मोबाइल नेविगेशन बार' : 'Mobile Bottom Navigation'}
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-cream-300 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-1.5 px-3"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-cream-300 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-1.5 px-3"
     >
       <div className="max-w-md mx-auto grid grid-cols-3 gap-1 items-center">
         {/* Tab 1: Home / मुख्य पृष्ठ */}

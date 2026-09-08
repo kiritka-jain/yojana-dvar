@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="bg-[#f7f2e7] border-t border-saffron-200/60 mt-16 sm:mt-20 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-saffron-200/60">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 pb-8 border-b border-saffron-200/60">
           
           {/* Col 1 & 2: Brand Info & Advisory */}
           <div className="md:col-span-2 space-y-4">
