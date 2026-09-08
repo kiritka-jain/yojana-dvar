@@ -189,27 +189,47 @@ export const SchemeDetail: React.FC = () => {
       });
   }, [id]);
 
-  // Auto-fetch plain-language AI summary on scheme load and on language change
+  // Auto-fetch plain-language AI summary on scheme load and on language change (Ticket 1.2: AbortController & Language Guard)
   useEffect(() => {
     if (!scheme) return;
+
+    // Reset explanation if language or scheme changed to avoid rendering stale language copy
+    if (explanation && (explanation.scheme_id !== scheme.scheme_id || explanation.language !== siteLanguage)) {
+      setExplanation(null);
+    }
+
+    let cancelled = false;
+    const controller = new AbortController();
     setExplainLoading(true);
 
-    explainSchemeEligibility({
-      scheme_id: scheme.scheme_id,
-      profile: activeProfile,
-      language: siteLanguage
-    })
+    explainSchemeEligibility(
+      {
+        scheme_id: scheme.scheme_id,
+        profile: activeProfile,
+        language: siteLanguage
+      },
+      controller.signal
+    )
       .then((res) => {
-        if (res?.summary) {
+        if (!cancelled && res?.summary && res.language === siteLanguage && res.scheme_id === scheme.scheme_id) {
           setExplanation(res);
         }
       })
       .catch((err) => {
-        console.warn("Auto-summary fetch fallback applied:", err);
+        if (err.name !== 'AbortError' && !cancelled) {
+          console.warn("Auto-summary fetch fallback applied:", err);
+        }
       })
       .finally(() => {
-        setExplainLoading(false);
+        if (!cancelled) {
+          setExplainLoading(false);
+        }
       });
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [scheme?.scheme_id, siteLanguage]);
 
   // Localized Fields from Translation Registry
@@ -240,7 +260,12 @@ export const SchemeDetail: React.FC = () => {
 
   // Resilient fallback summary text utilizing native catalog description & benefits
   const displaySummaryText = useMemo(() => {
-    if (explanation?.summary && explanation.summary.trim().length > 0) {
+    if (
+      explanation?.summary &&
+      explanation.summary.trim().length > 0 &&
+      explanation.language === siteLanguage &&
+      explanation.scheme_id === scheme?.scheme_id
+    ) {
       return explanation.summary;
     }
     if (!scheme) return '';
@@ -255,7 +280,7 @@ export const SchemeDetail: React.FC = () => {
       return `${displayName}: ${displayDescription} Key Entitlements: ${displayBenefits}`;
     }
     return `Under ${displayName}, eligible beneficiaries receive: ${displayBenefits}`;
-  }, [scheme, displayName, displayDescription, displayBenefits, explanation?.summary, siteLanguage]);
+  }, [scheme, displayName, displayDescription, displayBenefits, explanation, siteLanguage]);
 
   // Audio Narration Handler
   const handleAudioNarration = () => {
@@ -570,7 +595,7 @@ export const SchemeDetail: React.FC = () => {
         </div>
 
         {/* Plain-Language AI Summary Box (Auto-rendered, No User Clicks, Zero Model Jargon) */}
-        {explainLoading && !explanation?.summary ? (
+        {explainLoading && (!explanation?.summary || explanation.language !== siteLanguage) ? (
           <div className="p-4 sm:p-5 rounded-2xl bg-saffron-50/70 border border-saffron-200 animate-pulse flex items-center gap-3">
             <Loader2 className="w-4 h-4 text-saffron-600 animate-spin flex-shrink-0" />
             <span className="text-xs sm:text-sm font-medium text-saffron-900">
@@ -652,7 +677,7 @@ export const SchemeDetail: React.FC = () => {
             </div>
 
             {/* AI Summarized Benefit Highlights */}
-            {explanation?.key_benefits && explanation.key_benefits.length > 0 && (
+            {explanation && explanation.language === siteLanguage && explanation.scheme_id === scheme.scheme_id && explanation.key_benefits && explanation.key_benefits.length > 0 && (
               <div className="space-y-3 pt-1">
                 <h3 className="text-xs sm:text-sm font-bold text-charcoal-800 uppercase tracking-wide flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-saffron-600" />

@@ -119,13 +119,17 @@ export async function getSchemeById(schemeId: string): Promise<SchemeMatchResult
   return response.json();
 }
 
-export async function explainSchemeEligibility(request: ExplainRequest): Promise<ExplainResponse> {
+export async function explainSchemeEligibility(
+  request: ExplainRequest,
+  signal?: AbortSignal
+): Promise<ExplainResponse> {
   const response = await fetch(`${API_BASE_URL}/explain`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(request),
+    signal,
   });
 
   if (!response.ok) {
