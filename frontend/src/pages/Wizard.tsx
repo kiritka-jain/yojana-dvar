@@ -468,13 +468,14 @@ export const Wizard: React.FC = () => {
 
       {/* 2. STEPPER PROGRESS BAR (3 Clear Steps) */}
       <div className="mb-8">
-        <div className="flex items-center justify-between relative">
-          {/* Connector Lines */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-cream-300 -z-10" />
-          <div 
-            className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-saffron-500 transition-all duration-300 -z-10"
-            style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
-          />
+        <div className="flex items-start justify-between relative">
+          {/* Connector Track & Filled Progress Bar (perfectly centered at circle center: 20px / top-5) */}
+          <div className="absolute left-5 right-5 top-5 -translate-y-1/2 h-1 bg-cream-300 rounded-full overflow-hidden z-0">
+            <div 
+              className="h-full bg-saffron-500 transition-all duration-300 rounded-full"
+              style={{ width: `${((currentStep - 1) / (stepsConfig.length - 1)) * 100}%` }}
+            />
+          </div>
 
           {stepsConfig.map((s) => {
             const isCompleted = currentStep > s.num;
@@ -489,22 +490,22 @@ export const Wizard: React.FC = () => {
                     setCurrentStep(s.num);
                   }
                 }}
-                className="flex flex-col items-center group focus:outline-none"
+                className="flex flex-col items-center group focus:outline-none relative z-10 cursor-pointer"
                 aria-current={isCurrent ? 'step' : undefined}
               >
                 <div 
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-200 shadow-sm ${
                     isCompleted
-                      ? 'bg-forest-600 text-white'
+                      ? 'bg-forest-600 text-white ring-2 ring-white'
                       : isCurrent
                       ? 'bg-saffron-500 text-white ring-4 ring-saffron-200 scale-110'
-                      : 'bg-white text-charcoal-500 border border-cream-300'
+                      : 'bg-white text-charcoal-500 border border-cream-300 ring-2 ring-white'
                   }`}
                 >
                   {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : s.num}
                 </div>
                 <span 
-                  className={`text-xs mt-2 font-medium hidden sm:block ${
+                  className={`text-xs mt-2 font-medium hidden sm:block text-center max-w-[120px] ${
                     isCurrent ? 'text-saffron-800 font-bold' : 'text-charcoal-500'
                   }`}
                 >
