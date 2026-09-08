@@ -621,32 +621,6 @@ export const Wizard: React.FC = () => {
               )}
             </div>
 
-            {/* Field: Gender */}
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-charcoal-900">
-                {t('fieldGender')}
-              </label>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { val: 'Female', label: t('fieldGenderFemale') },
-                  { val: 'Transgender', label: t('fieldGenderTransgender') },
-                  { val: 'All', label: t('fieldGenderAll') }
-                ].map((g) => (
-                  <button
-                    key={g.val}
-                    type="button"
-                    onClick={() => setProfile({ ...profile, gender: g.val })}
-                    className={`min-h-[48px] py-3 px-3 rounded-2xl border text-xs sm:text-sm font-bold transition-all flex items-center justify-center ${
-                      profile.gender === g.val
-                        ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 ring-2 ring-saffron-300 shadow-2xs'
-                        : 'border-cream-300 hover:bg-cream-100 text-charcoal-800'
-                    }`}
-                  >
-                    {g.label}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         )}
 
