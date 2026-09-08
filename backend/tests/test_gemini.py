@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 import pytest
 from unittest.mock import patch, MagicMock
 from app.models.profile import ProfileInput
@@ -178,7 +179,7 @@ def test_clean_json_response_invalid_json_raises(service):
 # =============================================================================
 
 def test_generate_fallback_explanation_english(service, sample_scheme, sample_profile):
-    """Verify fallback response in English contains disclaimer and structured fields."""
+    """Verify fallback response in English contains disclaimer, catalog description, and structured fields."""
     fallback = service._generate_fallback_explanation(sample_scheme, sample_profile, lang="en")
 
     assert fallback.is_fallback is True
@@ -191,8 +192,9 @@ def test_generate_fallback_explanation_english(service, sample_scheme, sample_pr
     assert len(fallback.documents_required) == 3
     assert fallback.disclaimer == DISCLAIMER_EN
 
+
 def test_generate_fallback_explanation_hindi(service, sample_scheme, sample_profile):
-    """Verify fallback response in Hindi contains Hindi disclaimer and text."""
+    """Verify fallback response in Hindi contains Hindi disclaimer, localized name, and text."""
     fallback = service._generate_fallback_explanation(sample_scheme, sample_profile, lang="hi")
 
     assert fallback.is_fallback is True
@@ -201,6 +203,57 @@ def test_generate_fallback_explanation_hindi(service, sample_scheme, sample_prof
     assert "आपकी आयु" in fallback.summary
     assert fallback.disclaimer == DISCLAIMER_HI
     assert "अस्वीकरण: योजना द्वार" in fallback.disclaimer
+
+
+def test_generate_fallback_explanation_uniqueness_across_schemes(service, sample_profile):
+    """Verify that distinct catalog schemes generate distinct, scheme-specific summaries rather than identical boilerplate."""
+    scheme_1 = {
+        "scheme_id": "sukanya-samriddhi-yojana",
+        "name": "Sukanya Samriddhi Yojana",
+        "description": "Small deposit scheme for the girl child offering high guaranteed interest.",
+        "benefits": "8.2% annual interest rate with tax exemption under 80C.",
+        "documents_required": "Birth Certificate, Aadhaar Card, Guardian ID",
+        "application_process": "Apply at nearest Post Office or authorized Commercial Bank.",
+        "apply_url": "https://www.indiapost.gov.in"
+    }
+    scheme_2 = {
+        "scheme_id": "delhi-free-dtc-bus-travel-scheme",
+        "name": "Delhi Free DTC Bus Travel Scheme (Pink Passes)",
+        "description": "Provides 100% free public bus transit for all women in Delhi NCT.",
+        "benefits": "Free travel in all DTC and cluster buses with Pink Tickets.",
+        "documents_required": "No prior documents required during transit.",
+        "application_process": "Collect Pink Ticket upon boarding the bus from conductor.",
+        "apply_url": "https://dtc.delhi.gov.in"
+    }
+
+    res_1_en = service._generate_fallback_explanation(scheme_1, sample_profile, lang="en")
+    res_2_en = service._generate_fallback_explanation(scheme_2, sample_profile, lang="en")
+    assert res_1_en.summary != res_2_en.summary
+    assert "8.2%" in res_1_en.summary
+    assert "Pink Tickets" in res_2_en.summary
+
+    res_1_hi = service._generate_fallback_explanation(scheme_1, sample_profile, lang="hi")
+    res_2_hi = service._generate_fallback_explanation(scheme_2, sample_profile, lang="hi")
+    assert res_1_hi.summary != res_2_hi.summary
+    assert "सुकन्या समृद्धि" in res_1_hi.summary
+    assert "पिंक पास" in res_2_hi.summary
+
+
+def test_build_prompt_includes_description(service, sample_profile):
+    """Verify _build_prompt includes the native catalog description in the prompt context."""
+    scheme = {
+        "name": "Mahila Samman Savings Certificate",
+        "ministry": "Ministry of Finance",
+        "description": "A two-year deposit facility offering 7.5% fixed interest for women investors.",
+        "beneficiary_type": "Women and Girls",
+        "benefits": "Fixed 7.5% interest rate compounded quarterly.",
+        "eligibility_text": "Any female citizen or guardian of a minor girl.",
+        "documents_required": "Aadhaar card, PAN card, Application form",
+        "application_process": "Open account at any Post Office."
+    }
+    prompt = service._build_prompt(scheme, sample_profile, lang="en")
+    assert "Description: A two-year deposit facility" in prompt
+
 
 def test_generate_fallback_portfolio_summary(service, sample_scheme, sample_profile):
     """Verify portfolio summary fallback in English and Hindi."""
@@ -215,7 +268,6 @@ def test_generate_fallback_portfolio_summary(service, sample_scheme, sample_prof
     assert "आपकी प्रोफ़ाइल" in res_hi.holistic_summary
     assert res_hi.disclaimer == DISCLAIMER_HI
 
-import asyncio
 
 def test_generate_portfolio_summary_async_mock(service, sample_scheme, sample_profile):
     """Verify asynchronous portfolio summary generation with mocked client."""

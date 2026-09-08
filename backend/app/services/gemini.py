@@ -9,6 +9,7 @@ from google import genai
 from app.config import settings
 from app.models.profile import ProfileInput
 from app.models.explain import ExplainResponse, PortfolioExplainResponse
+from app.services.translations import get_localized_scheme_field
 
 logger = logging.getLogger("yojana_dvar")
 
@@ -116,7 +117,7 @@ class GeminiService:
         return sorted_schemes[:k]
 
     def _build_prompt(self, scheme: Dict[str, Any], profile: ProfileInput, lang: str) -> str:
-        """Constructs advisory prompt with token-trimmed scheme narratives."""
+        """Constructs advisory prompt with token-trimmed scheme narratives and native description."""
         lang_name = "Hindi (हिंदी)" if lang == "hi" else "English"
         
         prompt = f"""You are Yojana Dvar's compassionate women entitlement advisor.
@@ -136,6 +137,7 @@ Applicant Demographic Profile:
 Scheme Entitlement Details:
 - Scheme Name: {scheme.get('name')}
 - Ministry: {_trim_text(scheme.get('ministry'), 120)}
+- Description: {_trim_text(scheme.get('description'), 300)}
 - Target Beneficiaries: {_trim_text(scheme.get('beneficiary_type'), 150)}
 - Benefits: {_trim_text(scheme.get('benefits'), 300)}
 - Eligibility Criteria: {_trim_text(scheme.get('eligibility_text'), 300)}
@@ -197,38 +199,66 @@ Instructions:
         return json.loads(cleaned.strip())
 
     def _generate_fallback_explanation(self, scheme: Dict[str, Any], profile: ProfileInput, lang: str) -> ExplainResponse:
-        """Generates static template explanation when Gemini API is unavailable or rate-limited."""
-        scheme_name = scheme.get("name", "Welfare Scheme")
+        """Generates dynamic catalog-backed explanation when Gemini API is unavailable or rate-limited."""
+        scheme_name_en = scheme.get("name", "Welfare Scheme")
+        desc_en = (scheme.get("description") or "").strip()
         benefits_raw = scheme.get("benefits", "Government welfare benefits and financial support.")
         docs_raw = scheme.get("documents_required", "Aadhaar Card, Bank Account Details, Identity Proof")
+        app_process = (scheme.get("application_process") or "").strip()
+        apply_url = scheme.get("apply_url") or scheme.get("official_url") or "official government portal"
         
-        # Parse docs into list
+        # Parse documents into clean list
         docs_list = [d.strip() for d in docs_raw.split(",") if d.strip()]
         if not docs_list:
             docs_list = ["Aadhaar Card", "Bank Passbook", "Address Proof"]
 
         if lang == "hi":
-            summary = (
-                f"आपकी आयु ({profile.age} वर्ष), राज्य ({profile.state}) और जीवन चरण ({profile.life_stage}) "
-                f"के आधार पर आप '{scheme_name}' के लिए उपयुक्त पात्र हैं। यह योजना महिलाओं और उनके परिवारों "
-                f"को सामाजिक और आर्थिक सहायता प्रदान करती है।"
-            )
+            name_hi = get_localized_scheme_field(scheme, "name", "hi") or scheme_name_en
+            desc_hi = get_localized_scheme_field(scheme, "description", "hi")
+            benefits_hi = get_localized_scheme_field(scheme, "benefits", "hi") or benefits_raw
+
+            if desc_hi and desc_hi != benefits_hi:
+                summary = (
+                    f"आपकी आयु ({profile.age} वर्ष), राज्य ({profile.state}) और जीवन चरण ({profile.life_stage}) "
+                    f"के आधार पर आप '{name_hi}' के लिए उपयुक्त पात्र हैं। {desc_hi} "
+                    f"योजना के तहत मुख्य लाभ: {benefits_hi}"
+                )
+            else:
+                summary = (
+                    f"आपकी आयु ({profile.age} वर्ष), राज्य ({profile.state}) और जीवन चरण ({profile.life_stage}) "
+                    f"के आधार पर आप '{name_hi}' के लिए उपयुक्त पात्र हैं। मुख्य लाभ: {benefits_hi}"
+                )
+
             key_benefits = [
-                benefits_raw,
-                "आधिकारिक सरकारी पोर्टल के माध्यम से प्रत्यक्ष लाभ हस्तांतरण (DBT) सुविधा।"
+                benefits_hi,
+                "आधिकारिक सरकारी पोर्टल अथवा स्थानीय सेवा केंद्र के माध्यम से प्रत्यक्ष लाभ (DBT) सुविधा।"
             ]
-            next_steps = f"आवश्यक दस्तावेजों के साथ आधिकारिक पोर्टल ({scheme.get('apply_url', 'सरकारी केंद्र')}) पर आवेदन करें।"
+            if app_process:
+                next_steps = f"{app_process} (आधिकारिक पोर्टल: {apply_url})"
+            else:
+                next_steps = f"आवश्यक दस्तावेजों के साथ आधिकारिक पोर्टल ({apply_url}) पर आवेदन करें।"
             disclaimer = DISCLAIMER_HI
         else:
-            summary = (
-                f"Based on your age ({profile.age} years), residence in {profile.state}, and current life stage ({profile.life_stage}), "
-                f"you appear eligible for '{scheme_name}'. This scheme provides direct financial and developmental entitlements for women."
-            )
+            if desc_en and desc_en != benefits_raw:
+                summary = (
+                    f"Based on your profile (Age {profile.age}, {profile.state}, {profile.life_stage}), "
+                    f"you appear eligible for '{scheme_name_en}'. {desc_en} "
+                    f"Key entitlements include: {benefits_raw}"
+                )
+            else:
+                summary = (
+                    f"Based on your profile (Age {profile.age}, {profile.state}, {profile.life_stage}), "
+                    f"you appear eligible for '{scheme_name_en}'. Key entitlements include: {benefits_raw}"
+                )
+
             key_benefits = [
                 benefits_raw,
-                "Direct Benefit Transfer (DBT) into verified bank account."
+                "Direct Benefit Transfer (DBT) and entitlement distribution through official nodal channels."
             ]
-            next_steps = f"Apply online through the nodal portal at {scheme.get('apply_url', 'official welfare center')} with required verification documents."
+            if app_process:
+                next_steps = f"{app_process} (Portal: {apply_url})"
+            else:
+                next_steps = f"Apply online through the nodal portal at {apply_url} with required verification documents."
             disclaimer = DISCLAIMER_EN
 
         return ExplainResponse(
@@ -245,14 +275,17 @@ Instructions:
     def _generate_fallback_portfolio_summary(
         self, top_schemes: List[Dict[str, Any]], profile: ProfileInput, lang: str
     ) -> PortfolioExplainResponse:
-        """Generates static template portfolio overview when Gemini is unavailable."""
+        """Generates dynamic catalog-aware portfolio overview when Gemini is unavailable."""
         count = len(top_schemes)
         scheme_names = ", ".join([s.get("name", "Scheme") for s in top_schemes[:3]])
+        categories = list({s.get("category") for s in top_schemes if s.get("category")})
+        cat_text = ", ".join(categories[:3]) if categories else "social welfare"
         
         if lang == "hi":
             summary = (
                 f"आपकी प्रोफ़ाइल ({profile.state}, आयु {profile.age}, जीवन चरण {profile.life_stage}) के आधार पर "
-                f"आप {count} प्रमुख कल्याणकारी योजनाओं के लिए पात्र हैं, जिनमें {scheme_names} शामिल हैं।"
+                f"आप {count} प्रमुख कल्याणकारी योजनाओं के लिए पात्र हैं, जिनमें {scheme_names} शामिल हैं। "
+                f"ये योजनाएं मुख्य रूप से {cat_text} से संबंधित लाभ प्रदान करती हैं।"
             )
             action_plan = [
                 "चरण 1: अपने आधार कार्ड, आय प्रमाण पत्र और बैंक पासबुक को तैयार रखें।",
@@ -263,7 +296,7 @@ Instructions:
         else:
             summary = (
                 f"Based on your profile ({profile.state}, Age {profile.age}, Life Stage: {profile.life_stage}), "
-                f"you qualify for {count} high-impact welfare schemes including {scheme_names}."
+                f"you qualify for {count} high-impact welfare schemes across {cat_text}, including {scheme_names}."
             )
             action_plan = [
                 "Step 1: Organize standard verification documents (Aadhaar, MCP card/Income certificate, Bank Passbook).",

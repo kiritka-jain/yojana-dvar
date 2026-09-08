@@ -233,7 +233,12 @@ export const SchemeDetail: React.FC = () => {
     return getLocalizedSchemeField(scheme, 'benefits', siteLanguage);
   }, [scheme, siteLanguage]);
 
-  // Resilient fallback summary text if API is offline or generating
+  const displayDescription = useMemo(() => {
+    if (!scheme) return '';
+    return getLocalizedSchemeField(scheme, 'description', siteLanguage);
+  }, [scheme, siteLanguage]);
+
+  // Resilient fallback summary text utilizing native catalog description & benefits
   const displaySummaryText = useMemo(() => {
     if (explanation?.summary && explanation.summary.trim().length > 0) {
       return explanation.summary;
@@ -241,10 +246,16 @@ export const SchemeDetail: React.FC = () => {
     if (!scheme) return '';
 
     if (siteLanguage === 'hi') {
-      return `${displayName} के अंतर्गत पात्र लाभार्थियों को ${displayBenefits} प्रदान किया जाता है। यह योजना विशेष रूप से लक्षित नागरिकों को सामाजिक व आर्थिक सुरक्षा देने के लिए शुरू की गई है।`;
+      if (displayDescription && displayDescription !== displayBenefits) {
+        return `${displayName}: ${displayDescription} मुख्य लाभ: ${displayBenefits}`;
+      }
+      return `${displayName} के अंतर्गत पात्र लाभार्थियों को मुख्य लाभ प्रदान किए जाते हैं: ${displayBenefits}`;
     }
-    return `Under ${displayName}, eligible beneficiaries receive ${displayBenefits}. This initiative directly provides financial assistance and welfare support.`;
-  }, [scheme, displayName, displayBenefits, explanation?.summary, siteLanguage]);
+    if (displayDescription && displayDescription !== displayBenefits) {
+      return `${displayName}: ${displayDescription} Key Entitlements: ${displayBenefits}`;
+    }
+    return `Under ${displayName}, eligible beneficiaries receive: ${displayBenefits}`;
+  }, [scheme, displayName, displayDescription, displayBenefits, explanation?.summary, siteLanguage]);
 
   // Audio Narration Handler
   const handleAudioNarration = () => {
