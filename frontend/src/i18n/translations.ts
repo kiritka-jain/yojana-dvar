@@ -193,6 +193,8 @@ export interface TranslationDictionary {
   filterScopeState: string;
   filterStateLabel: string;
   filterStateAll: string;
+  filterOptgroupStates: string;
+  filterOptgroupUTs: string;
   filterLifeStage: string;
   filterLifeStageAll: string;
   sortLabel: string;
@@ -548,6 +550,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     filterScopeState: "State Only",
     filterStateLabel: "State / UT",
     filterStateAll: "All States & UTs",
+    filterOptgroupStates: "── 28 States ──",
+    filterOptgroupUTs: "── 8 Union Territories ──",
     filterLifeStage: "Stage",
     filterLifeStageAll: "All",
     sortLabel: "Sort",
@@ -900,6 +904,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     filterScopeState: "केवल राज्य",
     filterStateLabel: "राज्य / UT",
     filterStateAll: "सभी राज्य व UT",
+    filterOptgroupStates: "── 28 राज्य ──",
+    filterOptgroupUTs: "── 8 केंद्र शासित प्रदेश ──",
     filterLifeStage: "चरण",
     filterLifeStageAll: "सभी",
     sortLabel: "क्रम",

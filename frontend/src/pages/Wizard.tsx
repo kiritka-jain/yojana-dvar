@@ -19,7 +19,7 @@ import {
   Briefcase,
   GraduationCap
 } from 'lucide-react';
-import { INDIAN_STATES } from '../constants/states';
+import { INDIAN_STATES_DATA } from '../constants/states';
 
 const CASTE_OPTIONS = [
   { value: "General", labelKey: "casteGeneral" as const },
@@ -464,8 +464,10 @@ export const Wizard: React.FC = () => {
                 }`}
               >
                 <option value="">{t('fieldStatePlaceholder')}</option>
-                {INDIAN_STATES.map((st) => (
-                  <option key={st} value={st}>{st}</option>
+                {INDIAN_STATES_DATA.map((st) => (
+                  <option key={st.value} value={st.value}>
+                    {language === 'hi' ? st.labelHi : st.labelEn}
+                  </option>
                 ))}
               </select>
               {errors.state && (

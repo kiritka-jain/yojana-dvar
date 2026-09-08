@@ -13,6 +13,7 @@ import {
 import type { SchemeMatchResult } from '../../services/api';
 import { isLocalBookmarked, toggleLocalBookmark } from '../../services/api';
 import { getLocalizedSchemeField } from '../../i18n/schemeTranslations';
+import { getStateDisplayName } from '../../constants/states';
 import { useSpeech } from '../../utils/speech';
 
 interface SchemeCardProps {
@@ -116,7 +117,7 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
 
             {/* Scope Badge (Central vs State) */}
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cream-100 text-charcoal-700 border border-cream-200">
-              {isCentral ? t('tagCentral') : `${scheme.state} ${t('tagState')}`}
+              {isCentral ? t('tagCentral') : `${getStateDisplayName(scheme.state, language)} ${t('tagState')}`}
             </span>
           </div>
 

@@ -19,7 +19,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { INDIAN_STATES, UNION_TERRITORIES } from '../constants/states';
+import { STATES_ONLY_DATA, UNION_TERRITORIES_DATA } from '../constants/states';
 
 export type CategoryFilterType = 'all' | 'education' | 'maternity' | 'business' | 'pension';
 
@@ -531,17 +531,17 @@ export const Results: React.FC = () => {
               >
                 <option value="all">📍 {t('filterStateAll')}</option>
                 <option value="central">🏛️ {t('filterScopeCentral')}</option>
-                <optgroup label="── 28 States ──">
-                  {INDIAN_STATES.slice(0, 28).map((st) => (
-                    <option key={st} value={st}>
-                      {st}
+                <optgroup label={t('filterOptgroupStates')}>
+                  {STATES_ONLY_DATA.map((st) => (
+                    <option key={st.value} value={st.value}>
+                      {language === 'hi' ? st.labelHi : st.labelEn}
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label="── 8 Union Territories ──">
-                  {UNION_TERRITORIES.map((ut) => (
-                    <option key={ut} value={ut}>
-                      {ut}
+                <optgroup label={t('filterOptgroupUTs')}>
+                  {UNION_TERRITORIES_DATA.map((ut) => (
+                    <option key={ut.value} value={ut.value}>
+                      {language === 'hi' ? ut.labelHi : ut.labelEn}
                     </option>
                   ))}
                 </optgroup>

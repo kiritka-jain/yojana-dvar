@@ -13,6 +13,7 @@ import type {
   ProfileInput 
 } from '../services/api';
 import { getLocalizedSchemeField } from '../i18n/schemeTranslations';
+import { getStateDisplayName } from '../constants/states';
 import { useSpeech } from '../utils/speech';
 import { 
   ArrowLeft, 
@@ -365,7 +366,7 @@ export const SchemeDetail: React.FC = () => {
       if (isCentral) {
         points.push(`निवास पात्रता: संपूर्ण भारत के सभी राज्यों एवं केंद्र शासित प्रदेशों की नागरिक पात्र हैं।`);
       } else {
-        points.push(`निवास पात्रता: आवेदक ${scheme.state} राज्य की स्थायी / मूल निवासी होनी चाहिए।`);
+        points.push(`निवास पात्रता: आवेदक ${getStateDisplayName(scheme.state, 'hi')} राज्य की स्थायी / मूल निवासी होनी चाहिए।`);
       }
 
       // Income limit
@@ -489,7 +490,7 @@ export const SchemeDetail: React.FC = () => {
             </span>
 
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-cream-100 text-charcoal-800 border border-cream-200">
-              {isCentral ? `🏛️ ${t('tagCentral')}` : `📍 ${scheme.state} ${t('tagState')}`}
+              {isCentral ? `🏛️ ${t('tagCentral')}` : `📍 ${getStateDisplayName(scheme.state, siteLanguage)} ${t('tagState')}`}
             </span>
 
             {displayCategory && (
