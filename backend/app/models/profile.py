@@ -7,7 +7,7 @@ class ProfileInput(BaseModel):
     age: int = Field(default=25, ge=0, le=120, description="User's age in years")
     gender: str = Field(default="Female", description="User's gender (Female, Male, Other)")
     caste: str = Field(default="General", description="Caste category (General, SC, ST, OBC)")
-    income: int = Field(default=0, ge=0, description="Annual family income in INR")
+    income: int = Field(default=0, ge=0, le=1000000000, description="Annual family income in INR")
     residence: str = Field(default="All", description="Residence type (Rural, Urban, All)")
     marital_status: str = Field(default="all", description="User marital status (unmarried, married, intercaste_marriage, widow, divorced, all)")
     life_stage: str = Field(default="general", description="Life stage tag (student, maternal, widow, entrepreneur, senior, general, all)")

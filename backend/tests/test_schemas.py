@@ -259,3 +259,27 @@ def test_cross_field_senior_age_60_plus_succeeds():
     p = ProfileInput(age=65, life_stage="senior")
     assert p.age == 65
     assert p.life_stage == "senior"
+
+
+# =============================================================================
+# 7. Ticket TICKET-3.3 / BUG-012: Income Range Bounds Validation Tests
+# =============================================================================
+
+def test_negative_income_fails_validation():
+    """Verify negative income raises ValidationError."""
+    with pytest.raises(ValidationError):
+        ProfileInput(income=-500)
+
+def test_excessive_income_fails_validation():
+    """Verify income above upper bound raises ValidationError."""
+    with pytest.raises(ValidationError):
+        ProfileInput(income=10000000000)
+
+def test_valid_income_bounds_succeed():
+    """Verify valid income boundary values succeed."""
+    p_zero = ProfileInput(income=0)
+    assert p_zero.income == 0
+
+    p_high = ProfileInput(income=1000000)
+    assert p_high.income == 1000000
+

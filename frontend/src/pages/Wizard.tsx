@@ -267,6 +267,15 @@ export const Wizard: React.FC = () => {
         return t('validationErrorAge');
       }
     }
+    if (field === 'income') {
+      if (value === undefined || value === null || value === '') {
+        return t('validationErrorIncome');
+      }
+      const num = Number(value);
+      if (isNaN(num) || num < 0 || num > 100000000) {
+        return t('validationErrorIncome');
+      }
+    }
     return undefined;
   };
 
@@ -288,6 +297,22 @@ export const Wizard: React.FC = () => {
       }
       const ageErr = validateField('age', effectiveAge);
       if (ageErr) newErrors.age = ageErr;
+    }
+
+    if (step === 2) {
+      const incomeErr = validateField('income', profile.income);
+      if (incomeErr) newErrors.income = incomeErr;
+    }
+
+    if (step === 3) {
+      const stateErr = validateField('state', profile.state);
+      if (stateErr) newErrors.state = stateErr;
+
+      const ageErr = validateField('age', profile.age);
+      if (ageErr) newErrors.age = ageErr;
+
+      const incomeErr = validateField('income', profile.income);
+      if (incomeErr) newErrors.income = incomeErr;
     }
 
     setErrors(newErrors);
