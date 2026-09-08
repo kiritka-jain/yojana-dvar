@@ -162,6 +162,34 @@ export const matchesCategory = (scheme: SchemeMatchResult, category: CategoryFil
   }
 };
 
+export const matchesSearchQuery = (scheme: SchemeMatchResult, query: string): boolean => {
+  if (!query || !query.trim()) return true;
+  const q = query.toLowerCase().trim();
+  return Boolean(
+    scheme.name?.toLowerCase().includes(q) ||
+    scheme.description?.toLowerCase().includes(q) ||
+    scheme.benefits?.toLowerCase().includes(q) ||
+    scheme.ministry?.toLowerCase().includes(q) ||
+    scheme.department?.toLowerCase().includes(q) ||
+    scheme.category?.toLowerCase().includes(q) ||
+    scheme.eligibility_text?.toLowerCase().includes(q) ||
+    scheme.documents_required?.toLowerCase().includes(q)
+  );
+};
+
+export const getPaginationPages = (currentPage: number, totalPages: number): (number | 'ellipsis')[] => {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, 'ellipsis', totalPages];
+  }
+  if (currentPage >= totalPages - 3) {
+    return [1, 'ellipsis', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+  return [1, 'ellipsis', currentPage - 1, currentPage, currentPage + 1, 'ellipsis', totalPages];
+};
+
 const CATEGORY_ITEMS: { id: CategoryFilterType; labelKey: keyof TranslationDictionary }[] = [
   { id: 'all', labelKey: 'filterCategoryAll' },
   { id: 'education', labelKey: 'filterCategoryEducation' },
@@ -202,10 +230,11 @@ export const Results: React.FC = () => {
   const catalogTopRef = useRef<HTMLDivElement>(null);
 
   const locationState = location.state as { matchData?: MatchResponse; profile?: ProfileInput } | undefined;
+  const baseProfileState = locationState?.profile?.state || 'all';
 
   const initialCategory = normalizeCategoryParam(searchParams.get('category'));
   const initialSearch = searchParams.get('q') || '';
-  const initialState = searchParams.get('state') || locationState?.profile?.state || 'all';
+  const initialState = searchParams.get('state') || baseProfileState;
   const rawScope = searchParams.get('scope');
   const initialScope: 'all' | 'central' | 'state' = rawScope === 'central' || rawScope === 'state' ? rawScope : 'all';
   const initialPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
@@ -238,7 +267,7 @@ export const Results: React.FC = () => {
   useEffect(() => {
     const cat = normalizeCategoryParam(searchParams.get('category'));
     const q = searchParams.get('q') || '';
-    const st = searchParams.get('state') || locationState?.profile?.state || 'all';
+    const st = searchParams.get('state') || baseProfileState;
     const rawSc = searchParams.get('scope');
     const sc: 'all' | 'central' | 'state' = rawSc === 'central' || rawSc === 'state' ? rawSc : 'all';
     const pg = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
@@ -249,7 +278,7 @@ export const Results: React.FC = () => {
     setSelectedState((prev) => (prev !== st ? st : prev));
     setSelectedScope((prev) => (prev !== sc ? sc : prev));
     setCurrentPage((prev) => (prev !== pg ? pg : prev));
-  }, [searchParams, locationState?.profile?.state]);
+  }, [searchParams, baseProfileState]);
 
   // Reflect active filter state into URL query parameters
   useEffect(() => {
@@ -351,16 +380,9 @@ export const Results: React.FC = () => {
       // State filter (Central + Selected State schemes)
       if (!matchesState(s, selectedState)) return false;
 
-      // Search within results
-      if (debouncedSearch.trim()) {
-        const query = debouncedSearch.toLowerCase();
-        const matches =
-          s.name.toLowerCase().includes(query) ||
-          s.benefits.toLowerCase().includes(query) ||
-          s.ministry.toLowerCase().includes(query) ||
-          (s.category && s.category.toLowerCase().includes(query));
-        if (!matches) return false;
-      }
+      // Search within results (using expanded fields: name, description, benefits, ministry, etc.)
+      if (!matchesSearchQuery(s, debouncedSearch)) return false;
+
       return true;
     });
 
@@ -391,15 +413,9 @@ export const Results: React.FC = () => {
         return false;
       }
 
-      // Search within results
-      if (debouncedSearch.trim()) {
-        const query = debouncedSearch.toLowerCase();
-        const matches =
-          s.name.toLowerCase().includes(query) ||
-          s.benefits.toLowerCase().includes(query) ||
-          s.ministry.toLowerCase().includes(query) ||
-          (s.category && s.category.toLowerCase().includes(query));
-        if (!matches) return false;
+      // Search within results (using expanded fields: name, description, benefits, ministry, etc.)
+      if (!matchesSearchQuery(s, debouncedSearch)) {
+        return false;
       }
 
       return true;
@@ -424,7 +440,7 @@ export const Results: React.FC = () => {
 
   const handleResetFilters = () => {
     setSelectedScope('all');
-    setSelectedState('all');
+    setSelectedState(baseProfileState);
     setSelectedCategory('all');
     setSearchFilter('');
     setDebouncedSearch('');
@@ -432,7 +448,8 @@ export const Results: React.FC = () => {
     setSearchParams(new URLSearchParams(), { replace: true });
   };
 
-  const isFiltered = selectedScope !== 'all' || selectedState !== 'all' || selectedCategory !== 'all' || debouncedSearch.trim() !== '';
+  const isStateFiltered = selectedState !== baseProfileState;
+  const isFiltered = selectedScope !== 'all' || isStateFiltered || selectedCategory !== 'all' || debouncedSearch.trim() !== '';
 
   const handleBookmarkChange = (_schemeId: string, isSaved: boolean, schemeName: string) => {
     const text = isSaved 
@@ -692,23 +709,33 @@ export const Results: React.FC = () => {
                   <span className="hidden sm:inline">{t('paginationPrev')}</span>
                 </button>
 
-                {/* Page Number Pills */}
-                {Array.from({ length: totalPages }).map((_, idx) => {
-                  const pageNum = idx + 1;
-                  const isActive = currentPage === pageNum;
+                {/* Page Number Pills (with Compact Ellipsis) */}
+                {getPaginationPages(currentPage, totalPages).map((p, idx) => {
+                  if (p === 'ellipsis') {
+                    return (
+                      <span
+                        key={`ellipsis-${idx}`}
+                        className="min-w-[28px] sm:min-w-[36px] text-center text-charcoal-400 font-bold select-none text-xs sm:text-sm"
+                        aria-hidden="true"
+                      >
+                        …
+                      </span>
+                    );
+                  }
+                  const isActive = currentPage === p;
                   return (
                     <button
-                      key={pageNum}
+                      key={p}
                       type="button"
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`min-w-[40px] min-h-[40px] rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center ${
+                      onClick={() => handlePageChange(p)}
+                      className={`min-w-[36px] sm:min-w-[40px] min-h-[36px] sm:min-h-[40px] rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center ${
                         isActive
                           ? 'bg-saffron-500 text-white shadow-sm ring-2 ring-saffron-500/30 scale-105 font-black'
                           : 'bg-cream-50 text-charcoal-700 hover:bg-cream-200 border border-cream-200'
                       }`}
                       aria-current={isActive ? 'page' : undefined}
                     >
-                      {pageNum}
+                      {p}
                     </button>
                   );
                 })}
