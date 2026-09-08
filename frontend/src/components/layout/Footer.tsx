@@ -4,7 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { ShieldCheck, ExternalLink } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <footer className="bg-[#f7f2e7] border-t border-saffron-200/60 mt-16 sm:mt-20 transition-colors">
@@ -18,7 +18,7 @@ export const Footer: React.FC = () => {
                 <img src="/chakra.svg" alt="Yojana Dvar Emblem" className="w-full h-full object-contain" />
               </div>
               <span className="font-bold text-lg text-charcoal-900 tracking-tight">
-                {language === 'hi' ? 'योजना द्वार' : 'Yojana Dvar'}
+                {t('navBrand')}
               </span>
             </div>
 
@@ -32,7 +32,7 @@ export const Footer: React.FC = () => {
           {/* Col 3: Official Government Portals */}
           <div>
             <h4 className="font-bold text-xs text-charcoal-900 uppercase tracking-wider mb-3">
-              {language === 'hi' ? 'सरकारी पोर्टल' : 'Official Portals'}
+              {t('footerGovtPortalsTitle')}
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-charcoal-600">
               <li>
@@ -85,7 +85,7 @@ export const Footer: React.FC = () => {
           {/* Col 4: Platform & Info */}
           <div>
             <h4 className="font-bold text-xs text-charcoal-900 uppercase tracking-wider mb-3">
-              {language === 'hi' ? 'प्लेटफ़ॉर्म व जानकारी' : 'Platform & Info'}
+              {t('footerPlatformInfo')}
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-charcoal-600">
               <li>
@@ -104,7 +104,9 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <span className="text-charcoal-500">{t('footerAccessibility')}</span>
+                <Link to="/about" className="text-charcoal-600 hover:text-saffron-700 transition-colors">
+                  {t('footerAccessibility')}
+                </Link>
               </li>
             </ul>
           </div>

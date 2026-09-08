@@ -194,7 +194,7 @@ export const Navbar: React.FC = () => {
             {/* Language Switcher in Mobile Drawer */}
             <div className="pt-2 border-t border-cream-300 px-2">
               <p className="text-xs font-bold text-charcoal-600 mb-2">
-                {language === 'hi' ? 'भाषा चुनें (Select Language):' : 'Select Language (भाषा चुनें):'}
+                {t('navSelectLanguage')}
               </p>
               <div className="grid grid-cols-2 gap-2">
                 <button

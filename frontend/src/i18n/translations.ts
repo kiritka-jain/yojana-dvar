@@ -369,11 +369,19 @@ export interface TranslationDictionary {
   footerDisclaimer: string;
   footerRights: string;
   footerGovtPortals: string;
+  footerGovtPortalsTitle: string;
+  footerPlatformInfo: string;
   footerAbout: string;
   footerPrivacy: string;
   footerTerms: string;
   footerAccessibility: string;
   footerMadeWithLove: string;
+
+  // Mobile & Layout Shortcuts
+  navSelectLanguage: string;
+  navHomeShort: string;
+  navFindShort: string;
+  navBookmarksShort: string;
 }
 
 export const translations: Record<Language, TranslationDictionary> = {
@@ -737,11 +745,18 @@ export const translations: Record<Language, TranslationDictionary> = {
     footerDisclaimer: "Disclaimer: Yojana Dvar is an informational gateway and not a government agency. Always verify guidelines on official portals.",
     footerRights: "© 2026 Yojana Dvar. Open-source civic tech built for women welfare empowerment.",
     footerGovtPortals: "Official Portals: myScheme.gov.in • Ministry of Women & Child Development • Digital India",
+    footerGovtPortalsTitle: "Official Portals",
+    footerPlatformInfo: "Platform & Info",
     footerAbout: "About Yojana Dvar",
     footerPrivacy: "Data Privacy",
     footerTerms: "Terms of Use",
     footerAccessibility: "Web Accessibility",
-    footerMadeWithLove: "Made with ❤️ for women empowerment across India"
+    footerMadeWithLove: "Made with ❤️ for women empowerment across India",
+
+    navSelectLanguage: "Select Language (भाषा चुनें):",
+    navHomeShort: "Home",
+    navFindShort: "Find Schemes",
+    navBookmarksShort: "Saved"
   },
   hi: {
     navBrand: "योजना द्वार",
@@ -1103,10 +1118,17 @@ export const translations: Record<Language, TranslationDictionary> = {
     footerDisclaimer: "अस्वीकरण: योजना द्वार एक सूचनात्मक मंच है, सरकारी एजेंसी नहीं। पात्रता की अंतिम पुष्टि आधिकारिक सरकारी पोर्टल पर करें।",
     footerRights: "© 2026 योजना द्वार। भारतीय महिला सशक्तिकरण और डिजिटल समावेशन के लिए समर्पित।",
     footerGovtPortals: "सरकारी पोर्टल: myScheme.gov.in • महिला एवं बाल विकास मंत्रालय • डिजिटल इंडिया",
+    footerGovtPortalsTitle: "सरकारी पोर्टल",
+    footerPlatformInfo: "प्लेटफ़ॉर्म व जानकारी",
     footerAbout: "योजना द्वार के बारे में",
     footerPrivacy: "गोपनीयता नीति",
     footerTerms: "उपयोग की शर्तें",
     footerAccessibility: "सुलभता मानक",
-    footerMadeWithLove: "भारतीय महिला सशक्तिकरण हेतु ❤️ से निर्मित"
+    footerMadeWithLove: "भारतीय महिला सशक्तिकरण हेतु ❤️ से निर्मित",
+
+    navSelectLanguage: "भाषा चुनें (Select Language):",
+    navHomeShort: "होम",
+    navFindShort: "योजना खोजें",
+    navBookmarksShort: "सहेजी गई"
   }
 };

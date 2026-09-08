@@ -5,7 +5,7 @@ import { Home, Search, Bookmark } from 'lucide-react';
 import { getLocalBookmarks } from '../../services/api';
 
 export const BottomNav: React.FC = () => {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const location = useLocation();
   const [bookmarkCount, setBookmarkCount] = useState<number>(0);
 
@@ -66,7 +66,7 @@ export const BottomNav: React.FC = () => {
             />
           </div>
           <span className="text-[11px] leading-tight mt-1 font-bold tracking-tight">
-            {language === 'hi' ? 'होम' : 'Home'}
+            {t('navHomeShort')}
           </span>
         </Link>
 
@@ -90,7 +90,7 @@ export const BottomNav: React.FC = () => {
             />
           </div>
           <span className="text-[11px] leading-tight mt-1 font-bold tracking-tight">
-            {language === 'hi' ? 'योजना खोजें' : 'Find Schemes'}
+            {t('navFindShort')}
           </span>
         </Link>
 
@@ -122,7 +122,7 @@ export const BottomNav: React.FC = () => {
             )}
           </div>
           <span className="text-[11px] leading-tight mt-1 font-bold tracking-tight">
-            {language === 'hi' ? 'सहेजी गई' : 'Saved'}
+            {t('navBookmarksShort')}
           </span>
         </Link>
       </div>

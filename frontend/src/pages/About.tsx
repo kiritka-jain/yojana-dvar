@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { 
@@ -6,18 +6,18 @@ import {
   Sparkles, 
   ExternalLink, 
   Database, 
-  CheckCircle2,
+  CheckCircle2, 
   Lock, 
   Eye, 
   FileText, 
   Building2, 
-  ArrowRight
+  ArrowRight 
 } from 'lucide-react';
 
 export const About: React.FC = () => {
   const { t, language } = useLanguage();
 
-  const PILLARS = [
+  const PILLARS = useMemo(() => [
     {
       icon: <CheckCircle2 className="w-6 h-6 text-saffron-600" />,
       title: language === 'hi' ? 'सत्यापित पात्रता मिलान' : 'Verified Eligibility Matching',
@@ -46,9 +46,9 @@ export const About: React.FC = () => {
         ? 'स्क्रीन-रीडर अनुकूल, मोबाइल-प्रथम डिज़ाइन और निम्न-बैंडविड्थ ग्रामीण कनेक्टिविटी हेतु अनुकूलित।'
         : 'Built to WCAG 2.1 AA standards, optimized for low-bandwidth rural mobile internet connections.'
     }
-  ];
+  ], [language]);
 
-  const OFFICIAL_PORTALS = [
+  const OFFICIAL_PORTALS = useMemo(() => [
     {
       name: 'myScheme National Portal',
       url: 'https://www.myscheme.gov.in/',
@@ -85,9 +85,9 @@ export const About: React.FC = () => {
       ministry: language === 'hi' ? 'महिला एवं बाल विकास मंत्रालय' : 'Ministry of WCD',
       desc: language === 'hi' ? 'मातृत्व प्रत्यक्ष नकद लाभ हस्तांतरण (DBT) और पोषण सहायता का आधिकारिक पोर्टल।' : 'Official portal for maternal cash transfers and DBT nutrition disbursements.'
     }
-  ];
+  ], [language]);
 
-  const DATA_ATTRIBUTIONS = [
+  const DATA_ATTRIBUTIONS = useMemo(() => [
     {
       name: 'myScheme Public Catalog',
       source: language === 'hi' ? 'भारत सरकार ओपन डेटा सर्विसेज (myScheme.gov.in)' : 'Government of India Open Data Services (myScheme.gov.in)',
@@ -103,7 +103,7 @@ export const About: React.FC = () => {
       source: language === 'hi' ? 'ओपन कम्युनिटी सिविक टेक कल्याणकारी रिपॉजिटरी' : 'Open Community Civic Tech Welfare Repositories',
       role: language === 'hi' ? 'सार्वजनिक डेटासेट आधार और राज्य-विशिष्ट योजनाओं का सत्यापन' : 'Curated public dataset baseline and state-specific scheme cross-referencing'
     }
-  ];
+  ], [language]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
