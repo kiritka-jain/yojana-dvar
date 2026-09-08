@@ -96,6 +96,18 @@ export interface TranslationDictionary {
   fieldStatePlaceholder: string;
   fieldAge: string;
   fieldAgeHelper: string;
+  fieldMaritalStatus: string;
+  fieldMaritalStatusHelper: string;
+  maritalUnmarried: string;
+  maritalUnmarriedDesc: string;
+  maritalMarried: string;
+  maritalMarriedDesc: string;
+  maritalIntercaste: string;
+  maritalIntercasteDesc: string;
+  maritalWidow: string;
+  maritalWidowDesc: string;
+  maritalDivorced: string;
+  maritalDivorcedDesc: string;
   fieldGender: string;
   fieldGenderFemale: string;
   fieldGenderTransgender: string;
@@ -454,6 +466,18 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldStatePlaceholder: "-- Choose your State --",
     fieldAge: "Your Age",
     fieldAgeHelper: "Schemes have specific age criteria (e.g. 0-10 for SSY, 19-45 for PMMVY)",
+    fieldMaritalStatus: "Marital Status",
+    fieldMaritalStatusHelper: "Select your marital status for targeted scheme benefits",
+    maritalUnmarried: "Unmarried / Single",
+    maritalUnmarriedDesc: "Girl child, student, or single woman",
+    maritalMarried: "Married",
+    maritalMarriedDesc: "Married woman (maternity & family schemes)",
+    maritalIntercaste: "Inter-Caste Marriage",
+    maritalIntercasteDesc: "Inter-caste married couple (grant incentive)",
+    maritalWidow: "Widow",
+    maritalWidowDesc: "Widowed woman (widow pension & assistance)",
+    maritalDivorced: "Divorced / Abandoned",
+    maritalDivorcedDesc: "Separated or destitute woman maintenance",
     fieldGender: "Gender",
     fieldGenderFemale: "Female (महिला)",
     fieldGenderTransgender: "Transgender (किन्नर / तृतीय लिंग)",
@@ -808,6 +832,18 @@ export const translations: Record<Language, TranslationDictionary> = {
     fieldStatePlaceholder: "-- अपना राज्य चुनें --",
     fieldAge: "आपकी आयु (वर्ष में)",
     fieldAgeHelper: "योजनाओं में विशिष्ट आयु सीमा होती है (जैसे सुकन्या के लिए 0-10, PMMVY के लिए 19-45 वर्ष)",
+    fieldMaritalStatus: "वैवाहिक स्थिति",
+    fieldMaritalStatusHelper: "विशिष्ट सरकारी योजनाओं के लाभ हेतु अपनी वैवाहिक स्थिति चुनें",
+    maritalUnmarried: "अविवाहित / एकल",
+    maritalUnmarriedDesc: "बालिका, छात्रा अथवा अविवाहित कन्या",
+    maritalMarried: "विवाहित",
+    maritalMarriedDesc: "विवाहित महिला (मातृ वंदना व परिवार कल्याण)",
+    maritalIntercaste: "अंतरजातीय विवाह",
+    maritalIntercasteDesc: "अंतरजातीय दंपति (विवाह प्रोत्साहन अनुदान)",
+    maritalWidow: "विधवा",
+    maritalWidowDesc: "पति के निधन उपरांत (विधवा पेंशन व सहायता)",
+    maritalDivorced: "तलाकशुदा / परित्यक्ता",
+    maritalDivorcedDesc: "तलाकशुदा अथवा निराश्रित महिला भरण-पोषण",
     fieldGender: "लिंग",
     fieldGenderFemale: "महिला (Female)",
     fieldGenderTransgender: "किन्नर / तृतीय लिंग (Transgender)",

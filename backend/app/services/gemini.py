@@ -125,6 +125,7 @@ Explain clearly and simply in {lang_name} why this applicant qualifies for the w
 Applicant Demographic Profile:
 - Age: {profile.age} years
 - Gender: {profile.gender}
+- Marital Status: {getattr(profile, 'marital_status', 'Not specified')}
 - State of Residence: {profile.state}
 - Caste Category: {profile.caste}
 - Annual Family Income: Rs {profile.income:,}
@@ -145,7 +146,8 @@ Guardrails & Instructions:
 1. Tone: Warm, encouraging, empathetic, and plain-language.
 2. Advisory only: Do NOT guarantee official approval; state that the applicant meets the eligibility criteria and is encouraged to apply.
 3. Language: Generate the entire response strictly in {lang_name}.
-4. Output Format: Return ONLY a valid JSON object matching this structure:
+4. Document Checklist Note: If scheme is widow pension or marital assistance, explicitly highlight necessary certificates (e.g. Husband's Death Certificate or Marriage Certificate).
+5. Output Format: Return ONLY a valid JSON object matching this structure:
 {{
   "summary": "Plain language explanation addressing the user directly on why she qualifies.",
   "key_benefits": ["Key benefit 1", "Key benefit 2"],

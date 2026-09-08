@@ -384,3 +384,53 @@ def test_maternal_scheme_age_and_senior_incompatibility(matcher, base_scheme):
     # 4. Senior citizen (age 65, senior) -> Ineligible for maternal scheme
     p_senior = ProfileInput(age=65, gender="Female", state="All", life_stage="senior")
     assert matcher.evaluate_scheme(p_senior, base_scheme)[0] is False
+
+
+def test_marital_status_widow_scheme_rules(matcher, base_scheme):
+    """
+    Test widow scheme matching:
+    - Widow woman gets priority match and Death Certificate reminder.
+    - Married/unmarried applicants are excluded from exclusive widow pension schemes.
+    """
+    base_scheme["name"] = "Indira Gandhi National Widow Pension Scheme"
+    base_scheme["category"] = "Widow & Destitute Support"
+    base_scheme["beneficiary_type"] = "Widows aged 40-79 years living below poverty line"
+    base_scheme["life_stage_tags"] = '["widow"]'
+    base_scheme["age_min"] = 40
+    base_scheme["age_max"] = 79
+
+    # 1. Widow applicant qualifies with high score and reason
+    p_widow = ProfileInput(age=45, gender="Female", state="All", marital_status="widow", life_stage="widow", is_bpl=True)
+    eligible_widow, score_widow, reasons_widow = matcher.evaluate_scheme(p_widow, base_scheme)
+    assert eligible_widow is True
+    assert score_widow >= 75
+    assert any("Death Certificate" in r for r in reasons_widow)
+
+    # 2. Married applicant is excluded from exclusive widow pension scheme
+    p_married = ProfileInput(age=45, gender="Female", state="All", marital_status="married", life_stage="general", is_bpl=True)
+    eligible_married, _, _ = matcher.evaluate_scheme(p_married, base_scheme)
+    assert eligible_married is False
+
+
+def test_marital_status_intercaste_marriage_rules(matcher, base_scheme):
+    """
+    Test inter-caste marriage scheme rules and reason generation.
+    """
+    base_scheme["name"] = "Dr. Ambedkar Scheme for Social Integration through Inter-Caste Marriages"
+    base_scheme["category"] = "Inter-caste Marriage Incentive"
+    base_scheme["beneficiary_type"] = "Inter-caste married couples where one spouse belongs to SC category"
+    base_scheme["life_stage_tags"] = '["general"]'
+    base_scheme["age_min"] = 18
+    base_scheme["age_max"] = 60
+
+    # 1. Inter-caste married applicant qualifies with marriage certificate reason
+    p_intercaste = ProfileInput(age=25, gender="Female", state="All", marital_status="intercaste_marriage", caste="SC")
+    eligible_ic, score_ic, reasons_ic = matcher.evaluate_scheme(p_intercaste, base_scheme)
+    assert eligible_ic is True
+    assert any("Marriage Certificate" in r for r in reasons_ic)
+
+    # 2. Unmarried applicant does not qualify for inter-caste marriage scheme
+    p_unmarried = ProfileInput(age=25, gender="Female", state="All", marital_status="unmarried", caste="SC")
+    eligible_unm, _, _ = matcher.evaluate_scheme(p_unmarried, base_scheme)
+    assert eligible_unm is False
+

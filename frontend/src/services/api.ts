@@ -5,6 +5,7 @@ export interface ProfileInput {
   caste: string;
   income: number;
   residence: string;
+  marital_status?: string;
   life_stage: string;
   occupation?: string;
   education?: string;
@@ -161,6 +162,7 @@ export async function fetchDemoPersonas(): Promise<DemoPersona[]> {
         caste: "OBC",
         income: 180000,
         residence: "Urban",
+        marital_status: "unmarried",
         life_stage: "student",
         is_bpl: false,
         has_disability: false,
@@ -181,6 +183,7 @@ export async function fetchDemoPersonas(): Promise<DemoPersona[]> {
         caste: "SC",
         income: 48000,
         residence: "Rural",
+        marital_status: "married",
         life_stage: "maternal",
         is_bpl: true,
         has_disability: false,
@@ -201,6 +204,7 @@ export async function fetchDemoPersonas(): Promise<DemoPersona[]> {
         caste: "General",
         income: 220000,
         residence: "Urban",
+        marital_status: "married",
         life_stage: "entrepreneur",
         is_bpl: false,
         has_disability: false,

@@ -9,6 +9,7 @@ class ProfileInput(BaseModel):
     caste: str = Field(default="General", description="Caste category (General, SC, ST, OBC)")
     income: int = Field(default=0, ge=0, description="Annual family income in INR")
     residence: str = Field(default="All", description="Residence type (Rural, Urban, All)")
+    marital_status: str = Field(default="all", description="User marital status (unmarried, married, intercaste_marriage, widow, divorced, all)")
     life_stage: str = Field(default="general", description="Life stage tag (student, maternal, widow, entrepreneur, senior, general, all)")
     occupation: Optional[str] = Field(default="", description="User's current occupation")
     education: Optional[str] = Field(default="", description="Highest education level")
@@ -19,6 +20,11 @@ class ProfileInput(BaseModel):
     @model_validator(mode='after')
     def validate_cross_field_age_constraints(self) -> 'ProfileInput':
         stage = (self.life_stage or "").strip().lower()
+        marital = (self.marital_status or "").strip().lower()
+
+        # Age-gating for marital statuses requiring legal age (18+)
+        if marital in ['married', 'intercaste_marriage', 'widow', 'divorced'] and self.age < 18:
+            raise ValueError(f"Marital status '{marital}' requires legal age >= 18")
 
         # Age-gating for maternal / pregnancy schemes (18+)
         if stage == 'maternal' and self.age < 18:

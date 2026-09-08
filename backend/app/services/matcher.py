@@ -120,6 +120,20 @@ class EligibilityMatcher:
             if profile.age < 18 or profile.age > 50 or user_life_stage == "senior":
                 return False, 0, []
 
+        # 3.2 Marital Status Incompatibility Gate
+        scheme_full_text = f"{scheme.get('name', '')} {scheme.get('category', '')} {scheme.get('beneficiary_type', '')} {scheme.get('eligibility_text', '')}".lower()
+        user_marital = (profile.marital_status or "all").strip().lower()
+
+        # (a) Exclusive Widow Scheme Gate:
+        is_widow_scheme = "widow" in scheme_full_text or set(clean_tags) == {"widow"}
+        if is_widow_scheme and user_marital in ["unmarried", "married", "intercaste_marriage"] and user_life_stage != "widow":
+            return False, 0, []
+
+        # (b) Exclusive Inter-caste Scheme Gate:
+        is_intercaste_scheme = "intercaste" in scheme_full_text or "inter-caste" in scheme_full_text
+        if is_intercaste_scheme and user_marital not in ["intercaste_marriage", "all"]:
+            return False, 0, []
+
         # 4. State Coverage Check
         scheme_state = str(scheme.get("state", "All")).strip()
         eligible_states_raw = scheme.get("eligible_states", "[\"All\"]")
@@ -192,13 +206,23 @@ class EligibilityMatcher:
         user_life_stage = profile.life_stage.strip().lower()
         is_stage_match = any(tag.lower() == user_life_stage for tag in life_stage_tags)
         if not is_stage_match and user_life_stage == "widow":
-            scheme_text = f"{scheme.get('name', '')} {scheme.get('beneficiary_type', '')} {scheme.get('eligibility_text', '')}".lower()
-            if "widow" in scheme_text:
+            if "widow" in scheme_full_text:
                 is_stage_match = True
 
         if is_stage_match:
             score += 30
             reasons.append(f"Directly matches your target life stage ('{profile.life_stage}')")
+
+        # Marital Status Specificity Boost (+25)
+        if user_marital == "widow" and is_widow_scheme:
+            score += 25
+            reasons.append("Eligible under Widow Pension social security priority (Husband's Death Certificate required)")
+        elif user_marital == "intercaste_marriage" and is_intercaste_scheme:
+            score += 25
+            reasons.append("Eligible for Inter-Caste Marriage Incentive Grant (Registered Marriage Certificate required)")
+        elif user_marital == "unmarried" and ("single girl" in scheme_full_text or "unmarried" in scheme_full_text):
+            score += 15
+            reasons.append("Eligible under single / unmarried girl child welfare priority")
 
         # State Specificity Boost (+20)
         if scheme_state.lower() == user_state.lower() and scheme_state.lower() != "all":

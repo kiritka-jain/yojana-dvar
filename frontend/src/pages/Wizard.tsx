@@ -122,6 +122,12 @@ export const reconcileProfileForAge = (
     resetReasons.push('life_stage');
   }
 
+  // Age-gate marital status (under 18 must be unmarried)
+  if (clampedAge < 18 && sanitized.marital_status && sanitized.marital_status !== 'unmarried') {
+    sanitized.marital_status = 'unmarried';
+    resetReasons.push('marital_status');
+  }
+
   // Age-gate occupation (Ticket YD-BUG-2.1)
   if (sanitized.occupation && !isOccupationAllowed(sanitized.occupation, clampedAge)) {
     sanitized.occupation = '';
@@ -147,6 +153,7 @@ const DEFAULT_PROFILE: ProfileInput = {
   state: 'Uttar Pradesh',
   age: 24,
   gender: 'Female',
+  marital_status: 'unmarried',
   caste: 'General',
   income: 120000,
   residence: 'Rural',
@@ -187,6 +194,7 @@ export const Wizard: React.FC = () => {
         state: 'Karnataka',
         age: 19,
         gender: 'Female',
+        marital_status: 'unmarried',
         caste: 'OBC',
         income: 180000,
         residence: 'Urban',
@@ -202,6 +210,7 @@ export const Wizard: React.FC = () => {
         state: 'Bihar',
         age: 26,
         gender: 'Female',
+        marital_status: 'married',
         caste: 'SC',
         income: 48000,
         residence: 'Rural',
@@ -217,6 +226,7 @@ export const Wizard: React.FC = () => {
         state: 'Tamil Nadu',
         age: 42,
         gender: 'Female',
+        marital_status: 'married',
         caste: 'General',
         income: 220000,
         residence: 'Urban',
@@ -619,6 +629,112 @@ export const Wizard: React.FC = () => {
                   </button>
                 </div>
               )}
+            </div>
+
+            {/* Field: Marital Status (5 Plain-Language Options with Icons & Badges) */}
+            <div className="space-y-3.5 p-5 sm:p-6 rounded-3xl bg-cream-50/70 border border-saffron-200/80 shadow-xs">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="block text-sm sm:text-base font-bold text-charcoal-900 flex items-center gap-1.5">
+                    <span>💍</span>
+                    <span>{t('fieldMaritalStatus')}</span>
+                    <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <p className="text-xs text-charcoal-500 mt-0.5">
+                    {t('fieldMaritalStatusHelper')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {[
+                  {
+                    val: 'unmarried',
+                    title: t('maritalUnmarried'),
+                    desc: t('maritalUnmarriedDesc'),
+                    icon: '🌸',
+                    minAge: 0,
+                  },
+                  {
+                    val: 'married',
+                    title: t('maritalMarried'),
+                    desc: t('maritalMarriedDesc'),
+                    icon: '💍',
+                    minAge: 18,
+                  },
+                  {
+                    val: 'intercaste_marriage',
+                    title: t('maritalIntercaste'),
+                    desc: t('maritalIntercasteDesc'),
+                    icon: '🤝',
+                    minAge: 18,
+                  },
+                  {
+                    val: 'widow',
+                    title: t('maritalWidow'),
+                    desc: t('maritalWidowDesc'),
+                    icon: '🕊️',
+                    minAge: 18,
+                  },
+                  {
+                    val: 'divorced',
+                    title: t('maritalDivorced'),
+                    desc: t('maritalDivorcedDesc'),
+                    icon: '⚖️',
+                    minAge: 18,
+                  },
+                ].map((m) => {
+                  const isSelected = profile.marital_status === m.val;
+                  const isDisabled = profile.age < m.minAge;
+
+                  return (
+                    <button
+                      key={m.val}
+                      type="button"
+                      disabled={isDisabled}
+                      onClick={() => {
+                        if (!isDisabled) {
+                          setProfile((prev) => ({
+                            ...prev,
+                            marital_status: m.val,
+                            ...(m.val === 'widow' && (prev.life_stage === 'all' || prev.life_stage === 'general') ? { life_stage: 'widow' } : {}),
+                            ...(m.val === 'unmarried' && prev.life_stage === 'widow' ? { life_stage: 'all' } : {})
+                          }));
+                        }
+                      }}
+                      className={`min-h-[72px] p-4 rounded-2xl border-2 text-left flex items-start justify-between gap-3 transition-all duration-200 active:scale-98 group focus:outline-none focus:ring-2 focus:ring-saffron-400 ${
+                        isDisabled
+                          ? 'border-cream-200 bg-cream-100/50 text-charcoal-400 opacity-60 cursor-not-allowed select-none'
+                          : isSelected
+                          ? 'border-saffron-500 bg-saffron-50/90 text-saffron-950 font-bold ring-4 ring-saffron-200/80 shadow-md'
+                          : 'border-cream-300 bg-white hover:border-saffron-400 hover:bg-cream-50 text-charcoal-700 shadow-xs'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className={`text-2xl mt-0.5 filter drop-shadow-xs ${isDisabled ? 'grayscale opacity-60' : ''}`}>{m.icon}</span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-extrabold block leading-tight ${isSelected ? 'text-saffron-950' : isDisabled ? 'text-charcoal-500' : 'text-charcoal-900'}`}>
+                              {m.title}
+                            </span>
+                            {isDisabled && (
+                              <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">
+                                18+
+                              </span>
+                            )}
+                          </div>
+                          <span className={`text-xs mt-0.5 block font-medium leading-relaxed ${isSelected ? 'text-saffron-800' : 'text-charcoal-500'}`}>
+                            {m.desc}
+                          </span>
+                        </div>
+                      </div>
+                      {isSelected && (
+                        <CheckCircle2 className="w-5 h-5 text-saffron-700 flex-shrink-0 mt-0.5" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
           </div>
