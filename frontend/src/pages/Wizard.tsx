@@ -2,7 +2,7 @@ import React, { useState, useEffect, useId, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { matchSchemes, saveUserProfile } from '../services/api';
+import { matchSchemes, saveUserProfile, getStoredUserProfile, setStoredUserProfile } from '../services/api';
 import type { ProfileInput } from '../services/api';
 import { 
   User, 
@@ -244,6 +244,12 @@ export const Wizard: React.FC = () => {
         limit: 15
       });
       setRawAgeInput('42');
+    } else {
+      const stored = getStoredUserProfile();
+      if (stored) {
+        setProfile(stored);
+        setRawAgeInput(stored.age.toString());
+      }
     }
   }, [searchParams]);
 
@@ -363,7 +369,8 @@ export const Wizard: React.FC = () => {
     setLoading(true);
     setErrorMsg(null);
 
-    // Save profile to backend in background if authenticated
+    // Save profile locally and to backend if authenticated
+    setStoredUserProfile(profile);
     if (isAuthenticated && token) {
       saveUserProfile(profile, token).catch((err) => {
         console.warn('Could not auto-save demographic profile:', err);

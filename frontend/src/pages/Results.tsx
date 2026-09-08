@@ -4,7 +4,9 @@ import { useLanguage } from '../context/LanguageContext';
 import { SchemeCard, parseLifeStageTags } from '../components/schemes/SchemeCard';
 import { 
   matchSchemes, 
-  searchSchemes
+  searchSchemes,
+  getStoredUserProfile,
+  setStoredUserProfile
 } from '../services/api';
 import type { SchemeMatchResult, MatchResponse, ProfileInput } from '../services/api';
 import type { TranslationDictionary } from '../i18n/translations';
@@ -230,7 +232,16 @@ export const Results: React.FC = () => {
   const catalogTopRef = useRef<HTMLDivElement>(null);
 
   const locationState = location.state as { matchData?: MatchResponse; profile?: ProfileInput } | undefined;
-  const baseProfileState = locationState?.profile?.state || 'all';
+  
+  // Persist or retrieve user demographic profile
+  useEffect(() => {
+    if (locationState?.profile) {
+      setStoredUserProfile(locationState.profile);
+    }
+  }, [locationState?.profile]);
+
+  const activeProfile = locationState?.profile || getStoredUserProfile() || undefined;
+  const baseProfileState = activeProfile?.state || 'all';
 
   const initialCategory = normalizeCategoryParam(searchParams.get('category'));
   const initialSearch = searchParams.get('q') || '';
@@ -677,13 +688,22 @@ export const Results: React.FC = () => {
         <div className="space-y-8">
           {/* Schemes Card Grid (Paginated) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paginatedSchemes.map((scheme) => (
-              <SchemeCard 
-                key={scheme.scheme_id} 
-                scheme={scheme} 
-                onBookmarkChange={handleBookmarkChange}
-              />
-            ))}
+            {paginatedSchemes.map((scheme) => {
+              const cardProfile = activeProfile
+                ? {
+                    ...activeProfile,
+                    state: selectedState !== 'all' ? selectedState : activeProfile.state,
+                  }
+                : undefined;
+              return (
+                <SchemeCard 
+                  key={scheme.scheme_id} 
+                  scheme={scheme} 
+                  profile={cardProfile}
+                  onBookmarkChange={handleBookmarkChange}
+                />
+              );
+            })}
           </div>
 
           {/* Pagination Controls Bar */}

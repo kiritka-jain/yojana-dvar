@@ -3,8 +3,53 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useBookmarks } from '../context/BookmarkContext';
-import { fetchUserProfile } from '../services/api';
+import { fetchUserProfile, setStoredUserProfile } from '../services/api';
 import type { ProfileInput } from '../services/api';
+
+const DEMO_PROFILES: Record<'priya' | 'sunita' | 'lakshmi', ProfileInput> = {
+  priya: {
+    state: 'Karnataka',
+    age: 19,
+    gender: 'Female',
+    caste: 'OBC',
+    income: 180000,
+    residence: 'Urban',
+    life_stage: 'student',
+    occupation: 'Student',
+    education: 'Undergraduate',
+    is_bpl: false,
+    has_disability: false,
+    limit: 10
+  },
+  sunita: {
+    state: 'Bihar',
+    age: 26,
+    gender: 'Female',
+    caste: 'SC',
+    income: 48000,
+    residence: 'Rural',
+    life_stage: 'maternal',
+    occupation: 'Homemaker',
+    education: 'Secondary',
+    is_bpl: true,
+    has_disability: false,
+    limit: 10
+  },
+  lakshmi: {
+    state: 'Tamil Nadu',
+    age: 42,
+    gender: 'Female',
+    caste: 'General',
+    income: 220000,
+    residence: 'Urban',
+    life_stage: 'entrepreneur',
+    occupation: 'Self-Employed / Artisan',
+    education: 'Diploma',
+    is_bpl: false,
+    has_disability: false,
+    limit: 10
+  }
+};
 import { getStateDisplayName } from '../constants/states';
 import { 
   User, 
@@ -59,6 +104,11 @@ export const Profile: React.FC = () => {
   };
 
   const handleSaveDemoProfile = async (persona: 'priya' | 'sunita' | 'lakshmi') => {
+    const prof = DEMO_PROFILES[persona];
+    if (prof) {
+      setStoredUserProfile(prof);
+      setSavedProfile(prof);
+    }
     loginDemo(persona);
   };
 

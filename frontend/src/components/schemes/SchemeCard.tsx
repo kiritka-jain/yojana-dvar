@@ -11,13 +11,15 @@ import {
   Volume2,
   VolumeX
 } from 'lucide-react';
-import type { SchemeMatchResult } from '../../services/api';
+import type { SchemeMatchResult, ProfileInput } from '../../services/api';
+import { getStoredUserProfile } from '../../services/api';
 import { getLocalizedSchemeField } from '../../i18n/schemeTranslations';
 import { getStateDisplayName } from '../../constants/states';
 import { useSpeech } from '../../utils/speech';
 
 interface SchemeCardProps {
   scheme: SchemeMatchResult;
+  profile?: ProfileInput;
   onBookmarkChange?: (schemeId: string, isSaved: boolean, schemeName: string) => void;
 }
 
@@ -39,7 +41,7 @@ export function parseLifeStageTags(rawTags: any): string[] {
   return [];
 }
 
-export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange }) => {
+export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, profile, onBookmarkChange }) => {
   const { t, language } = useLanguage();
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const navigate = useNavigate();
@@ -53,7 +55,10 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
   const displayBenefits = getLocalizedSchemeField(scheme, 'benefits', language);
 
   const handleCardNavigate = () => {
-    navigate(`/schemes/${scheme.scheme_id}`);
+    const resolvedProfile = profile || getStoredUserProfile() || undefined;
+    navigate(`/schemes/${scheme.scheme_id}`, {
+      state: resolvedProfile ? { profile: resolvedProfile } : undefined
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

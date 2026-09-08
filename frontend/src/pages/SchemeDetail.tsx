@@ -5,6 +5,7 @@ import { useBookmarks } from '../context/BookmarkContext';
 import { 
   getSchemeById, 
   explainSchemeEligibility,
+  getStoredUserProfile
 } from '../services/api';
 import type { 
   SchemeMatchResult, 
@@ -163,7 +164,10 @@ export const SchemeDetail: React.FC = () => {
 
   // AI Plain-Language Explanation State
   const passedProfile = (location.state as { profile?: ProfileInput } | undefined)?.profile;
-  const activeProfile = passedProfile || DEFAULT_PROFILE;
+  const storedProfile = useMemo(() => getStoredUserProfile(), []);
+  const activeProfile = useMemo(() => {
+    return passedProfile || storedProfile || DEFAULT_PROFILE;
+  }, [passedProfile, storedProfile]);
   const [explanation, setExplanation] = useState<ExplainResponse | null>(null);
   const [explainLoading, setExplainLoading] = useState<boolean>(false);
 
@@ -229,7 +233,7 @@ export const SchemeDetail: React.FC = () => {
       cancelled = true;
       controller.abort();
     };
-  }, [scheme?.scheme_id, siteLanguage]);
+  }, [scheme?.scheme_id, siteLanguage, activeProfile]);
 
   // Localized Fields from Translation Registry
   const displayName = useMemo(() => {

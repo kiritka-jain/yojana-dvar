@@ -594,6 +594,26 @@ def extract_boolean_flags(text: str) -> dict:
         "is_active": True
     }
 
+ALL_INDIAN_STATES_LIST = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
+    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", 
+    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", 
+    "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir", "Ladakh", "Puducherry", 
+    "Chandigarh", "Dadra and Nagar Haveli", "Daman and Diu", "Lakshadweep", "Andaman and Nicobar"
+]
+
+def extract_state_from_text(text: str) -> str:
+    """Detects Indian state or UT from narrative text."""
+    if not text:
+        return "All"
+    text_clean = text.lower()
+    for st in ALL_INDIAN_STATES_LIST:
+        pattern = r'\b' + re.escape(st.lower()) + r'\b'
+        if re.search(pattern, text_clean):
+            return st
+    return "All"
+
 def transform_kaggle_myscheme_record(row: dict) -> dict:
     """
     Transforms a raw Kaggle MyScheme CSV record into the BigQuery `schemes_women` data model (Ticket 2.1 & 2.4).
@@ -606,18 +626,13 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
     
     scheme_id = slugify(name)
     
+    level = str(row.get("level") or "").strip().lower()
+    
     raw_state = (
         row.get("State") or row.get("state_name") or
-        row.get("state") or "All"
+        row.get("state") or ""
     ).strip()
     
-    if raw_state.lower() in ["central", "all", "all india", "national", "india", ""]:
-        state = "All"
-    else:
-        state = raw_state
-
-    eligible_states = ["All"] if state == "All" else [state]
-
     details = (
         row.get("Details") or row.get("details") or
         row.get("description") or row.get("summary") or ""
@@ -625,9 +640,28 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
     
     benefits = (
         row.get("Benefits") or row.get("scheme_benefits") or
-        row.get("benefits") or ""
+        row.get("benefits") or details or "Government welfare entitlement"
     ).strip()
+
+    eligibility_text = (
+        row.get("Eligibility") or row.get("eligibility_criteria_text") or
+        row.get("eligibility_text") or details or "Resident Indian citizen meeting scheme guidelines"
+    ).strip()
+
+    tags = str(row.get("tags") or "").strip()
     
+    # State Resolution
+    if raw_state and raw_state.lower() not in ["central", "all", "all india", "national", "india", ""]:
+        state = raw_state
+    elif level == "central":
+        state = "All"
+    elif level == "state" or not raw_state:
+        detected = extract_state_from_text(f"{name} {details} {eligibility_text} {tags}")
+        state = detected if detected != "All" else ("All" if level != "state" else "All")
+    else:
+        state = "All"
+
+    eligible_states = ["All"] if state == "All" else [state]
     description = details if details else benefits
 
     ministry = (
@@ -641,8 +675,8 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
     ).strip()
 
     category = (
-        row.get("Category") or row.get("scheme_category") or
-        row.get("category") or "Social welfare & Empowerment"
+        row.get("schemeCategory") or row.get("Category") or 
+        row.get("scheme_category") or row.get("category") or "Social welfare & Empowerment"
     ).strip()
 
     beneficiary_type = (
@@ -650,14 +684,9 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
         row.get("beneficiary_type") or "Women & Girls"
     ).strip()
 
-    eligibility_text = (
-        row.get("Eligibility") or row.get("eligibility_criteria_text") or
-        row.get("eligibility_text") or ""
-    ).strip()
-
     documents_required = (
-        row.get("Documents Required") or row.get("required_documents") or
-        row.get("documents_required") or ""
+        row.get("documents") or row.get("Documents Required") or 
+        row.get("required_documents") or row.get("documents_required") or ""
     ).strip()
 
     apply_url = (
@@ -666,7 +695,8 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
     ).strip()
 
     application_process = (
-        row.get("Application Process") or row.get("application_process") or
+        row.get("application") or row.get("Application Process") or 
+        row.get("application_process") or
         (f"Apply online at {apply_url} or visit designated nodal office." if apply_url else "Apply through official portal or designated nodal office.")
     ).strip()
 
@@ -678,13 +708,22 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
     life_stage_tags = classify_life_stage(row)
 
     # Extract structured constraints from narrative eligibility, beneficiary, and details text
-    eligibility_narrative = f"{beneficiary_type} {eligibility_text} {details} {benefits}"
+    eligibility_narrative = f"{name} {beneficiary_type} {eligibility_text} {details} {benefits} {tags}"
 
     extracted_min_age, extracted_max_age = extract_age_bounds(eligibility_narrative, default_min=0, default_max=100)
     explicit_min_age = clean_int(row.get("min_age") or row.get("age_min"), 0)
     explicit_max_age = clean_int(row.get("max_age") or row.get("age_max"), 100)
     age_min = explicit_min_age if explicit_min_age > 0 else extracted_min_age
     age_max = explicit_max_age if explicit_max_age < 100 else extracted_max_age
+
+    # Apply canonical age bounds for distinct life-stages if unspecified
+    if age_min == 0 and age_max == 100:
+        if "student" in life_stage_tags:
+            age_min, age_max = 5, 30
+        elif "maternal" in life_stage_tags:
+            age_min, age_max = 18, 50
+        elif "senior" in life_stage_tags:
+            age_min, age_max = 60, 100
 
     extracted_income = extract_income_cap(eligibility_narrative, default_income=0)
     explicit_income = clean_int(row.get("max_income_limit") or row.get("income_max"), 0)

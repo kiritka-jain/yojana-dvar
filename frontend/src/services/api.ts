@@ -345,3 +345,23 @@ export async function saveUserProfile(profile: ProfileInput, token: string): Pro
   }
 }
 
+export const USER_PROFILE_STORAGE_KEY = 'yojana_active_user_profile';
+
+export function getStoredUserProfile(): ProfileInput | null {
+  try {
+    const raw = localStorage.getItem(USER_PROFILE_STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredUserProfile(profile: ProfileInput): void {
+  try {
+    localStorage.setItem(USER_PROFILE_STORAGE_KEY, JSON.stringify(profile));
+  } catch (e) {
+    console.warn("Failed to save profile in localStorage:", e);
+  }
+}
+

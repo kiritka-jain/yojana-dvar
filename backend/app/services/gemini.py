@@ -212,21 +212,41 @@ Instructions:
         if not docs_list:
             docs_list = ["Aadhaar Card", "Bank Passbook", "Address Proof"]
 
+        # Format profile attributes naturally
+        state_en = profile.state if profile.state and profile.state.lower() not in ["all", "all india"] else "All India"
+        state_hi = profile.state if profile.state and profile.state.lower() not in ["all", "all india"] else "अखिल भारतीय"
+        
+        life_stage_lower = (profile.life_stage or "").lower()
+        has_specific_stage = life_stage_lower not in ["all", "none", ""]
+
         if lang == "hi":
             name_hi = get_localized_scheme_field(scheme, "name", "hi") or scheme_name_en
             desc_hi = get_localized_scheme_field(scheme, "description", "hi")
             benefits_hi = get_localized_scheme_field(scheme, "benefits", "hi") or benefits_raw
 
+            stage_labels_hi = {
+                "student": "छात्रा / उच्च शिक्षा",
+                "maternal": "मातृत्व / गर्भवती",
+                "entrepreneur": "महिला स्वरोजगार / उद्यमिता",
+                "senior": "वरिष्ठ नागरिक / पेंशन",
+                "widow": "एकल महिला / विधवा कल्याण",
+                "disabled": "दिव्यांगजन सशक्तिकरण"
+            }
+            stage_str_hi = stage_labels_hi.get(life_stage_lower, profile.life_stage)
+
+            if has_specific_stage:
+                profile_context_hi = f"आपकी आयु ({profile.age} वर्ष), राज्य ({state_hi}) और जीवन चरण ({stage_str_hi}) के आधार पर"
+            else:
+                profile_context_hi = f"आपकी आयु ({profile.age} वर्ष) और राज्य ({state_hi}) के आधार पर"
+
             if desc_hi and desc_hi != benefits_hi:
                 summary = (
-                    f"आपकी आयु ({profile.age} वर्ष), राज्य ({profile.state}) और जीवन चरण ({profile.life_stage}) "
-                    f"के आधार पर आप '{name_hi}' के लिए उपयुक्त पात्र हैं। {desc_hi} "
+                    f"{profile_context_hi} आप '{name_hi}' के लिए उपयुक्त पात्र हैं। {desc_hi} "
                     f"योजना के तहत मुख्य लाभ: {benefits_hi}"
                 )
             else:
                 summary = (
-                    f"आपकी आयु ({profile.age} वर्ष), राज्य ({profile.state}) और जीवन चरण ({profile.life_stage}) "
-                    f"के आधार पर आप '{name_hi}' के लिए उपयुक्त पात्र हैं। मुख्य लाभ: {benefits_hi}"
+                    f"{profile_context_hi} आप '{name_hi}' के लिए उपयुक्त पात्र हैं। मुख्य लाभ: {benefits_hi}"
                 )
 
             key_benefits = [
@@ -239,16 +259,19 @@ Instructions:
                 next_steps = f"आवश्यक दस्तावेजों के साथ आधिकारिक पोर्टल ({apply_url}) पर आवेदन करें।"
             disclaimer = DISCLAIMER_HI
         else:
+            if has_specific_stage:
+                profile_context_en = f"Based on your profile (Age {profile.age}, {state_en}, Life Stage: {profile.life_stage.capitalize()}),"
+            else:
+                profile_context_en = f"Based on your profile (Age {profile.age}, {state_en}),"
+
             if desc_en and desc_en != benefits_raw:
                 summary = (
-                    f"Based on your profile (Age {profile.age}, {profile.state}, {profile.life_stage}), "
-                    f"you appear eligible for '{scheme_name_en}'. {desc_en} "
+                    f"{profile_context_en} you appear eligible for '{scheme_name_en}'. {desc_en} "
                     f"Key entitlements include: {benefits_raw}"
                 )
             else:
                 summary = (
-                    f"Based on your profile (Age {profile.age}, {profile.state}, {profile.life_stage}), "
-                    f"you appear eligible for '{scheme_name_en}'. Key entitlements include: {benefits_raw}"
+                    f"{profile_context_en} you appear eligible for '{scheme_name_en}'. Key entitlements include: {benefits_raw}"
                 )
 
             key_benefits = [
@@ -281,9 +304,25 @@ Instructions:
         categories = list({s.get("category") for s in top_schemes if s.get("category")})
         cat_text = ", ".join(categories[:3]) if categories else "social welfare"
         
+        state_en = profile.state if profile.state and profile.state.lower() not in ["all", "all india"] else "All India"
+        state_hi = profile.state if profile.state and profile.state.lower() not in ["all", "all india"] else "अखिल भारतीय"
+        life_stage_lower = (profile.life_stage or "").lower()
+        has_specific_stage = life_stage_lower not in ["all", "none", ""]
+
         if lang == "hi":
+            stage_labels_hi = {
+                "student": "छात्रा / उच्च शिक्षा",
+                "maternal": "मातृत्व / गर्भवती",
+                "entrepreneur": "महिला स्वरोजगार / उद्यमिता",
+                "senior": "वरिष्ठ नागरिक / पेंशन",
+                "widow": "एकल महिला / विधवा कल्याण",
+                "disabled": "दिव्यांगजन सशक्तिकरण"
+            }
+            stage_str_hi = stage_labels_hi.get(life_stage_lower, profile.life_stage)
+            profile_ctx_hi = f"{state_hi}, आयु {profile.age}" + (f", जीवन चरण {stage_str_hi}" if has_specific_stage else "")
+
             summary = (
-                f"आपकी प्रोफ़ाइल ({profile.state}, आयु {profile.age}, जीवन चरण {profile.life_stage}) के आधार पर "
+                f"आपकी प्रोफ़ाइल ({profile_ctx_hi}) के आधार पर "
                 f"आप {count} प्रमुख कल्याणकारी योजनाओं के लिए पात्र हैं, जिनमें {scheme_names} शामिल हैं। "
                 f"ये योजनाएं मुख्य रूप से {cat_text} से संबंधित लाभ प्रदान करती हैं।"
             )
@@ -294,8 +333,9 @@ Instructions:
             ]
             disclaimer = DISCLAIMER_HI
         else:
+            profile_ctx_en = f"{state_en}, Age {profile.age}" + (f", Life Stage: {profile.life_stage.capitalize()}" if has_specific_stage else "")
             summary = (
-                f"Based on your profile ({profile.state}, Age {profile.age}, Life Stage: {profile.life_stage}), "
+                f"Based on your profile ({profile_ctx_en}), "
                 f"you qualify for {count} high-impact welfare schemes across {cat_text}, including {scheme_names}."
             )
             action_plan = [
