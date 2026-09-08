@@ -765,24 +765,22 @@ export const Wizard: React.FC = () => {
               <label className="block text-sm font-bold text-charcoal-900">
                 {t('fieldResidence')}
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-3.5">
                 {[
                   { val: 'Rural', label: t('fieldResidenceRural'), icon: '🏡' },
-                  { val: 'Urban', label: t('fieldResidenceUrban'), icon: '🏙️' },
-                  { val: 'Semi-Urban', label: t('fieldResidenceSemiUrban'), icon: '🏘️' },
-                  { val: 'All', label: t('fieldResidenceAll'), icon: '🌏' }
+                  { val: 'Urban', label: t('fieldResidenceUrban'), icon: '🏙️' }
                 ].map((r) => (
                   <button
                     key={r.val}
                     type="button"
                     onClick={() => setProfile({ ...profile, residence: r.val })}
-                    className={`min-h-[64px] p-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center ${
+                    className={`min-h-[68px] p-3.5 rounded-2xl border text-center transition-all flex flex-col items-center justify-center active:scale-98 ${
                       profile.residence === r.val
-                        ? 'border-saffron-500 bg-saffron-50/80 text-saffron-900 font-bold ring-2 ring-saffron-300'
-                        : 'border-cream-300 hover:bg-cream-100 text-charcoal-800 font-semibold'
+                        ? 'border-saffron-500 bg-saffron-50/90 text-saffron-900 font-extrabold ring-4 ring-saffron-200/80 shadow-xs'
+                        : 'border-cream-300 hover:bg-cream-100 text-charcoal-800 font-semibold bg-white'
                     }`}
                   >
-                    <div className="text-xl mb-0.5">{r.icon}</div>
+                    <div className="text-2xl mb-1">{r.icon}</div>
                     <div className="text-xs sm:text-sm font-bold">{r.label}</div>
                   </button>
                 ))}
