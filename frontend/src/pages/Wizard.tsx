@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useId, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { matchSchemes } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { matchSchemes, saveUserProfile } from '../services/api';
 import type { ProfileInput } from '../services/api';
 import { 
   User, 
@@ -167,6 +168,7 @@ const DEFAULT_PROFILE: ProfileInput = {
 
 export const Wizard: React.FC = () => {
   const { t, language } = useLanguage();
+  const { token, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -360,6 +362,13 @@ export const Wizard: React.FC = () => {
 
     setLoading(true);
     setErrorMsg(null);
+
+    // Save profile to backend in background if authenticated
+    if (isAuthenticated && token) {
+      saveUserProfile(profile, token).catch((err) => {
+        console.warn('Could not auto-save demographic profile:', err);
+      });
+    }
 
     try {
       const matchResult = await matchSchemes(profile);

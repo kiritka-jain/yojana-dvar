@@ -1,48 +1,71 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { getLocalBookmarks } from '../services/api';
+import { useBookmarks } from '../context/BookmarkContext';
+import { fetchUserProfile } from '../services/api';
+import type { ProfileInput } from '../services/api';
+import { getStateDisplayName } from '../constants/states';
 import { 
   User, 
   CheckCircle2, 
   LogOut, 
   Bookmark, 
   Sparkles, 
-  ArrowRight,
-  Globe,
-  Trash2
+  ArrowRight, 
+  Globe, 
+  Trash2, 
+  Loader2, 
+  ShieldCheck, 
+  LogIn 
 } from 'lucide-react';
 
 export const Profile: React.FC = () => {
   const { language, t } = useLanguage();
-  const { currentUser, isAuthenticated, logout } = useAuth();
-  const [bookmarkCount, setBookmarkCount] = useState<number>(0);
+  const { currentUser, token, isAuthenticated, loginDemo, logout } = useAuth();
+  const { bookmarkCount, clearBookmarks } = useBookmarks();
+
+  const [savedProfile, setSavedProfile] = useState<ProfileInput | null>(null);
+  const [profileLoading, setProfileLoading] = useState<boolean>(false);
   const [clearedNotice, setClearedNotice] = useState<boolean>(false);
 
-  useEffect(() => {
-    const updateCount = () => {
-      setBookmarkCount(getLocalBookmarks().length);
-    };
-    updateCount();
-    window.addEventListener('yojana_bookmarks_updated', updateCount);
-    window.addEventListener('storage', updateCount);
-    return () => {
-      window.removeEventListener('yojana_bookmarks_updated', updateCount);
-      window.removeEventListener('storage', updateCount);
-    };
-  }, []);
+  // Load saved demographic profile from backend when authenticated
+  const loadProfile = useCallback(async () => {
+    if (isAuthenticated && token) {
+      setProfileLoading(true);
+      try {
+        const prof = await fetchUserProfile(token);
+        if (prof) {
+          setSavedProfile(prof);
+        }
+      } catch (err) {
+        console.warn('Failed to load user profile:', err);
+      } finally {
+        setProfileLoading(false);
+      }
+    } else {
+      setSavedProfile(null);
+    }
+  }, [isAuthenticated, token]);
 
-  const handleClearLocalBookmarks = () => {
-    localStorage.removeItem('yojana_saved_bookmarks');
-    window.dispatchEvent(new Event('yojana_bookmarks_updated'));
-    setBookmarkCount(0);
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  const handleClearBookmarks = async () => {
+    await clearBookmarks();
     setClearedNotice(true);
     setTimeout(() => setClearedNotice(false), 3000);
   };
 
+  const handleSaveDemoProfile = async (persona: 'priya' | 'sunita' | 'lakshmi') => {
+    loginDemo(persona);
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-6">
+      
+      {/* Main Profile Card */}
       <div className="bg-white rounded-3xl p-6 sm:p-10 border border-saffron-100 shadow-card space-y-6 max-w-2xl mx-auto">
         
         {/* Header */}
@@ -63,12 +86,12 @@ export const Profile: React.FC = () => {
               <h1 className="text-2xl font-bold text-charcoal-900">
                 {currentUser?.displayName || (language === 'hi' ? 'नागरिक सत्र' : 'Citizen Session')}
               </h1>
-              <p className="text-xs text-charcoal-500 flex items-center gap-1.5 mt-0.5">
+              <p className="text-xs text-charcoal-500 flex items-center gap-1.5 mt-0.5 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5 text-forest-600" />
                 <span>
                   {isAuthenticated 
-                    ? (language === 'hi' ? 'सत्यापित डिजिटल सत्र' : 'Verified Citizen Session')
-                    : (language === 'hi' ? 'स्थानीय सुरक्षित सत्र' : 'Local Private Session')}
+                    ? (language === 'hi' ? 'सत्यापित डिजिटल सत्र (क्लाउड सिंक सक्रिय)' : 'Verified Digital Session (Cloud Sync Active)')
+                    : (language === 'hi' ? 'स्थानीय सुरक्षित सत्र (लोकल स्टोरेज)' : 'Local Private Session (Offline Storage)')}
                 </span>
               </p>
             </div>
@@ -80,11 +103,50 @@ export const Profile: React.FC = () => {
               onClick={logout}
               className="p-2.5 rounded-xl border border-cream-300 hover:border-red-300 hover:bg-red-50 text-charcoal-600 hover:text-red-700 transition-colors"
               title={t('navSignOut')}
+              aria-label={t('navSignOut')}
             >
               <LogOut className="w-4 h-4" />
             </button>
           )}
         </div>
+
+        {/* Guest Demo Persona Switcher (if not logged in) */}
+        {!isAuthenticated && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-saffron-50/70 border border-saffron-200 space-y-3">
+            <div className="flex items-center gap-2 text-xs font-bold text-saffron-900 uppercase tracking-wider">
+              <LogIn className="w-4 h-4 text-saffron-600" />
+              <span>{language === 'hi' ? '1-क्लिक नागरिक डेमो सत्र चुनें' : '1-Click Demo Citizen Profiles'}</span>
+            </div>
+            <p className="text-xs text-charcoal-600">
+              {language === 'hi' 
+                ? 'क्लाउड सिंक और व्यक्तिगत योजनाओं के परीक्षण हेतु किसी भी प्रोफाइल पर क्लिक करें:' 
+                : 'Test cloud bookmark syncing and personalized match recommendations by switching persona:'}
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleSaveDemoProfile('priya')}
+                className="p-2.5 rounded-xl bg-white border border-saffron-200 hover:border-saffron-400 text-xs font-bold text-charcoal-800 hover:bg-saffron-50 transition-all text-center"
+              >
+                👩‍🎓 Priya
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSaveDemoProfile('sunita')}
+                className="p-2.5 rounded-xl bg-white border border-saffron-200 hover:border-saffron-400 text-xs font-bold text-charcoal-800 hover:bg-saffron-50 transition-all text-center"
+              >
+                🤱 Sunita
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSaveDemoProfile('lakshmi')}
+                className="p-2.5 rounded-xl bg-white border border-saffron-200 hover:border-saffron-400 text-xs font-bold text-charcoal-800 hover:bg-saffron-50 transition-all text-center"
+              >
+                💼 Lakshmi
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Preferences & Session Stats */}
         <div className="space-y-3">
@@ -119,6 +181,54 @@ export const Profile: React.FC = () => {
           </div>
         </div>
 
+        {/* Saved Demographic Profile Details */}
+        {isAuthenticated && (
+          <div className="p-5 rounded-2xl bg-cream-50/80 border border-cream-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-forest-600" />
+                <span>{language === 'hi' ? 'सहेजी गई जनसांख्यिकीय प्रोफ़ाइल' : 'Saved Demographic Profile'}</span>
+              </span>
+              {profileLoading && <Loader2 className="w-3.5 h-3.5 text-saffron-600 animate-spin" />}
+            </div>
+
+            {savedProfile ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldState')}</span>
+                  <span className="font-bold text-charcoal-900">{getStateDisplayName(savedProfile.state, language)}</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldAge')}</span>
+                  <span className="font-bold text-charcoal-900">{savedProfile.age} {language === 'hi' ? 'वर्ष' : 'Yrs'}</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldCaste')}</span>
+                  <span className="font-bold text-charcoal-900">{savedProfile.caste || 'General'}</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldIncome')}</span>
+                  <span className="font-bold text-forest-700">₹{savedProfile.income?.toLocaleString('en-IN') || 0}</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldResidence')}</span>
+                  <span className="font-bold text-charcoal-900">{savedProfile.residence || 'Rural'}</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldLifeStage')}</span>
+                  <span className="font-bold text-saffron-800 capitalize">{savedProfile.life_stage || 'All'}</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-charcoal-500">
+                {language === 'hi' 
+                  ? 'कोई जनसांख्यिकीय प्रोफ़ाइल सहेजी नहीं गई है। योजना खोजक के माध्यम से अपनी जानकारी भरें।' 
+                  : 'No demographic profile saved yet. Complete the eligibility wizard to save your preferences.'}
+              </p>
+            )}
+          </div>
+        )}
+
         {/* Clear Notice Toast */}
         {clearedNotice && (
           <div className="p-3 rounded-xl bg-forest-50 border border-forest-200 text-forest-900 text-xs font-semibold">
@@ -140,7 +250,7 @@ export const Profile: React.FC = () => {
           {bookmarkCount > 0 && (
             <button
               type="button"
-              onClick={handleClearLocalBookmarks}
+              onClick={handleClearBookmarks}
               className="py-3 px-4 rounded-2xl border border-cream-300 hover:border-red-300 hover:bg-red-50 text-charcoal-600 hover:text-red-700 font-semibold text-xs transition-colors inline-flex items-center justify-center gap-1.5"
             >
               <Trash2 className="w-4 h-4" />

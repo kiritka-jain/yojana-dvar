@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useBookmarks } from '../../context/BookmarkContext';
 import { 
   Bookmark, 
   CheckCircle2, 
@@ -11,7 +12,6 @@ import {
   VolumeX
 } from 'lucide-react';
 import type { SchemeMatchResult } from '../../services/api';
-import { isLocalBookmarked, toggleLocalBookmark } from '../../services/api';
 import { getLocalizedSchemeField } from '../../i18n/schemeTranslations';
 import { getStateDisplayName } from '../../constants/states';
 import { useSpeech } from '../../utils/speech';
@@ -41,15 +41,12 @@ export function parseLifeStageTags(rawTags: any): string[] {
 
 export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange }) => {
   const { t, language } = useLanguage();
+  const { isBookmarked, toggleBookmark } = useBookmarks();
   const navigate = useNavigate();
-  const [bookmarked, setBookmarked] = useState<boolean>(false);
   const { speak, stop, isSpeaking, supported } = useSpeech();
 
   const isCardSpeaking = isSpeaking(scheme.scheme_id);
-
-  useEffect(() => {
-    setBookmarked(isLocalBookmarked(scheme.scheme_id));
-  }, [scheme.scheme_id]);
+  const bookmarked = isBookmarked(scheme.scheme_id);
 
   const displayName = getLocalizedSchemeField(scheme, 'name', language);
   const displayMinistry = getLocalizedSchemeField(scheme, 'ministry', language);
@@ -66,11 +63,10 @@ export const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, onBookmarkChange
     }
   };
 
-  const handleBookmarkClick = (e: React.MouseEvent | React.KeyboardEvent) => {
+  const handleBookmarkClick = async (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const newState = toggleLocalBookmark(scheme.scheme_id);
-    setBookmarked(newState);
+    const newState = await toggleBookmark(scheme);
     if (onBookmarkChange) {
       onBookmarkChange(scheme.scheme_id, newState, displayName);
     }

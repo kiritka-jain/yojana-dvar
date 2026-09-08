@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { useBookmarks } from '../../context/BookmarkContext';
 import { 
   Globe, 
   Bookmark, 
@@ -15,6 +16,7 @@ import {
 export const Navbar: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
   const { currentUser, isAuthenticated, logout } = useAuth();
+  const { bookmarkCount } = useBookmarks();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -76,8 +78,15 @@ export const Navbar: React.FC = () => {
                   : 'text-charcoal-700 hover:text-saffron-700 hover:bg-cream-100'
               }`}
             >
-              <Bookmark className="w-4 h-4 text-saffron-600" />
-              {t('navBookmarks')}
+              <div className="relative flex items-center">
+                <Bookmark className="w-4 h-4 text-saffron-600" />
+                {bookmarkCount > 0 && (
+                  <span className="absolute -top-2 -right-2.5 min-w-[15px] h-3.5 px-1 rounded-full bg-saffron-600 text-white text-[9px] font-black flex items-center justify-center">
+                    {bookmarkCount > 9 ? '9+' : bookmarkCount}
+                  </span>
+                )}
+              </div>
+              <span>{t('navBookmarks')}</span>
             </Link>
           </nav>
 
@@ -183,11 +192,16 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/bookmarks"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
+                className={`flex items-center justify-between px-4 py-2.5 rounded-lg text-base font-medium ${
                   isActive('/bookmarks') ? 'bg-saffron-100 text-saffron-900 font-semibold' : 'text-charcoal-800'
                 }`}
               >
-                {t('navBookmarks')}
+                <span>{t('navBookmarks')}</span>
+                {bookmarkCount > 0 && (
+                  <span className="px-2 py-0.5 rounded-full bg-saffron-600 text-white text-xs font-black">
+                    {bookmarkCount}
+                  </span>
+                )}
               </Link>
             </div>
 

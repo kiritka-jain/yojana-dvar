@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { useBookmarks } from '../context/BookmarkContext';
 import { 
   getSchemeById, 
   explainSchemeEligibility,
-  isLocalBookmarked, 
-  toggleLocalBookmark 
 } from '../services/api';
 import type { 
   SchemeMatchResult, 
@@ -154,8 +153,9 @@ export const SchemeDetail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Bookmark State
-  const [bookmarked, setBookmarked] = useState<boolean>(false);
+  // Bookmark State from Context
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const bookmarked = scheme ? isBookmarked(scheme.scheme_id) : false;
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Interactive Document Checklist State
@@ -180,7 +180,6 @@ export const SchemeDetail: React.FC = () => {
     getSchemeById(id)
       .then((data) => {
         setScheme(data);
-        setBookmarked(isLocalBookmarked(data.scheme_id));
         setLoading(false);
       })
       .catch((err) => {
@@ -298,10 +297,9 @@ export const SchemeDetail: React.FC = () => {
   };
 
   // Bookmark Toggle
-  const handleBookmarkToggle = () => {
+  const handleBookmarkToggle = async () => {
     if (!scheme) return;
-    const newState = toggleLocalBookmark(scheme.scheme_id);
-    setBookmarked(newState);
+    const newState = await toggleBookmark(scheme);
     const msg = newState ? t('toastBookmarkSaved') : t('toastBookmarkRemoved');
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);

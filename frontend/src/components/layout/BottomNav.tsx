@@ -1,30 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useBookmarks } from '../../context/BookmarkContext';
 import { Home, Search, Bookmark } from 'lucide-react';
-import { getLocalBookmarks } from '../../services/api';
 
 export const BottomNav: React.FC = () => {
   const { t, language } = useLanguage();
   const location = useLocation();
-  const [bookmarkCount, setBookmarkCount] = useState<number>(0);
-
-  // Sync bookmark count from local storage
-  useEffect(() => {
-    const updateCount = () => {
-      const items = getLocalBookmarks();
-      setBookmarkCount(items.length);
-    };
-
-    updateCount();
-    window.addEventListener('yojana_bookmarks_updated', updateCount);
-    window.addEventListener('storage', updateCount);
-
-    return () => {
-      window.removeEventListener('yojana_bookmarks_updated', updateCount);
-      window.removeEventListener('storage', updateCount);
-    };
-  }, []);
+  const { bookmarkCount } = useBookmarks();
 
   const isTabActive = (tab: 'home' | 'find' | 'bookmarks') => {
     const path = location.pathname;

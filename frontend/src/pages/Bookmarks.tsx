@@ -1,16 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { useAuth } from '../context/AuthContext';
+import { useBookmarks } from '../context/BookmarkContext';
 import { SchemeCard } from '../components/schemes/SchemeCard';
-import { 
-  fetchUserBookmarks, 
-  removeUserBookmark, 
-  getSchemeById,
-  getLocalBookmarks,
-  toggleLocalBookmark
-} from '../services/api';
-import type { SchemeMatchResult } from '../services/api';
 import { 
   Bookmark, 
   BookmarkCheck, 
@@ -22,101 +14,20 @@ import {
   X, 
   Loader2
 } from 'lucide-react';
-
 import { getLocalizedSchemeField } from '../i18n/schemeTranslations';
 
 export const Bookmarks: React.FC = () => {
   const { t, language } = useLanguage();
-  const { token, isAuthenticated } = useAuth();
+  const { bookmarks, isLoading: loading, removeBookmark, bookmarkCount } = useBookmarks();
 
-  // State
-  const [bookmarks, setBookmarks] = useState<SchemeMatchResult[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  // Local UI State for Search, Filter, and Toast
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Load all bookmarks (local storage + remote sync if authenticated)
-  const loadBookmarks = useCallback(async () => {
-    setLoading(true);
-    try {
-      const localIds = getLocalBookmarks();
-
-      // If authenticated, also fetch remote bookmarks
-      let remoteSchemes: SchemeMatchResult[] = [];
-      if (isAuthenticated && token) {
-        try {
-          remoteSchemes = await fetchUserBookmarks(token);
-        } catch (err) {
-          console.warn("Could not fetch remote bookmarks, using local cache:", err);
-        }
-      }
-
-      // Collect all unique scheme IDs
-      const allIds = Array.from(new Set([...localIds, ...remoteSchemes.map((s) => s.scheme_id)]));
-
-      if (allIds.length === 0) {
-        setBookmarks([]);
-        setLoading(false);
-        return;
-      }
-
-      // Map remote schemes by ID for instant resolution
-      const remoteMap = new Map<string, SchemeMatchResult>();
-      remoteSchemes.forEach((s) => remoteMap.set(s.scheme_id, s));
-
-      // Fetch any missing scheme details in parallel
-      const schemePromises = allIds.map(async (id) => {
-        if (remoteMap.has(id)) {
-          return remoteMap.get(id)!;
-        }
-        try {
-          return await getSchemeById(id);
-        } catch {
-          return null;
-        }
-      });
-
-      const results = await Promise.all(schemePromises);
-      const validSchemes = results.filter((s): s is SchemeMatchResult => s !== null);
-      setBookmarks(validSchemes);
-    } catch (err) {
-      console.error("Error loading bookmarks:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [isAuthenticated, token]);
-
-  useEffect(() => {
-    loadBookmarks();
-
-    const handleUpdate = () => {
-      loadBookmarks();
-    };
-
-    window.addEventListener('yojana_bookmarks_updated', handleUpdate);
-    window.addEventListener('storage', handleUpdate);
-
-    return () => {
-      window.removeEventListener('yojana_bookmarks_updated', handleUpdate);
-      window.removeEventListener('storage', handleUpdate);
-    };
-  }, [loadBookmarks]);
-
   // Remove a bookmark
   const handleRemoveBookmark = async (schemeId: string, schemeName?: string) => {
-    // Optimistically remove from state
-    setBookmarks((prev) => prev.filter((s) => s.scheme_id !== schemeId));
-    toggleLocalBookmark(schemeId);
-
-    if (token) {
-      try {
-        await removeUserBookmark(schemeId, token);
-      } catch (err) {
-        console.warn("Remote bookmark remove error:", err);
-      }
-    }
-
+    await removeBookmark(schemeId);
     const nameStr = schemeName ? `"${schemeName.substring(0, 25)}..." ` : '';
     setToastMessage(`${nameStr}${t('toastBookmarkRemoved')}`);
     setTimeout(() => setToastMessage(null), 3000);
@@ -198,7 +109,7 @@ export const Bookmarks: React.FC = () => {
           <div className="flex items-center gap-3 self-start sm:self-auto">
             <div className="px-4 py-2 rounded-2xl bg-saffron-50 border border-saffron-200 text-center">
               <span className="block text-xl font-black text-saffron-900">
-                {bookmarks.length}
+                {bookmarkCount}
               </span>
               <span className="text-[11px] font-semibold text-saffron-700 uppercase tracking-wide">
                 {t('bookmarksCountBadge')}
