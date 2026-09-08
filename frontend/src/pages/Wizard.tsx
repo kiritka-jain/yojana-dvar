@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useId } from 'react';
+import React, { useState, useEffect, useId, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { matchSchemes } from '../services/api';
@@ -185,6 +185,8 @@ export const Wizard: React.FC = () => {
 
   // Demographic Profile State
   const [profile, setProfile] = useState<ProfileInput>({ ...DEFAULT_PROFILE });
+  const [rawAgeInput, setRawAgeInput] = useState<string>(DEFAULT_PROFILE.age.toString());
+  const debounceAgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync with URL parameter on mount (support ?persona=priya/sunita/lakshmi)
   useEffect(() => {
@@ -205,6 +207,7 @@ export const Wizard: React.FC = () => {
         has_disability: false,
         limit: 15
       });
+      setRawAgeInput('19');
     } else if (personaParam === 'sunita') {
       setProfile({
         state: 'Bihar',
@@ -221,6 +224,7 @@ export const Wizard: React.FC = () => {
         has_disability: false,
         limit: 15
       });
+      setRawAgeInput('26');
     } else if (personaParam === 'lakshmi') {
       setProfile({
         state: 'Tamil Nadu',
@@ -237,8 +241,18 @@ export const Wizard: React.FC = () => {
         has_disability: false,
         limit: 15
       });
+      setRawAgeInput('42');
     }
   }, [searchParams]);
+
+  // Clean up debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceAgeTimerRef.current) {
+        clearTimeout(debounceAgeTimerRef.current);
+      }
+    };
+  }, []);
 
   // Client-side field validations
   const validateField = (field: keyof ProfileInput, value: any): string | undefined => {
@@ -263,7 +277,16 @@ export const Wizard: React.FC = () => {
       const stateErr = validateField('state', profile.state);
       if (stateErr) newErrors.state = stateErr;
 
-      const ageErr = validateField('age', profile.age);
+      // Validate against current profile age (or raw age if pending)
+      let effectiveAge = profile.age;
+      const trimmed = rawAgeInput.trim();
+      if (trimmed !== '') {
+        const parsed = parseInt(trimmed, 10);
+        if (!isNaN(parsed)) {
+          effectiveAge = parsed;
+        }
+      }
+      const ageErr = validateField('age', effectiveAge);
       if (ageErr) newErrors.age = ageErr;
     }
 
@@ -279,6 +302,19 @@ export const Wizard: React.FC = () => {
   };
 
   const handleNext = () => {
+    if (currentStep === 1) {
+      // Flush any pending debounce input before step transition
+      if (debounceAgeTimerRef.current) {
+        clearTimeout(debounceAgeTimerRef.current);
+      }
+      const trimmed = rawAgeInput.trim();
+      const parsed = trimmed === '' ? 0 : parseInt(trimmed, 10);
+      const clamped = isNaN(parsed) ? 0 : Math.min(100, Math.max(0, parsed));
+      if (clamped !== profile.age) {
+        handleAgeChange(clamped);
+      }
+    }
+
     if (validateStep(currentStep)) {
       setCurrentStep((prev) => Math.min(prev + 1, 3));
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -320,10 +356,11 @@ export const Wizard: React.FC = () => {
     { num: 3, title: t('wizardStep3Title'), icon: <HeartHandshake className="w-4 h-4" /> },
   ];
 
-  // Handle age updates with validation & reactive state reconciliation (Ticket YD-BUG-3.1)
+  // Handle age updates with validation & reactive state reconciliation (Ticket YD-BUG-3.1 / BUG-011)
   const handleAgeChange = (newAge: number) => {
     const { sanitized, resetReasons } = reconcileProfileForAge(newAge, profile);
     setProfile(sanitized);
+    setRawAgeInput(sanitized.age === 0 ? '0' : sanitized.age.toString());
 
     if (resetReasons.length > 0) {
       setResetNotice(t('ageResetNotice'));
@@ -335,8 +372,55 @@ export const Wizard: React.FC = () => {
     setErrors((prev) => ({ ...prev, age: err }));
   };
 
-  // Age increment/decrement helper
+  // Debounce age input typing so intermediate keystrokes don't trigger premature profile reconciliation (BUG-011)
+  const handleAgeTyping = (valueStr: string) => {
+    setRawAgeInput(valueStr);
+
+    if (debounceAgeTimerRef.current) {
+      clearTimeout(debounceAgeTimerRef.current);
+    }
+
+    const trimmed = valueStr.trim();
+    if (trimmed === '') {
+      // Allow user to temporarily clear the input without destroying profile attributes
+      return;
+    }
+
+    const parsed = parseInt(trimmed, 10);
+    if (!isNaN(parsed) && parsed >= 0 && parsed <= 110) {
+      debounceAgeTimerRef.current = setTimeout(() => {
+        handleAgeChange(parsed);
+      }, 450);
+    }
+  };
+
+  // Blur event commits and clamps the typed age value immediately
+  const handleAgeBlur = () => {
+    if (debounceAgeTimerRef.current) {
+      clearTimeout(debounceAgeTimerRef.current);
+    }
+
+    const trimmed = rawAgeInput.trim();
+    if (trimmed === '') {
+      handleAgeChange(0);
+      return;
+    }
+
+    const parsed = parseInt(trimmed, 10);
+    if (isNaN(parsed) || parsed < 0) {
+      handleAgeChange(0);
+    } else if (parsed > 100) {
+      handleAgeChange(100);
+    } else {
+      handleAgeChange(parsed);
+    }
+  };
+
+  // Age increment/decrement helper (immediate)
   const adjustAge = (delta: number) => {
+    if (debounceAgeTimerRef.current) {
+      clearTimeout(debounceAgeTimerRef.current);
+    }
     handleAgeChange((profile.age || 0) + delta);
   };
 
@@ -526,7 +610,7 @@ export const Wizard: React.FC = () => {
                     type="number"
                     min="0"
                     max="100"
-                    value={profile.age === 0 ? '' : profile.age}
+                    value={rawAgeInput}
                     placeholder="0"
                     role="spinbutton"
                     aria-valuenow={profile.age}
@@ -534,20 +618,13 @@ export const Wizard: React.FC = () => {
                     aria-valuemax={100}
                     aria-invalid={!!errors.age}
                     aria-label={language === 'hi' ? 'आयु (वर्ष में)' : 'Age in years'}
-                    onChange={(e) => {
-                      const raw = e.target.value.trim();
-                      if (raw === '') {
-                        handleAgeChange(0);
-                        return;
+                    onChange={(e) => handleAgeTyping(e.target.value)}
+                    onBlur={handleAgeBlur}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAgeBlur();
                       }
-                      const parsed = parseInt(raw, 10);
-                      if (!isNaN(parsed)) {
-                        handleAgeChange(parsed);
-                      }
-                    }}
-                    onBlur={() => {
-                      const err = validateField('age', profile.age);
-                      setErrors((prev) => ({ ...prev, age: err }));
                     }}
                     className="w-16 sm:w-20 text-center text-3xl sm:text-4xl font-black text-charcoal-900 focus:outline-none bg-transparent"
                   />
