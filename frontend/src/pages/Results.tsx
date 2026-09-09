@@ -332,6 +332,8 @@ export const Results: React.FC = () => {
     }
   }, [selectedCategory, selectedScope, selectedState, debouncedSearch]);
 
+  const isPersonalized = Boolean(locationState?.matchData || (activeProfile && activeProfile.age > 0));
+
   useEffect(() => {
     if (locationState?.matchData?.schemes) {
       setSchemes(locationState.matchData.schemes);
@@ -342,28 +344,16 @@ export const Results: React.FC = () => {
     const loadDefaultSchemes = async () => {
       setLoading(true);
       try {
-        const searchRes = await searchSchemes('', '', '', 100);
-        setSchemes(searchRes.schemes);
-      } catch (searchErr) {
-        console.error("Failed to load catalog schemes via search, trying fallback:", searchErr);
-        try {
-          const defaultProfile: ProfileInput = {
-            state: 'all',
-            age: 25,
-            gender: 'Female',
-            caste: 'General',
-            income: 150000,
-            residence: 'All',
-            life_stage: 'all',
-            is_bpl: false,
-            has_disability: false,
-            limit: 50
-          };
-          const res = await matchSchemes(defaultProfile);
+        const storedProfile = getStoredUserProfile();
+        if (storedProfile && storedProfile.age > 0) {
+          const res = await matchSchemes(storedProfile);
           setSchemes(res.schemes);
-        } catch (fallbackErr) {
-          console.error("Failed to load fallback schemes:", fallbackErr);
+        } else {
+          const searchRes = await searchSchemes('', '', '', 100);
+          setSchemes(searchRes.schemes);
         }
+      } catch (err) {
+        console.error("Failed to load catalog schemes:", err);
       } finally {
         setLoading(false);
       }
@@ -516,6 +506,33 @@ export const Results: React.FC = () => {
           {t('resultsSubtitle')}
         </p>
       </div>
+
+      {/* Unpersonalized Catalog Browse Mode Banner (TICKET-303) */}
+      {!isPersonalized && (
+        <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-saffron-50 border border-saffron-200 text-charcoal-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-5 h-5 text-saffron-600 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-bold text-charcoal-900">
+                {language === 'hi' 
+                  ? 'सभी सामान्य योजनाएं दिखाई जा रही हैं' 
+                  : 'Browsing General Scheme Catalog'}
+              </p>
+              <p className="text-xs text-charcoal-600 mt-0.5">
+                {language === 'hi' 
+                  ? 'सटीक और व्यक्तिगत योजनाएं खोजने के लिए केवल 1 मिनट की पात्रता जांच पूरी करें।' 
+                  : 'Take our 1-minute eligibility quiz to receive personalized scheme recommendations matched to your age, state, and life stage.'}
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/wizard"
+            className="min-h-[40px] px-4 py-2 bg-saffron-500 hover:bg-saffron-600 text-white rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-xs flex items-center justify-center self-stretch sm:self-auto"
+          >
+            {language === 'hi' ? 'पात्रता जांच शुरू करें' : 'Take Eligibility Quiz'}
+          </Link>
+        </div>
+      )}
 
       {/* 1-Row Horizontal Category Filter Bar */}
       <div className="bg-white rounded-3xl p-4 sm:p-5 border border-cream-300 shadow-card mb-8 space-y-4">

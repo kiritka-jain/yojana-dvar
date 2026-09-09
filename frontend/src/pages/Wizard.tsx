@@ -151,12 +151,12 @@ interface FormErrors {
 }
 
 const DEFAULT_PROFILE: ProfileInput = {
-  state: 'Uttar Pradesh',
-  age: 24,
+  state: '',
+  age: 0,
   gender: 'Female',
   marital_status: 'unmarried',
   caste: 'General',
-  income: 120000,
+  income: 0,
   residence: 'Rural',
   life_stage: 'all',
   occupation: '',
@@ -187,7 +187,7 @@ export const Wizard: React.FC = () => {
 
   // Demographic Profile State
   const [profile, setProfile] = useState<ProfileInput>({ ...DEFAULT_PROFILE });
-  const [rawAgeInput, setRawAgeInput] = useState<string>(DEFAULT_PROFILE.age.toString());
+  const [rawAgeInput, setRawAgeInput] = useState<string>(DEFAULT_PROFILE.age > 0 ? DEFAULT_PROFILE.age.toString() : '');
   const debounceAgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync with URL parameter on mount (support ?persona=priya/sunita/lakshmi)
@@ -246,7 +246,7 @@ export const Wizard: React.FC = () => {
       setRawAgeInput('42');
     } else {
       const stored = getStoredUserProfile();
-      if (stored) {
+      if (stored && stored.age > 0) {
         setProfile(stored);
         setRawAgeInput(stored.age.toString());
       }
@@ -271,7 +271,7 @@ export const Wizard: React.FC = () => {
     }
     if (field === 'age') {
       const num = Number(value);
-      if (isNaN(num) || num < 0 || num > 110) {
+      if (isNaN(num) || num <= 0 || num > 110) {
         return t('validationErrorAge');
       }
     }
