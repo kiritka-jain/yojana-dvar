@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { ShieldCheck, ExternalLink } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { t } = useLanguage();
@@ -9,9 +9,9 @@ export const Footer: React.FC = () => {
   return (
     <footer className="bg-[#f7f2e7] border-t border-saffron-200/60 mt-16 sm:mt-20 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 pb-8 border-b border-saffron-200/60">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-saffron-200/60">
           
-          {/* Col 1 & 2: Brand Info & Advisory */}
+          {/* Brand Info & Advisory */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-saffron-100 border border-saffron-500 flex items-center justify-center p-1 shadow-xs">
@@ -29,60 +29,7 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Col 3: Official Government Portals */}
-          <div>
-            <h4 className="font-bold text-xs text-charcoal-900 uppercase tracking-wider mb-3">
-              {t('footerGovtPortalsTitle')}
-            </h4>
-            <ul className="space-y-2 text-xs sm:text-sm text-charcoal-600">
-              <li>
-                <a 
-                  href="https://www.myscheme.gov.in/" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="hover:text-saffron-700 flex items-center gap-1.5 transition-colors"
-                >
-                  <span>myScheme Portal</span>
-                  <ExternalLink className="w-3 h-3 text-charcoal-400" />
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://wcd.gov.in/" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="hover:text-saffron-700 flex items-center gap-1.5 transition-colors"
-                >
-                  <span>Ministry of WCD</span>
-                  <ExternalLink className="w-3 h-3 text-charcoal-400" />
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://www.digitalindia.gov.in/" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="hover:text-saffron-700 flex items-center gap-1.5 transition-colors"
-                >
-                  <span>Digital India</span>
-                  <ExternalLink className="w-3 h-3 text-charcoal-400" />
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://india.gov.in/" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="hover:text-saffron-700 flex items-center gap-1.5 transition-colors"
-                >
-                  <span>National Portal of India</span>
-                  <ExternalLink className="w-3 h-3 text-charcoal-400" />
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 4: Platform & Info */}
+          {/* Platform & Info */}
           <div>
             <h4 className="font-bold text-xs text-charcoal-900 uppercase tracking-wider mb-3">
               {t('footerPlatformInfo')}
@@ -101,11 +48,6 @@ export const Footer: React.FC = () => {
               <li>
                 <Link to="/bookmarks" className="hover:text-saffron-700 transition-colors">
                   {t('navBookmarks')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-charcoal-600 hover:text-saffron-700 transition-colors">
-                  {t('footerAccessibility')}
                 </Link>
               </li>
             </ul>

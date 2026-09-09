@@ -396,7 +396,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     navSignOut: "Sign Out",
     navGuest: "Guest User",
 
-    heroBadge: "Official Central & State Welfare Gateway",
+    heroBadge: "Central & State Welfare Gateway",
     heroTitle: "Find Government Schemes For",
     heroHighlight: "Every Indian Woman",
     heroSubtitle: "Discover eligible schemes for education, maternity, business, and pension. 100% free and secure.",
@@ -769,7 +769,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     navSignOut: "लॉग आउट",
     navGuest: "अतिथि उपयोगकर्ता",
 
-    heroBadge: "केंद्र व राज्य सरकार की आधिकारिक योजनाएं",
+    heroBadge: "केंद्र व राज्य सरकार की योजनाएं",
     heroTitle: "हर भारतीय महिला को मिले",
     heroHighlight: "उसका सरकारी अधिकार",
     heroSubtitle: "शिक्षा, मातृत्व, स्वरोजगार और पेंशन की सरकारी योजनाएं खोजें। 100% निःशुल्क और सुरक्षित।",
