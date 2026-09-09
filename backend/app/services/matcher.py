@@ -98,7 +98,7 @@ class EligibilityMatcher:
         else:
             reasons.append(f"Age {profile.age} is within eligible range ({age_min}–{age_max} years)")
 
-        # 3.1 Life-Stage Incompatibility Hard Gate (Ticket YD-ENG-2.2)
+        # 3.1 Life-Stage Incompatibility Hard Gate & Reverse Demographic Gating (Ticket YD-ENG-2.2 / TICKET-202)
         tags_raw = scheme.get("life_stage_tags", "[\"general\"]")
         try:
             life_stage_tags = json.loads(tags_raw) if isinstance(tags_raw, str) else tags_raw
@@ -107,21 +107,38 @@ class EligibilityMatcher:
 
         user_life_stage = profile.life_stage.strip().lower()
         clean_tags = [str(t).strip().lower() for t in life_stage_tags if str(t).strip()]
+        scheme_full_text = f"{scheme.get('name', '')} {scheme.get('category', '')} {scheme.get('beneficiary_type', '')} {scheme.get('eligibility_text', '')}".lower()
 
-        # (a) Exclusive Student Scheme Incompatibility Gate:
-        # If scheme is exclusively for students and user age > 30 or user life_stage == "senior" -> Disqualify
-        if set(clean_tags) == {"student"}:
-            if profile.age > 30 or user_life_stage == "senior":
+        # (a) Exclusive Student Scheme Gate:
+        # If scheme is exclusively for students/scholarships and user age > 35 or user life_stage == "senior" -> Disqualify
+        is_student_exclusive = set(clean_tags) == {"student"} or ("student" in clean_tags and "scholarship" in scheme_full_text and "entrepreneur" not in clean_tags and "general" not in clean_tags)
+        if is_student_exclusive:
+            if profile.age > 35 or user_life_stage == "senior":
                 return False, 0, []
 
-        # (b) Maternal Scheme Incompatibility Gate:
-        # Maternal schemes are strictly for women in maternal age (18–50) and never seniors
-        if set(clean_tags) == {"maternal"} or "maternal" in str(scheme.get("category", "")).lower():
-            if profile.age < 18 or profile.age > 50 or user_life_stage == "senior":
+        # (b) Maternal / Marriage Scheme Gate:
+        # Maternal/marriage schemes are strictly for women in maternal/legal marriage age (18–50) and never seniors or minors
+        is_maternal_or_marriage = "maternal" in clean_tags or "maternal" in str(scheme.get("category", "")).lower() or any(kw in scheme_full_text for kw in ["pregnant", "maternity", "lactating", "marriage assistance", "kanya vivah", "wedding aid", "vivah hetu"])
+        if is_maternal_or_marriage:
+            if not any(cw in scheme_full_text for cw in ["girl child", "balika", "sukanya"]):
+                if profile.age < 18 or profile.age > 50 or user_life_stage == "senior":
+                    return False, 0, []
+
+        # (c) Senior Citizen / Old-Age Pension Gate:
+        # Senior citizen schemes strictly require age >= 60 (excluding widow/divyang specific exceptions)
+        is_senior_pension = "senior" in clean_tags or any(kw in scheme_full_text for kw in ["old age pension", "senior citizen pension", "vridha pension", "vruddha pension", "vaya vandana", "vridhavastha"])
+        if is_senior_pension and not any(kw in scheme_full_text for kw in ["widow", "vidhwa", "divyang", "disability", "orphan", "family pension"]):
+            if profile.age < 60:
+                return False, 0, []
+
+        # (d) Adult Entrepreneur / Loan / Hostel Gate:
+        # Business loans, working women hostels, and SHG credit facilities require adult age (18+)
+        is_adult_entrepreneur = "entrepreneur" in clean_tags or any(kw in scheme_full_text for kw in ["working women hostel", "working woman hostel", "mudra", "stand up india", "stand-up india", "business loan", "self help group", "credit facility for"])
+        if is_adult_entrepreneur and not any(cw in scheme_full_text for cw in ["girl child", "balika", "sukanya", "school", "scholarship"]):
+            if profile.age < 18:
                 return False, 0, []
 
         # 3.2 Marital Status Incompatibility Gate
-        scheme_full_text = f"{scheme.get('name', '')} {scheme.get('category', '')} {scheme.get('beneficiary_type', '')} {scheme.get('eligibility_text', '')}".lower()
         user_marital = (profile.marital_status or "all").strip().lower()
 
         # (a) Exclusive Widow Scheme Gate:
