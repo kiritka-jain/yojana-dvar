@@ -410,9 +410,9 @@ export const translations: Record<Language, TranslationDictionary> = {
     heroChipMaternity: "🤱 Maternity Aid",
     heroChipBusiness: "💼 Business Loans",
     heroChipPension: "👵 Pension",
-    heroDirectWizardPrompt: "Or check instant eligibility:",
+    heroDirectWizardPrompt: "Or check instant eligibility in 3 simple steps:",
     ctaBannerTitle: "Ready to Discover Your Entitlements?",
-    ctaBannerSubtitle: "Answer 3 simple questions to discover all direct welfare benefits designed for you.",
+    ctaBannerSubtitle: "Discover all direct welfare benefits designed for you in 3 simple steps.",
     badgeQuickTime: "⚡ 1-2 Min Discovery",
     badgeFreeService: "100% Free & Open",
     badgeNoLogin: "No Login Needed",
@@ -461,7 +461,7 @@ export const translations: Record<Language, TranslationDictionary> = {
 
     // Wizard
     wizardTitle: "Find Government Schemes For You",
-    wizardSubtitle: "Answer 3 simple questions to discover all direct cash grants, scholarships, and welfare benefits.",
+    wizardSubtitle: "Find direct cash grants, scholarships, and welfare benefits in 3 simple steps.",
     wizardPersonaLoaded: "Demo profile pre-loaded. Feel free to adjust any fields or proceed.",
     wizardStep1Title: "State & Age",
     wizardStep1Subtitle: "Your residence state and age",
@@ -783,9 +783,9 @@ export const translations: Record<Language, TranslationDictionary> = {
     heroChipMaternity: "🤱 मातृत्व सहायता",
     heroChipBusiness: "💼 व्यवसाय व ऋण",
     heroChipPension: "👵 पेंशन",
-    heroDirectWizardPrompt: "या 3 प्रश्नों में पात्रता निकालें:",
+    heroDirectWizardPrompt: "या केवल 3 सरल चरणों में पात्रता निकालें:",
     ctaBannerTitle: "अपनी पात्रता जांचने के लिए तैयार हैं?",
-    ctaBannerSubtitle: "केवल 3 सरल प्रश्नों के उत्तर दें और 1 मिनट में अपनी पात्र योजनाओं की सूची पाएं।",
+    ctaBannerSubtitle: "केवल 3 सरल चरणों में अपनी पात्र योजनाओं और सरकारी लाभों की सूची पाएं।",
     badgeQuickTime: "⚡ 1-2 मिनट का समय",
     badgeFreeService: "100% नि:शुल्क सेवा",
     badgeNoLogin: "लॉगिन अनिवार्य नहीं",
@@ -834,7 +834,7 @@ export const translations: Record<Language, TranslationDictionary> = {
 
     // Wizard
     wizardTitle: "अपनी सरकारी योजनाएं खोजें",
-    wizardSubtitle: "केवल 3 सरल प्रश्नों के उत्तर दें और अपने सभी सरकारी लाभ, छात्रवृत्ति व अनुदान तुरंत पाएं।",
+    wizardSubtitle: "केवल 3 सरल चरणों में अपने सभी सरकारी लाभ, छात्रवृत्ति व अनुदान खोजें।",
     wizardPersonaLoaded: "डेमो प्रोफाइल लोड हो गई है। आप इसे अपनी आवश्यकता अनुसार बदल सकते हैं।",
     wizardStep1Title: "राज्य व आयु",
     wizardStep1Subtitle: "आपका निवास राज्य और आयु",
