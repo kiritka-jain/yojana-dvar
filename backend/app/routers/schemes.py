@@ -65,7 +65,7 @@ async def get_all_schemes(
 @router.get(
     "/schemes/search",
     response_model=Dict[str, Any],
-    summary="Search scheme catalog by keyword, state, and category"
+    summary="Search scheme catalog by keyword, state, category, and demographics"
 )
 @router.get(
     "/api/v1/schemes/search",
@@ -76,15 +76,20 @@ async def search_schemes(
     q: Optional[str] = Query(default="", description="Search query keyword"),
     state: Optional[str] = Query(default="", description="Filter by state name"),
     category: Optional[str] = Query(default="", description="Filter by scheme category"),
-    limit: int = Query(default=10, ge=1, le=50, description="Max results to return")
+    age: Optional[int] = Query(default=None, ge=0, le=110, description="Optional age demographic filter"),
+    life_stage: Optional[str] = Query(default=None, description="Optional life stage filter"),
+    gender: Optional[str] = Query(default=None, description="Optional gender filter"),
+    limit: int = Query(default=10, ge=1, le=100, description="Max results to return")
 ):
     """
-    Search scheme catalog across title, description, category, ministry, benefits, and state.
+    Search scheme catalog across title, description, category, ministry, benefits, state, and demographic bounds.
     """
     catalog = matcher_service.get_catalog()
     query_str = q.strip().lower() if q else ""
     state_str = state.strip().lower() if state else ""
     cat_str = category.strip().lower() if category else ""
+    life_stage_str = life_stage.strip().lower() if life_stage else ""
+    gender_str = gender.strip().lower() if gender else ""
 
     matched_results = []
     
@@ -100,6 +105,25 @@ async def search_schemes(
         if cat_str:
             scheme_cat = str(scheme.get("category", "")).strip().lower()
             if cat_str not in scheme_cat:
+                continue
+
+        # Check Age Demographic Filter (TICKET-401)
+        if age is not None:
+            age_min = int(scheme.get("age_min", 0))
+            age_max = int(scheme.get("age_max", 100))
+            if not (age_min <= age <= age_max):
+                continue
+
+        # Check Life Stage Filter
+        if life_stage_str:
+            tags = str(scheme.get("life_stage_tags", "")).lower()
+            if life_stage_str not in tags:
+                continue
+
+        # Check Gender Filter
+        if gender_str:
+            scheme_gender = str(scheme.get("gender", "Female")).strip().lower()
+            if scheme_gender not in ["all", "all india"] and scheme_gender != gender_str:
                 continue
 
         # Check Keyword Search query

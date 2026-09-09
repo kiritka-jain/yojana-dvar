@@ -90,3 +90,25 @@ def test_api_v1_schemes_filtering_and_pagination():
     data_page = resp_page.json()
     assert data_page["count"] == 5
     assert data_page["total"] >= 30
+
+
+def test_schemes_search_demographic_filtering():
+    """
+    TICKET-401 Acceptance Criteria:
+    Verify /schemes/search supports age, life_stage, and gender demographic filtering.
+    """
+    # 1. Search with age filter (Age 10 must only return schemes with age_min <= 10 <= age_max)
+    resp_age = client.get("/schemes/search?q=scholarship&age=10&limit=50")
+    assert resp_age.status_code == 200
+    data_age = resp_age.json()
+    assert data_age["count"] > 0
+    for s in data_age["schemes"]:
+        assert s["age_min"] <= 10 <= s["age_max"]
+
+    # 2. Search with life_stage filter
+    resp_stage = client.get("/schemes/search?life_stage=student&limit=50")
+    assert resp_stage.status_code == 200
+    data_stage = resp_stage.json()
+    assert data_stage["count"] > 0
+    for s in data_stage["schemes"]:
+        assert "student" in s.get("life_stage_tags", "").lower()
