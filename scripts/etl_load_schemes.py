@@ -51,21 +51,76 @@ MALE_EXCLUSIVE_KEYWORDS = [
     "for men and boys", "boys and young men only"
 ]
 
-# Audited Explicit Scheme Age Bounds (Ticket YD-DATA-2.1)
+# Audited Explicit Scheme Age Bounds (Ticket YD-DATA-2.1 / TICKET-101)
 SCHEME_EXPLICIT_AGE_BOUNDS = {
+    # Student / Education / Youth schemes
     "gaura-devi-kanya-dhan-yojana": (14, 22),
     "moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme": (17, 25),
     "mukhyamantri-kanya-utthan-yojana": (0, 25),
     "mukhya-mantri-kanya-sumangala-yojana": (0, 25),
+    "sukanya-samriddhi-yojana": (0, 10),
+    "cbse-single-girl-child-scholarship": (14, 20),
+    "pragati-scholarship-scheme-for-girl-students": (16, 25),
+    "begum-hazrat-mahal-national-scholarship": (14, 22),
+    "kalpana-chawla-chhatravriti-yojana": (17, 25),
+    "post-matric-scholarship-for-girls": (15, 30),
+
+    # Working Women / Hostels / Shelters
     "working-women-hostel-scheme": (18, 60),
+    "working-women-hostel": (18, 60),
+    "sakhi-niwas-working-women-hostel": (18, 60),
+    "working-women-hostels": (18, 60),
+    "swadhar-greh-scheme": (18, 60),
+    "ujjawala-scheme": (18, 60),
+    "one-stop-centre-scheme": (18, 100),
+    "sakhi-one-stop-centre": (18, 100),
+
+    # Marriage / Kalyanam / Vivah
     "kanya-sumangala-mukhyamantri-kanya-vivah-yojana": (18, 45),
+    "mukhyamantri-kanya-vivah-yojana": (18, 45),
+    "mukhyamantri-kanya-vivah-nikah-yojana": (18, 45),
+    "shadi-shagun-scheme": (18, 45),
+    "kalyana-lakshmi-shaadi-mubarak": (18, 45),
+    "rupashree-prakalpa": (18, 45),
+    "majhi-bhagyashree-kanya-yojana": (0, 18),
+
+    # Livelihood / Entrepreneurship / Loans / Micro-finance
     "kudumbashree-women-empowerment-livelihood-mission": (18, 65),
     "mission-shakti-odisha": (18, 65),
     "pm-street-vendors-atmanirbhar-nidhi": (18, 70),
+    "pm-svanidhi": (18, 70),
+    "stand-up-india-scheme": (18, 70),
+    "pradhan-mantri-mudra-yojana-pmmy": (18, 65),
+    "mudra-yojana": (18, 65),
+    "mahila-samman-savings-certificate": (18, 100),
+    "stree-shakti-package-for-women-entrepreneurs": (18, 65),
+    "dena-shakti-scheme": (18, 65),
+    "udyogini-scheme": (18, 55),
+    "annapurna-scheme": (18, 65),
+    "bhartiya-mahila-bank-business-loan": (18, 65),
+    "trade-related-entrepreneurship-assistance-and-development-tread": (18, 65),
+    "national-safai-karamcharis-finance-development-corporation-nskfdc": (18, 65),
+    "credit-facility-for-safai-karamcharis": (18, 65),
+    "swarojgar-credit-card-scheme": (18, 65),
+
+    # Direct Benefit / Universal Welfare
     "gruha-lakshmi-scheme": (18, 100),
     "mahalakshmi-scheme": (18, 100),
     "orunodoi-20-scheme": (18, 100),
     "griha-aadhar-scheme": (18, 100),
+    "ladli-behna-yojana": (21, 60),
+
+    # Maternal / Reproductive Health
+    "pradhan-mantri-matru-vandana-yojana-pmmvy": (18, 50),
+    "janani-suraksha-yojana-jsy": (18, 50),
+    "janani-shishu-suraksha-karyakram-jssk": (18, 50),
+
+    # Pensions / Senior Support
+    "indira-gandhi-national-old-age-pension-scheme-ignoaps": (60, 100),
+    "indira-gandhi-national-widow-pension-scheme-ignwps": (40, 79),
+    "atal-pension-yojana": (18, 40),
+    "pradhan-mantri-vaya-vandana-yojana": (60, 100),
+    "national-pension-scheme-for-traders-and-self-employed-persons": (18, 40),
 }
 
 # Canonical Life-Stage Tags (Section 6.1 / Ticket 2.3)
@@ -454,6 +509,99 @@ def extract_age_bounds(text: str, default_min: int = 0, default_max: int = 100) 
 
     return default_min, default_max
 
+# Content-based adult and pension keyword rules (TICKET-101)
+ADULT_ONLY_KEYWORDS = [
+    "working women", "working woman", "hostel scheme", "marriage", "vivah", "wedding",
+    "kalyanam", "nikah", "shaadi", "shagun", "entrepreneur", "business loan", "mudra",
+    "stand up india", "stand-up india", "self help group", "self-help group", "shg",
+    "self employment", "swarojgar", "safai karamchari", "loan for", "credit facility",
+    "shelter home", "one stop centre", "mahila samman savings", "street vendor",
+    "svanidhi", "hawker", "livelihood mission", "swadhar greh", "ujjawala",
+    "widow pension", "destitute pension", "divyang pension", "maternity benefit",
+    "pmmvy", "janani suraksha", "artisan loan", "handloom weaver loan",
+    "micro enterprise", "commercial vehicle loan", "tractor loan"
+]
+
+PENSION_KEYWORDS = [
+    "old age pension", "vridha pension", "vruddha pension", "senior citizen pension",
+    "elderly pension", "vaya vandana", "vridhavastha"
+]
+
+def infer_age_bounds_from_content(
+    name: str,
+    description: str = "",
+    eligibility_text: str = "",
+    beneficiary_type: str = "",
+    life_stage_tags: list = None,
+    current_min: int = 0,
+    current_max: int = 100
+) -> tuple:
+    """
+    Infers rational age bounds based on scheme name, life stage tags, and semantic keywords (TICKET-101).
+    Ensures adult-only schemes and pensions do not have default child-eligible bounds (0-100).
+    """
+    if life_stage_tags is None:
+        life_stage_tags = []
+
+    age_min = current_min
+    age_max = current_max
+
+    combined_text = f"{name} {description} {eligibility_text} {beneficiary_type}".lower()
+    name_lower = name.lower()
+
+    # 1. Pension Schemes (unless orphan/family pension for minors)
+    if any(kw in combined_text for kw in PENSION_KEYWORDS) or ("pension" in name_lower and "widow" not in name_lower and "student" not in combined_text and "orphan" not in combined_text and "family pension" not in combined_text):
+        if age_min < 60:
+            age_min = 60
+        if age_max <= 60:
+            age_max = 100
+        return age_min, age_max
+
+    # 2. Widow Pensions
+    if "widow pension" in combined_text or "vidhwa pension" in combined_text or ("widow" in name_lower and "pension" in combined_text):
+        if age_min < 18:
+            age_min = 18
+        if age_max == 100:
+            age_max = 80
+        return age_min, age_max
+
+    # 3. Adult-only schemes (Hostels, Marriage, Business loans, SHGs, Mudra, Safai Karamchari)
+    if not any(cw in name_lower for cw in ["girl child", "balika", "sukanya", "school", "scholarship"]):
+        # Working women hostels
+        if "working women" in combined_text or "hostel" in name_lower and "student" not in combined_text:
+            if age_min < 18:
+                age_min = 18
+            if age_max == 100:
+                age_max = 60
+        # Marriage assistance
+        elif any(kw in combined_text for kw in ["marriage", "vivah", "wedding", "kalyanam", "nikah", "shaadi", "shagun"]):
+            if age_min < 18:
+                age_min = 18
+            if age_max == 100:
+                age_max = 45
+        # Entrepreneur loans / Livelihood / Credit facilities
+        elif any(kw in combined_text for kw in ["mudra", "stand up india", "stand-up india", "business loan", "safai karamchari", "street vendor", "svanidhi", "self help group", "self-help group", "swarojgar", "credit facility"]):
+            if age_min < 18:
+                age_min = 18
+            if age_max == 100:
+                age_max = 65
+        # General adult-only keyword check
+        elif age_min < 18 and any(kw in name_lower for kw in ADULT_ONLY_KEYWORDS):
+            age_min = 18
+
+    # 4. Life-stage canonical default enforcement when still unconstrained (0, 100)
+    if age_min == 0 and age_max == 100:
+        if "student" in life_stage_tags:
+            age_min, age_max = 5, 30
+        elif "maternal" in life_stage_tags:
+            age_min, age_max = 18, 50
+        elif "senior" in life_stage_tags:
+            age_min, age_max = 60, 100
+        elif "entrepreneur" in life_stage_tags:
+            age_min, age_max = 18, 65
+
+    return age_min, age_max
+
 def extract_income_cap(text: str, default_income: int = 0) -> int:
     """
     Extracts maximum family/annual income cap in INR from narrative eligibility text (Ticket 2.4).
@@ -716,14 +864,16 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
     age_min = explicit_min_age if explicit_min_age > 0 else extracted_min_age
     age_max = explicit_max_age if explicit_max_age < 100 else extracted_max_age
 
-    # Apply canonical age bounds for distinct life-stages if unspecified
-    if age_min == 0 and age_max == 100:
-        if "student" in life_stage_tags:
-            age_min, age_max = 5, 30
-        elif "maternal" in life_stage_tags:
-            age_min, age_max = 18, 50
-        elif "senior" in life_stage_tags:
-            age_min, age_max = 60, 100
+    # Apply content-based and canonical age bounds inference (TICKET-101)
+    age_min, age_max = infer_age_bounds_from_content(
+        name=name,
+        description=description,
+        eligibility_text=eligibility_text,
+        beneficiary_type=beneficiary_type,
+        life_stage_tags=life_stage_tags,
+        current_min=age_min,
+        current_max=age_max
+    )
 
     extracted_income = extract_income_cap(eligibility_narrative, default_income=0)
     explicit_income = clean_int(row.get("max_income_limit") or row.get("income_max"), 0)
@@ -791,6 +941,21 @@ def transform_csv_record(row: dict) -> dict:
     caste_raw = row.get("caste_category", "All").strip()
     caste_categories = [caste_raw] if caste_raw and caste_raw != "All" else ["All"]
 
+    raw_age_min = clean_int(row.get("min_age"), 0)
+    raw_age_max = clean_int(row.get("max_age"), 100)
+    extracted_min, extracted_max = extract_age_bounds(f"{name} {row.get('eligibility_criteria_text', '')}", default_min=0, default_max=100)
+    eff_min = raw_age_min if raw_age_min > 0 else extracted_min
+    eff_max = raw_age_max if raw_age_max < 100 else extracted_max
+    age_min, age_max = infer_age_bounds_from_content(
+        name=name,
+        description=row.get("eligibility_criteria_text", ""),
+        eligibility_text=row.get("eligibility_criteria_text", ""),
+        beneficiary_type=row.get("target_beneficiary", ""),
+        life_stage_tags=life_stage_tags,
+        current_min=eff_min,
+        current_max=eff_max
+    )
+
     return {
         "scheme_id": scheme_id,
         "name": name,
@@ -806,8 +971,8 @@ def transform_csv_record(row: dict) -> dict:
         "application_process": f"Apply online at {row.get('application_url', 'official portal')}.",
         "apply_url": row.get("application_url", "").strip(),
         "official_url": row.get("official_website", "").strip(),
-        "age_min": clean_int(row.get("min_age"), 0),
-        "age_max": clean_int(row.get("max_age"), 100),
+        "age_min": age_min,
+        "age_max": age_max,
         "gender": row.get("gender_applicable", "Female").strip(),
         "caste_categories": json.dumps(caste_categories),
         "income_max": clean_int(row.get("max_income_limit"), 0),
@@ -829,6 +994,21 @@ def transform_json_record(item: dict) -> dict:
     urls = item.get("urls", {})
     life_stage_tags = classify_life_stage(item)
 
+    raw_age_min = clean_int(eligibility.get("min_age"), 0)
+    raw_age_max = clean_int(eligibility.get("max_age"), 100)
+    extracted_min, extracted_max = extract_age_bounds(f"{name} {item.get('summary', '')}", default_min=0, default_max=100)
+    eff_min = raw_age_min if raw_age_min > 0 else extracted_min
+    eff_max = raw_age_max if raw_age_max < 100 else extracted_max
+    age_min, age_max = infer_age_bounds_from_content(
+        name=name,
+        description=item.get("summary", ""),
+        eligibility_text=item.get("summary", ""),
+        beneficiary_type="Women & Girls",
+        life_stage_tags=life_stage_tags,
+        current_min=eff_min,
+        current_max=eff_max
+    )
+
     return {
         "scheme_id": scheme_id,
         "name": name,
@@ -844,8 +1024,8 @@ def transform_json_record(item: dict) -> dict:
         "application_process": f"Submit application via official portal: {urls.get('apply', '')}",
         "apply_url": urls.get("apply", "").strip(),
         "official_url": urls.get("portal", "").strip(),
-        "age_min": clean_int(eligibility.get("min_age"), 0),
-        "age_max": clean_int(eligibility.get("max_age"), 100),
+        "age_min": age_min,
+        "age_max": age_max,
         "gender": eligibility.get("gender", "Female"),
         "caste_categories": json.dumps(["All"]),
         "income_max": clean_int(eligibility.get("max_income"), 0),
@@ -1095,11 +1275,36 @@ def merge_and_deduplicate_schemes(records: list) -> list:
             schemes_by_id[rec_id] = merge_scheme_records(schemes_by_id[rec_id], rec)
             collision_count += 1
 
-    # Enforce audited scheme age bounds (Ticket YD-DATA-2.1)
+    # Enforce audited scheme age bounds and keyword inference (Ticket YD-DATA-2.1 / TICKET-101)
     for rec in schemes_by_id.values():
         rec_id = rec.get("scheme_id")
         if rec_id in SCHEME_EXPLICIT_AGE_BOUNDS:
             rec["age_min"], rec["age_max"] = SCHEME_EXPLICIT_AGE_BOUNDS[rec_id]
+        else:
+            # Secondary pass: infer age bounds if still defaulted or inconsistent
+            cur_min = clean_int(rec.get("age_min"), 0)
+            cur_max = clean_int(rec.get("age_max"), 100)
+            life_tags = []
+            raw_tags = rec.get("life_stage_tags", "[]")
+            if isinstance(raw_tags, str):
+                try:
+                    life_tags = json.loads(raw_tags)
+                except Exception:
+                    life_tags = []
+            elif isinstance(raw_tags, list):
+                life_tags = raw_tags
+
+            new_min, new_max = infer_age_bounds_from_content(
+                name=rec.get("name", ""),
+                description=rec.get("description", ""),
+                eligibility_text=rec.get("eligibility_text", ""),
+                beneficiary_type=rec.get("beneficiary_type", ""),
+                life_stage_tags=life_tags,
+                current_min=cur_min,
+                current_max=cur_max
+            )
+            rec["age_min"] = new_min
+            rec["age_max"] = new_max
 
     deduplicated = sorted(list(schemes_by_id.values()), key=lambda x: x.get("name", ""))
     print(f"✓ Deduplicated {len(records)} records into {len(deduplicated)} unique schemes ({collision_count} merge collision(s) resolved)")
