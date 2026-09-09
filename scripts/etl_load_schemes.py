@@ -126,13 +126,15 @@ SCHEME_EXPLICIT_AGE_BOUNDS = {
 # Canonical Life-Stage Tags (Section 6.1 / Ticket 2.3)
 CANONICAL_LIFE_STAGES = ["maternal", "student", "entrepreneur", "senior", "general"]
 
-# Life-Stage Pattern Dictionaries (Ticket 2.3)
+# Life-Stage Pattern Dictionaries (Ticket 2.3 / TICKET-102)
 LIFE_STAGE_PATTERNS = {
     "maternal": [
         "pregnant", "pregnancy", "maternal", "maternity", "lactating", "lactation",
         "infant", "child birth", "delivery", "postnatal", "prenatal", "newborn",
         "pmmvy", "matru", "matritva", "janani", "jsy", "mcp card", "safe motherhood",
-        "immunization", "antenatal", "गर्भ", "मातृ", "मातृत्व", "स्तनपान"
+        "immunization", "antenatal", "vivah", "marriage assistance", "kanya vivah",
+        "wedding", "nikah", "kalyanam", "shaadi", "shagun", "marriage", "vidhwa vivah",
+        "गर्भ", "मातृ", "मातृत्व", "स्तनपान", "विवाह", "शादी"
     ],
     "student": [
         "student", "students", "scholarship", "scholarships", "education", "school",
@@ -142,7 +144,8 @@ LIFE_STAGE_PATTERNS = {
         "class 12", "10th pass", "12th pass", "kanyashree", "pudhumai penn",
         "kanya utthan", "sumangala", "gaura devi", "tuition", "fellowship",
         "sukanya samriddhi", "sukanya", "girl child education", "higher education",
-        "stem", "hostel", "study", "learning", "छात्र", "छात्रा", "शिक्षा", "छात्रवृत्ति", "स्कूल"
+        "stem", "study", "learning", "student hostel", "girls hostel",
+        "छात्र", "छात्रा", "शिक्षा", "छात्रवृत्ति", "स्कूल"
     ],
     "entrepreneur": [
         "entrepreneur", "entrepreneurs", "business", "loan", "loans", "micro-credit",
@@ -153,22 +156,24 @@ LIFE_STAGE_PATTERNS = {
         "cheyutha", "micro-enterprise", "micro enterprise", "enterprise", "enterprises",
         "artisans", "artisan", "vocational training", "step", "self-employment",
         "self employment", "subsidy", "credit facility", "swarojgar", "handloom",
-        "उद्यम", "व्यवसाय", "ऋण", "स्वयं सहायता"
+        "working women hostel", "working woman hostel", "working women", "sakhi niwas",
+        "safai karamchari", "safai karamcharis", "weaver", "weavers",
+        "उद्यम", "व्यवसाय", "ऋण", "स्वयं सहायता", "हथकरघा", "सफाई कर्मचारी"
     ],
     "senior": [
         "widow", "widows", "vidhwa", "pension", "pensions", "elderly", "senior citizen",
         "senior citizens", "old age", "old-age", "ignwps", "destitute widow",
         "destitute widows", "pensioner", "superannuated", "aged 60", "above 60",
-        "40-79 years", "elderly women", "वृद्ध", "पेंशन", "विधवा"
+        "40-79 years", "elderly women", "vaya vandana", "vridhavastha", "वृद्ध", "पेंशन", "विधवा"
     ],
     "general": [
-        "housing", "shelter", "sakhi niwas", "ujjwala", "lpg", "gas connection",
+        "housing", "shelter", "ujjwala", "lpg", "gas connection",
         "sanitation", "bus travel", "free bus", "transport", "travel", "pink pass",
         "pink ticket", "mahalakshmi", "basic income", "cash assistance", "cash transfer",
         "ladli behna", "majhi ladki", "gruha lakshmi", "orunodoi", "maiya samman",
         "chiranjeevi", "swasthya bima", "health insurance", "healthcare", "ration",
         "bpl", "homemaker", "housewife", "housewives", "griha aadhar", "samman",
-        "vivah", "marriage assistance", "kanya vivah", "आवास", "स्वास्थ्य", "राशन"
+        "आवास", "स्वास्थ्य", "राशन"
     ]
 }
 
@@ -266,6 +271,40 @@ def classify_life_stage(record: dict) -> list:
 
     return assigned_tags if assigned_tags else ["general"]
 
+
+# Specific Beneficiary Groups Extraction (TICKET-102)
+SPECIFIC_BENEFICIARY_KEYWORDS = [
+    ("Safai Karamcharis / Sanitation Workers", ["safai karamchari", "sanitation worker", "manual scavenger", "waste picker"]),
+    ("Construction Workers", ["construction worker", "building worker", "bocw"]),
+    ("Beedi Workers", ["beedi worker", "bidi worker"]),
+    ("Street Vendors / Hawkers", ["street vendor", "street vendors", "hawker", "svanidhi", "footpath vendor"]),
+    ("Handloom Weavers / Artisans", ["handloom", "weaver", "artisan", "craftsperson", "bunkar", "karigar"]),
+    ("Working Women", ["working women", "working woman", "working women hostel"]),
+    ("Women Entrepreneurs / SHG Members", ["shg", "self help group", "self-help group", "women entrepreneur", "business loan for women", "micro-enterprise"]),
+    ("Brides / Marriage Assistance", ["marriage assistance", "kanya vivah", "shadi", "wedding aid", "vivah hetu"]),
+    ("Widows / Destitute Women", ["destitute widow", "widow pension", "vidhwa", "deserted woman", "single woman"]),
+    ("Pregnant & Lactating Mothers", ["pregnant", "pregnancy", "maternal", "maternity", "lactating", "lactation", "postnatal", "prenatal"]),
+    ("Students & Scholars", ["scholarship", "higher education", "fellowship", "school girl", "college student"]),
+    ("Senior Citizens", ["senior citizen", "old age pension", "elderly", "vridha", "60 years and above", "superannuated"]),
+    ("Persons with Disabilities", ["disability", "divyang", "differently abled", "handicapped", "pwd"]),
+    ("Anganwadi / ASHA Workers", ["anganwadi", "asha worker", "sewika", "sahayika"]),
+    ("Ex-Servicemen / Defense Personnel Dependents", ["ex-servicem", "war widow", "defense personnel", "armed forces"]),
+]
+
+def extract_specific_beneficiary_type(text: str, fallback: str = "Women & Girls") -> str:
+    """
+    Extracts specific target beneficiary group from scheme title, description, and eligibility narrative (TICKET-102).
+    """
+    if not text:
+        return fallback
+    text_lower = str(text).lower()
+    matched = []
+    for label, patterns in SPECIFIC_BENEFICIARY_KEYWORDS:
+        if any(p in text_lower for p in patterns):
+            matched.append(label)
+    if matched:
+        return "; ".join(matched[:2])
+    return fallback
 
 def slugify(text: str) -> str:
     """Converts a scheme title into a unique clean slug identifier."""
@@ -827,10 +866,14 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
         row.get("scheme_category") or row.get("category") or "Social welfare & Empowerment"
     ).strip()
 
-    beneficiary_type = (
+    raw_ben = (
         row.get("Beneficiaries") or row.get("target_beneficiary") or
-        row.get("beneficiary_type") or "Women & Girls"
+        row.get("beneficiary_type") or ""
     ).strip()
+    beneficiary_type = extract_specific_beneficiary_type(
+        f"{name} {raw_ben} {eligibility_text} {details} {tags}",
+        fallback=raw_ben if raw_ben else "Women & Girls"
+    )
 
     documents_required = (
         row.get("documents") or row.get("Documents Required") or 
@@ -941,6 +984,12 @@ def transform_csv_record(row: dict) -> dict:
     caste_raw = row.get("caste_category", "All").strip()
     caste_categories = [caste_raw] if caste_raw and caste_raw != "All" else ["All"]
 
+    raw_ben = row.get("target_beneficiary", "").strip()
+    beneficiary_type = extract_specific_beneficiary_type(
+        f"{name} {raw_ben} {row.get('eligibility_criteria_text', '')} {row.get('scheme_benefits', '')}",
+        fallback=raw_ben if raw_ben else "Women"
+    )
+
     raw_age_min = clean_int(row.get("min_age"), 0)
     raw_age_max = clean_int(row.get("max_age"), 100)
     extracted_min, extracted_max = extract_age_bounds(f"{name} {row.get('eligibility_criteria_text', '')}", default_min=0, default_max=100)
@@ -964,7 +1013,7 @@ def transform_csv_record(row: dict) -> dict:
         "department": row.get("department_name", "Department of Social Welfare").strip(),
         "state": state if state else "All",
         "category": row.get("scheme_category", "Welfare").strip(),
-        "beneficiary_type": row.get("target_beneficiary", "Women").strip(),
+        "beneficiary_type": beneficiary_type,
         "benefits": row.get("scheme_benefits", "").strip(),
         "eligibility_text": row.get("eligibility_criteria_text", "").strip(),
         "documents_required": row.get("required_documents", "").strip(),
@@ -994,6 +1043,11 @@ def transform_json_record(item: dict) -> dict:
     urls = item.get("urls", {})
     life_stage_tags = classify_life_stage(item)
 
+    beneficiary_type = extract_specific_beneficiary_type(
+        f"{name} {item.get('summary', '')} {item.get('benefits_text', '')}",
+        fallback="Women & Girls"
+    )
+
     raw_age_min = clean_int(eligibility.get("min_age"), 0)
     raw_age_max = clean_int(eligibility.get("max_age"), 100)
     extracted_min, extracted_max = extract_age_bounds(f"{name} {item.get('summary', '')}", default_min=0, default_max=100)
@@ -1017,7 +1071,7 @@ def transform_json_record(item: dict) -> dict:
         "department": item.get("domain", "Social Welfare").strip(),
         "state": item.get("geography", "All").strip(),
         "category": item.get("domain", "General Welfare").strip(),
-        "beneficiary_type": "Women & Girls",
+        "beneficiary_type": beneficiary_type,
         "benefits": item.get("benefits_text", "").strip(),
         "eligibility_text": item.get("summary", "").strip(),
         "documents_required": ", ".join(item.get("documents", [])),
@@ -1275,24 +1329,39 @@ def merge_and_deduplicate_schemes(records: list) -> list:
             schemes_by_id[rec_id] = merge_scheme_records(schemes_by_id[rec_id], rec)
             collision_count += 1
 
-    # Enforce audited scheme age bounds and keyword inference (Ticket YD-DATA-2.1 / TICKET-101)
+    # Enforce audited scheme age bounds, refined life-stage tags, and beneficiary types (TICKET-101 / TICKET-102)
     for rec in schemes_by_id.values():
         rec_id = rec.get("scheme_id")
+        
+        # 1. Re-evaluate life stage tags on merged rich text if tagged general or missing
+        raw_tags = rec.get("life_stage_tags", "[]")
+        life_tags = []
+        if isinstance(raw_tags, str):
+            try:
+                life_tags = json.loads(raw_tags)
+            except Exception:
+                life_tags = []
+        elif isinstance(raw_tags, list):
+            life_tags = raw_tags
+
+        if not life_tags or life_tags == ["general"]:
+            recomputed_tags = classify_life_stage(rec)
+            if recomputed_tags:
+                life_tags = recomputed_tags
+                rec["life_stage_tags"] = json.dumps(life_tags)
+
+        # 2. Enrich beneficiary type if generic
+        cur_ben = rec.get("beneficiary_type", "").strip()
+        if not cur_ben or cur_ben in ["Women & Girls", "Women"]:
+            combined_ben_text = f"{rec.get('name', '')} {rec.get('description', '')} {rec.get('eligibility_text', '')} {rec.get('benefits', '')}"
+            rec["beneficiary_type"] = extract_specific_beneficiary_type(combined_ben_text, fallback=cur_ben or "Women & Girls")
+
+        # 3. Enforce explicit or content-based age bounds
         if rec_id in SCHEME_EXPLICIT_AGE_BOUNDS:
             rec["age_min"], rec["age_max"] = SCHEME_EXPLICIT_AGE_BOUNDS[rec_id]
         else:
-            # Secondary pass: infer age bounds if still defaulted or inconsistent
             cur_min = clean_int(rec.get("age_min"), 0)
             cur_max = clean_int(rec.get("age_max"), 100)
-            life_tags = []
-            raw_tags = rec.get("life_stage_tags", "[]")
-            if isinstance(raw_tags, str):
-                try:
-                    life_tags = json.loads(raw_tags)
-                except Exception:
-                    life_tags = []
-            elif isinstance(raw_tags, list):
-                life_tags = raw_tags
 
             new_min, new_max = infer_age_bounds_from_content(
                 name=rec.get("name", ""),
