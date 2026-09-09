@@ -1038,6 +1038,10 @@ def transform_csv_record(row: dict) -> dict:
         current_max=eff_max
     )
 
+    raw_income = clean_int(row.get("max_income_limit"), 0)
+    extracted_income = extract_income_cap(f"{name} {row.get('eligibility_criteria_text', '')} {row.get('scheme_benefits', '')}", default_income=0)
+    income_max = raw_income if raw_income > 0 else extracted_income
+
     return {
         "scheme_id": scheme_id,
         "name": name,
