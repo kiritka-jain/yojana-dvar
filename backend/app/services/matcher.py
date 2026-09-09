@@ -39,6 +39,26 @@ SCHEME_ID_ALIASES: Dict[str, str] = {
     "hf-scheme-003": "working-women-hostel-scheme",
 }
 
+RESTRICTIVE_OCCUPATION_GATES: List[Tuple[str, List[str]]] = [
+    ("safai karamchari", ["daily wage labor", "other", "self-employed / artisan", "sanitation worker"]),
+    ("sanitation worker", ["daily wage labor", "other", "self-employed / artisan", "sanitation worker"]),
+    ("manual scavenger", ["daily wage labor", "other"]),
+    ("construction worker", ["daily wage labor", "construction worker"]),
+    ("building worker", ["daily wage labor"]),
+    ("bocw", ["daily wage labor"]),
+    ("beedi worker", ["daily wage labor", "self-employed / artisan", "other"]),
+    ("bidi worker", ["daily wage labor", "self-employed / artisan", "other"]),
+    ("handloom", ["self-employed / artisan", "daily wage labor"]),
+    ("weaver", ["self-employed / artisan", "daily wage labor"]),
+    ("street vendor", ["self-employed / artisan", "daily wage labor", "other"]),
+    ("svanidhi", ["self-employed / artisan", "daily wage labor", "other"]),
+    ("hawker", ["self-employed / artisan", "daily wage labor", "other"]),
+    ("anganwadi", ["salaried", "other"]),
+    ("asha worker", ["salaried", "other"]),
+    ("ex-servicem", []),
+    ("war widow", []),
+]
+
 class EligibilityMatcher:
     """Deterministic rule-based eligibility match engine for Yojana Dvar."""
 
@@ -47,11 +67,54 @@ class EligibilityMatcher:
         self._catalog_cache: List[Dict[str, Any]] = []
 
     def get_catalog(self) -> List[Dict[str, Any]]:
-        """Loads and caches scheme catalog from processed JSON storage."""
+        """Loads and caches scheme catalog from processed JSON storage with pre-indexed metadata."""
         if not self._catalog_cache:
             if os.path.exists(self.catalog_path):
                 with open(self.catalog_path, "r", encoding="utf-8") as f:
-                    self._catalog_cache = json.load(f)
+                    raw_catalog = json.load(f)
+                for s in raw_catalog:
+                    tags_raw = s.get("life_stage_tags", "[]")
+                    if isinstance(tags_raw, str):
+                        try:
+                            s["_clean_tags"] = [str(t).strip().lower() for t in json.loads(tags_raw)]
+                        except Exception:
+                            s["_clean_tags"] = ["general"]
+                    elif isinstance(tags_raw, list):
+                        s["_clean_tags"] = [str(t).strip().lower() for t in tags_raw]
+                    else:
+                        s["_clean_tags"] = ["general"]
+                    s["_clean_tags_set"] = set(s["_clean_tags"])
+
+                    states_raw = s.get("eligible_states", "[\"All\"]")
+                    if isinstance(states_raw, str):
+                        try:
+                            s["_eligible_states"] = [st.lower() for st in json.loads(states_raw)]
+                        except Exception:
+                            s["_eligible_states"] = ["all"]
+                    elif isinstance(states_raw, list):
+                        s["_eligible_states"] = [str(st).lower() for st in states_raw]
+                    else:
+                        s["_eligible_states"] = ["all"]
+                    s["_eligible_states_set"] = set(s["_eligible_states"])
+
+                    caste_raw = s.get("caste_categories", "[\"All\"]")
+                    if isinstance(caste_raw, str):
+                        try:
+                            s["_caste_categories"] = [c.lower() for c in json.loads(caste_raw)]
+                        except Exception:
+                            s["_caste_categories"] = ["all"]
+                    elif isinstance(caste_raw, list):
+                        s["_caste_categories"] = [str(c).lower() for c in caste_raw]
+                    else:
+                        s["_caste_categories"] = ["all"]
+                    s["_caste_categories_set"] = set(s["_caste_categories"])
+
+                    s["_state_lower"] = str(s.get("state", "All")).strip().lower()
+                    s["_gender_lower"] = str(s.get("gender", "Female")).strip().lower()
+                    s["_category_lower"] = str(s.get("category", "")).strip().lower()
+                    s["_full_text"] = f"{s.get('name', '')} {s.get('category', '')} {s.get('beneficiary_type', '')} {s.get('eligibility_text', '')}".lower()
+
+                self._catalog_cache = raw_catalog
             else:
                 self._catalog_cache = []
         return self._catalog_cache
@@ -79,7 +142,7 @@ class EligibilityMatcher:
             return False, 0, []
 
         # 2. Gender Rule Check
-        scheme_gender = str(scheme.get("gender", "Female")).strip().lower()
+        scheme_gender = scheme.get("_gender_lower", str(scheme.get("gender", "Female")).strip().lower())
         user_gender = profile.gender.strip().lower()
         if scheme_gender not in ["all", "all india"]:
             if scheme_gender in ["female", "women"]:
@@ -99,26 +162,33 @@ class EligibilityMatcher:
             reasons.append(f"Age {profile.age} is within eligible range ({age_min}–{age_max} years)")
 
         # 3.1 Life-Stage Incompatibility Hard Gate & Reverse Demographic Gating (Ticket YD-ENG-2.2 / TICKET-202)
-        tags_raw = scheme.get("life_stage_tags", "[\"general\"]")
-        try:
-            life_stage_tags = json.loads(tags_raw) if isinstance(tags_raw, str) else tags_raw
-        except Exception:
-            life_stage_tags = ["general"]
+        clean_tags = scheme.get("_clean_tags")
+        if clean_tags is None:
+            tags_raw = scheme.get("life_stage_tags", "[\"general\"]")
+            try:
+                life_stage_tags = json.loads(tags_raw) if isinstance(tags_raw, str) else tags_raw
+            except Exception:
+                life_stage_tags = ["general"]
+            clean_tags = [str(t).strip().lower() for t in life_stage_tags if str(t).strip()]
+        clean_tags_set = scheme.get("_clean_tags_set", set(clean_tags))
+
+        scheme_full_text = scheme.get("_full_text")
+        if scheme_full_text is None:
+            scheme_full_text = f"{scheme.get('name', '')} {scheme.get('category', '')} {scheme.get('beneficiary_type', '')} {scheme.get('eligibility_text', '')}".lower()
 
         user_life_stage = profile.life_stage.strip().lower()
-        clean_tags = [str(t).strip().lower() for t in life_stage_tags if str(t).strip()]
-        scheme_full_text = f"{scheme.get('name', '')} {scheme.get('category', '')} {scheme.get('beneficiary_type', '')} {scheme.get('eligibility_text', '')}".lower()
 
         # (a) Exclusive Student Scheme Gate:
-        # If scheme is exclusively for students/scholarships and user age > 35 or user life_stage == "senior" -> Disqualify
-        is_student_exclusive = set(clean_tags) == {"student"} or ("student" in clean_tags and "scholarship" in scheme_full_text and "entrepreneur" not in clean_tags and "general" not in clean_tags)
+        # If scheme is exclusively for students/scholarships and user age > 30 or user life_stage == "senior" -> Disqualify
+        is_student_exclusive = clean_tags_set == {"student"} or ("student" in clean_tags_set and "scholarship" in scheme_full_text and "entrepreneur" not in clean_tags_set and "general" not in clean_tags_set)
         if is_student_exclusive:
-            if profile.age > 35 or user_life_stage == "senior":
+            if profile.age > 30 or user_life_stage == "senior":
                 return False, 0, []
 
         # (b) Maternal / Marriage Scheme Gate:
         # Maternal/marriage schemes are strictly for women in maternal/legal marriage age (18–50) and never seniors or minors
-        is_maternal_or_marriage = "maternal" in clean_tags or "maternal" in str(scheme.get("category", "")).lower() or any(kw in scheme_full_text for kw in ["pregnant", "maternity", "lactating", "marriage assistance", "kanya vivah", "wedding aid", "vivah hetu"])
+        category_lower = scheme.get("_category_lower", str(scheme.get("category", "")).strip().lower())
+        is_maternal_or_marriage = clean_tags_set == {"maternal"} or "maternal" in category_lower or any(kw in scheme_full_text for kw in ["pregnant", "maternity", "lactating", "marriage assistance", "kanya vivah", "wedding aid", "vivah hetu"])
         if is_maternal_or_marriage:
             if not any(cw in scheme_full_text for cw in ["girl child", "balika", "sukanya"]):
                 if profile.age < 18 or profile.age > 50 or user_life_stage == "senior":
@@ -126,14 +196,14 @@ class EligibilityMatcher:
 
         # (c) Senior Citizen / Old-Age Pension Gate:
         # Senior citizen schemes strictly require age >= 60 (excluding widow/divyang specific exceptions)
-        is_senior_pension = "senior" in clean_tags or any(kw in scheme_full_text for kw in ["old age pension", "senior citizen pension", "vridha pension", "vruddha pension", "vaya vandana", "vridhavastha"])
+        is_senior_pension = any(kw in scheme_full_text for kw in ["old age pension", "senior citizen pension", "vridha pension", "vruddha pension", "vaya vandana", "vridhavastha"])
         if is_senior_pension and not any(kw in scheme_full_text for kw in ["widow", "vidhwa", "divyang", "disability", "orphan", "family pension"]):
             if profile.age < 60:
                 return False, 0, []
 
         # (d) Adult Entrepreneur / Loan / Hostel Gate:
         # Business loans, working women hostels, and SHG credit facilities require adult age (18+)
-        is_adult_entrepreneur = "entrepreneur" in clean_tags or any(kw in scheme_full_text for kw in ["working women hostel", "working woman hostel", "mudra", "stand up india", "stand-up india", "business loan", "self help group", "credit facility for"])
+        is_adult_entrepreneur = any(kw in scheme_full_text for kw in ["working women hostel", "working woman hostel", "mudra", "stand up india", "stand-up india", "business loan", "self help group", "credit facility for safai", "safai karamchari"])
         if is_adult_entrepreneur and not any(cw in scheme_full_text for cw in ["girl child", "balika", "sukanya", "school", "scholarship"]):
             if profile.age < 18:
                 return False, 0, []
@@ -142,7 +212,7 @@ class EligibilityMatcher:
         user_marital = (profile.marital_status or "all").strip().lower()
 
         # (a) Exclusive Widow Scheme Gate:
-        is_widow_scheme = "widow" in scheme_full_text or set(clean_tags) == {"widow"}
+        is_widow_scheme = "widow" in scheme_full_text or clean_tags_set == {"widow"}
         if is_widow_scheme and user_marital in ["unmarried", "married", "intercaste_marriage"] and user_life_stage != "widow":
             return False, 0, []
 
@@ -153,25 +223,6 @@ class EligibilityMatcher:
 
         # 3.3 Restrictive Occupation & Beneficiary Hard Gate (TICKET-201)
         user_occupation = (profile.occupation or "").strip().lower()
-        RESTRICTIVE_OCCUPATION_GATES = [
-            ("safai karamchari", ["daily wage labor", "other", "self-employed / artisan", "sanitation worker"]),
-            ("sanitation worker", ["daily wage labor", "other", "self-employed / artisan", "sanitation worker"]),
-            ("manual scavenger", ["daily wage labor", "other"]),
-            ("construction worker", ["daily wage labor", "construction worker"]),
-            ("building worker", ["daily wage labor"]),
-            ("bocw", ["daily wage labor"]),
-            ("beedi worker", ["daily wage labor", "self-employed / artisan", "other"]),
-            ("bidi worker", ["daily wage labor", "self-employed / artisan", "other"]),
-            ("handloom", ["self-employed / artisan", "daily wage labor"]),
-            ("weaver", ["self-employed / artisan", "daily wage labor"]),
-            ("street vendor", ["self-employed / artisan", "daily wage labor", "other"]),
-            ("svanidhi", ["self-employed / artisan", "daily wage labor", "other"]),
-            ("hawker", ["self-employed / artisan", "daily wage labor", "other"]),
-            ("anganwadi", ["salaried", "other"]),
-            ("asha worker", ["salaried", "other"]),
-            ("ex-servicem", []),
-            ("war widow", []),
-        ]
 
         for keyword, allowed_occupations in RESTRICTIVE_OCCUPATION_GATES:
             if keyword in scheme_full_text:
@@ -187,19 +238,23 @@ class EligibilityMatcher:
                     return False, 0, []
 
         # 4. State Coverage Check
-        scheme_state = str(scheme.get("state", "All")).strip()
-        eligible_states_raw = scheme.get("eligible_states", "[\"All\"]")
-        try:
-            eligible_states = json.loads(eligible_states_raw) if isinstance(eligible_states_raw, str) else eligible_states_raw
-        except Exception:
-            eligible_states = ["All"]
+        scheme_state_lower = scheme.get("_state_lower", str(scheme.get("state", "All")).strip().lower())
+        eligible_states_set = scheme.get("_eligible_states_set")
+        if eligible_states_set is None:
+            eligible_states_raw = scheme.get("eligible_states", "[\"All\"]")
+            try:
+                eligible_states = [st.lower() for st in (json.loads(eligible_states_raw) if isinstance(eligible_states_raw, str) else eligible_states_raw)]
+            except Exception:
+                eligible_states = ["all"]
+            eligible_states_set = set(eligible_states)
 
         user_state = profile.state.strip()
+        user_state_lower = user_state.lower()
         state_matched = False
-        if scheme_state.lower() in ["all", "all india"] or "All" in eligible_states:
+        if scheme_state_lower in ["all", "all india"] or "all" in eligible_states_set:
             state_matched = True
             reasons.append("Available central scheme across all States/UTs")
-        elif scheme_state.lower() == user_state.lower() or any(st.lower() == user_state.lower() for st in eligible_states):
+        elif scheme_state_lower == user_state_lower or user_state_lower in eligible_states_set:
             state_matched = True
             reasons.append(f"Targeted state scheme for residents of {user_state}")
             
@@ -207,14 +262,17 @@ class EligibilityMatcher:
             return False, 0, []
 
         # 5. Caste Category Check
-        caste_raw = scheme.get("caste_categories", "[\"All\"]")
-        try:
-            caste_categories = json.loads(caste_raw) if isinstance(caste_raw, str) else caste_raw
-        except Exception:
-            caste_categories = ["All"]
+        caste_categories_set = scheme.get("_caste_categories_set")
+        if caste_categories_set is None:
+            caste_raw = scheme.get("caste_categories", "[\"All\"]")
+            try:
+                caste_categories = [c.lower() for c in (json.loads(caste_raw) if isinstance(caste_raw, str) else caste_raw)]
+            except Exception:
+                caste_categories = ["all"]
+            caste_categories_set = set(caste_categories)
 
-        user_caste = profile.caste.strip()
-        caste_matched = "All" in caste_categories or any(c.lower() == user_caste.lower() for c in caste_categories)
+        user_caste_lower = profile.caste.strip().lower()
+        caste_matched = "all" in caste_categories_set or user_caste_lower in caste_categories_set
         if not caste_matched:
             return False, 0, []
 
@@ -249,14 +307,8 @@ class EligibilityMatcher:
         score = 50  # Base score for passing all hard rules
         
         # Life Stage Boost (+30)
-        tags_raw = scheme.get("life_stage_tags", "[\"general\"]")
-        try:
-            life_stage_tags = json.loads(tags_raw) if isinstance(tags_raw, str) else tags_raw
-        except Exception:
-            life_stage_tags = ["general"]
-            
         user_life_stage = profile.life_stage.strip().lower()
-        is_stage_match = any(tag.lower() == user_life_stage for tag in life_stage_tags)
+        is_stage_match = any(tag == user_life_stage for tag in clean_tags)
         if not is_stage_match and user_life_stage == "widow":
             if "widow" in scheme_full_text:
                 is_stage_match = True
@@ -277,7 +329,7 @@ class EligibilityMatcher:
             reasons.append("Eligible under single / unmarried girl child welfare priority")
 
         # State Specificity Boost (+20)
-        if scheme_state.lower() == user_state.lower() and scheme_state.lower() != "all":
+        if scheme_state_lower == user_state_lower and scheme_state_lower != "all":
             score += 20
 
         # Income Targeting Boost (+10)
@@ -299,47 +351,50 @@ class EligibilityMatcher:
         start_time = time.time()
         catalog = self.get_catalog()
         
-        eligible_results: List[SchemeMatchResult] = []
+        eligible_candidates: List[Tuple[int, str, Dict[str, Any], List[str]]] = []
         
         for scheme in catalog:
             is_eligible, score, reasons = self.evaluate_scheme(profile, scheme)
             if is_eligible:
-                res = SchemeMatchResult(
-                    scheme_id=scheme.get("scheme_id", ""),
-                    name=scheme.get("name", ""),
-                    description=scheme.get("description", ""),
-                    ministry=scheme.get("ministry", ""),
-                    department=scheme.get("department", ""),
-                    state=scheme.get("state", "All"),
-                    category=scheme.get("category", ""),
-                    beneficiary_type=scheme.get("beneficiary_type", ""),
-                    benefits=scheme.get("benefits", ""),
-                    eligibility_text=scheme.get("eligibility_text", ""),
-                    documents_required=scheme.get("documents_required", ""),
-                    application_process=scheme.get("application_process", ""),
-                    apply_url=scheme.get("apply_url", ""),
-                    official_url=scheme.get("official_url", ""),
-                    age_min=int(scheme.get("age_min", 0)),
-                    age_max=int(scheme.get("age_max", 100)),
-                    gender=scheme.get("gender", "Female"),
-                    caste_categories=str(scheme.get("caste_categories", "[\"All\"]")),
-                    income_max=int(scheme.get("income_max", 0)),
-                    residence=scheme.get("residence", "All"),
-                    eligible_states=str(scheme.get("eligible_states", "[\"All\"]")),
-                    requires_bpl=bool(scheme.get("requires_bpl", False)),
-                    requires_disability=bool(scheme.get("requires_disability", False)),
-                    life_stage_tags=str(scheme.get("life_stage_tags", "[\"general\"]")),
-                    is_active=bool(scheme.get("is_active", True)),
-                    match_score=score,
-                    match_reasons=reasons
-                )
-                eligible_results.append(res)
+                eligible_candidates.append((score, str(scheme.get("scheme_id", "")), scheme, reasons))
 
         # Sort by match_score descending, then scheme_id
-        eligible_results.sort(key=lambda s: (-s.match_score, s.scheme_id))
+        eligible_candidates.sort(key=lambda item: (-item[0], item[1]))
         
-        # Limit results
-        top_results = eligible_results[:profile.limit]
+        # Limit results before Pydantic instantiation for high throughput
+        top_candidates = eligible_candidates[:profile.limit]
+        top_results = [
+            SchemeMatchResult(
+                scheme_id=sch.get("scheme_id", ""),
+                name=sch.get("name", ""),
+                description=sch.get("description", ""),
+                ministry=sch.get("ministry", ""),
+                department=sch.get("department", ""),
+                state=sch.get("state", "All"),
+                category=sch.get("category", ""),
+                beneficiary_type=sch.get("beneficiary_type", ""),
+                benefits=sch.get("benefits", ""),
+                eligibility_text=sch.get("eligibility_text", ""),
+                documents_required=sch.get("documents_required", ""),
+                application_process=sch.get("application_process", ""),
+                apply_url=sch.get("apply_url", ""),
+                official_url=sch.get("official_url", ""),
+                age_min=int(sch.get("age_min", 0)),
+                age_max=int(sch.get("age_max", 100)),
+                gender=sch.get("gender", "Female"),
+                caste_categories=str(sch.get("caste_categories", "[\"All\"]")),
+                income_max=int(sch.get("income_max", 0)),
+                residence=sch.get("residence", "All"),
+                eligible_states=str(sch.get("eligible_states", "[\"All\"]")),
+                requires_bpl=bool(sch.get("requires_bpl", False)),
+                requires_disability=bool(sch.get("requires_disability", False)),
+                life_stage_tags=str(sch.get("life_stage_tags", "[\"general\"]")),
+                is_active=bool(sch.get("is_active", True)),
+                match_score=sc,
+                match_reasons=rs
+            )
+            for sc, _, sch, rs in top_candidates
+        ]
         elapsed_ms = round((time.time() - start_time) * 1000, 2)
         
         return MatchResponse(

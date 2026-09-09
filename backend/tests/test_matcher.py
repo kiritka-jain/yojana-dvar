@@ -438,3 +438,101 @@ def test_marital_status_intercaste_marriage_rules(matcher, base_scheme):
     eligible_unm, _, _ = matcher.evaluate_scheme(p_unmarried, base_scheme)
     assert eligible_unm is False
 
+
+# =============================================================================
+# 3. Persona Regression & Reverse Life-Stage Gating Tests (TICKET-203)
+# =============================================================================
+
+def test_10_year_old_girl_persona_exclusion_from_adult_and_pension_schemes(matcher):
+    """
+    Persona Test: 10-year-old girl in Maharashtra must receive ONLY age-appropriate schemes.
+    Zero working women hostels, pension schemes, mudra loans, marriage schemes, or safai karamchari loans.
+    """
+    girl_profile = ProfileInput(
+        age=10,
+        gender="Female",
+        state="Maharashtra",
+        life_stage="all",
+        marital_status="unmarried",
+        caste="General",
+        income=100000,
+        occupation="Student",
+        limit=50
+    )
+
+    res = matcher.match_profile(girl_profile)
+    assert res.count > 0
+
+    banned_adult_keywords = [
+        "working women", "working woman", "pension", "mudra",
+        "stand up india", "safai karamchari", "marriage assistance",
+        "vivah hetu", "wedding aid"
+    ]
+
+    for s in res.schemes:
+        name_lower = s.name.lower()
+        for kw in banned_adult_keywords:
+            if kw in name_lower:
+                # Ensure it's not a false positive like "girl child"
+                assert any(ok in name_lower for ok in ["girl child", "balika", "sukanya", "school", "student", "education", "scholarship"]), (
+                    f"Ineligible scheme '{s.name}' matched for 10-year-old girl (keyword: {kw})"
+                )
+
+
+def test_restrictive_occupation_gate(matcher, base_scheme):
+    """
+    Test that schemes for specialized occupations (safai karamcharis, construction workers)
+    reject unqualified profiles (e.g. students, homemakers, salaried civilians).
+    """
+    base_scheme["name"] = "Credit Facility for Safai Karamcharis"
+    base_scheme["eligibility_text"] = "Financial aid for safai karamchari families"
+    base_scheme["beneficiary_type"] = "Safai Karamcharis / Sanitation Workers"
+    base_scheme["age_min"] = 18
+    base_scheme["age_max"] = 65
+
+    # 1. Student applicant is rejected
+    p_student = ProfileInput(age=20, gender="Female", state="All", occupation="Student", life_stage="student")
+    assert matcher.evaluate_scheme(p_student, base_scheme)[0] is False
+
+    # 2. Daily wage labor applicant is accepted
+    p_worker = ProfileInput(age=30, gender="Female", state="All", occupation="Daily Wage Labor", life_stage="general")
+    assert matcher.evaluate_scheme(p_worker, base_scheme)[0] is True
+
+
+def test_reverse_life_stage_age_gate_general_profile(matcher, base_scheme):
+    """
+    Test that even if user has life_stage='all', reverse demographic sanity gates
+    block minors (<18) from maternal/marriage/hostel schemes and under-60 from senior pensions.
+    """
+    # Maternal scheme
+    base_scheme["name"] = "Mukhyamantri Kanya Vivah Yojana"
+    base_scheme["life_stage_tags"] = '["maternal"]'
+    base_scheme["category"] = "Maternal & Child Welfare"
+    base_scheme["age_min"] = 18
+    base_scheme["age_max"] = 45
+
+    p_child_all = ProfileInput(age=10, gender="Female", state="All", life_stage="all", marital_status="unmarried")
+    assert matcher.evaluate_scheme(p_child_all, base_scheme)[0] is False
+
+    # Senior pension scheme
+    senior_scheme = {
+        "scheme_id": "old-age-pension",
+        "name": "Indira Gandhi National Old Age Pension Scheme",
+        "is_active": True,
+        "gender": "Female",
+        "age_min": 60,
+        "age_max": 100,
+        "state": "All",
+        "eligible_states": '["All"]',
+        "caste_categories": '["All"]',
+        "income_max": 0,
+        "residence": "All",
+        "requires_bpl": False,
+        "requires_disability": False,
+        "life_stage_tags": '["senior"]'
+    }
+
+    p_young_adult = ProfileInput(age=25, gender="Female", state="All", life_stage="all")
+    assert matcher.evaluate_scheme(p_young_adult, senior_scheme)[0] is False
+
+
