@@ -643,50 +643,83 @@ def infer_age_bounds_from_content(
 
 def extract_income_cap(text: str, default_income: int = 0) -> int:
     """
-    Extracts maximum family/annual income cap in INR from narrative eligibility text (Ticket 2.4).
+    Extracts maximum family/annual income cap in INR from narrative eligibility text (Ticket 2.4 / TICKET-103).
     """
     if not text:
         return default_income
 
     text_clean = str(text).lower()
 
-    # Pattern 1: annual/family/gross income ... not exceed / below / less than Rs 2,50,000 / Rs 3,00,000
-    m = re.search(
-        r'(?:annual|family|gross|household)?\s*(?:family\s*)?income\b(?:[a-zA-Z\s,]{0,45}?)(?:must|should)?\s*(?:not\s*exceed|below|under|less\s+than|up\s+to|upto|is\s+less\s+than|ceiling\s+of|limit\s+(?:of\s+)?)?\s*(?:rs\.?|inr|₹)?\s*([0-9,]+)',
-        text_clean
-    )
-    if m:
-        val_str = m.group(1).replace(",", "").strip()
-        try:
-            val = int(val_str)
-            if val >= 10000:  # Sensible minimum annual income cap
-                return val
-        except ValueError:
-            pass
+    # Explicit statement of NO income limit
+    if "no income limit" in text_clean or "no income bar" in text_clean or "no ceiling on income" in text_clean or "without any income limit" in text_clean:
+        return 0
 
-    # Pattern 2: income in Lakhs (e.g. Rs 2.5 Lakh / 3 Lakh / 5 Lakh)
+    # Pattern 1: Monthly salary/income cap (annualize by * 12)
     m = re.search(
-        r'(?:annual|family|gross)?\s*(?:family\s*)?income\b(?:[a-zA-Z\s,]{0,45}?)(?:must|should)?\s*(?:not\s*exceed|below|under|less\s+than|up\s+to|upto)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|lac|lacs)',
-        text_clean
-    )
-    if m:
-        try:
-            val = int(float(m.group(1)) * 100000)
-            return val
-        except ValueError:
-            pass
-
-    # Pattern 3: gross monthly salary does not exceed Rs 50,000 (annualize to 12 * 50,000 = 600,000)
-    m = re.search(
-        r'monthly\s+(?:salary|income)\s*(?:does\s*not\s*exceed|below|under|less\s+than|up\s+to|upto)?\s*(?:rs\.?|inr|₹)?\s*([0-9,]+)',
+        r'monthly\s+(?:salary|income|earnings)\b[a-zA-Z\s,]{0,35}?(?:below|under|less\s+than|up\s+to|upto|not\s+exceeding|does\s*not\s*exceed)?\s*(?:rs\.?|inr|₹)?\s*([0-9,]+)',
         text_clean
     )
     if m:
         val_str = m.group(1).replace(",", "").strip()
         try:
             monthly_val = int(val_str)
-            if monthly_val > 0:
+            if 1000 <= monthly_val <= 200000:
                 return monthly_val * 12
+        except ValueError:
+            pass
+
+    # Pattern 2: Income in Lakhs with decimals/digits (e.g. ₹2.5 Lakh, Rs 8 Lakhs, ₹3.00 Lakhs, 1.20 lakh per annum)
+    m = re.search(
+        r'(?:annual|family|gross|household|parental)?\s*(?:family\s*)?income\b[a-zA-Z\s,]{0,45}?(?:should\s*not\s*be\s*more\s*than|must\s*not\s*exceed|not\s*exceeding|not\s*exceed|is\s*less\s*than|less\s*than|below|under|up\s*to|upto|within|ceiling\s*of|limit\s*(?:of\s*)?)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|lac|lacs)',
+        text_clean
+    )
+    if m:
+        try:
+            val = int(float(m.group(1)) * 100000)
+            if 10000 <= val <= 2500000:  # Sensible range for income caps
+                return val
+        except ValueError:
+            pass
+
+    # Pattern 3: Numeric Income in Rupee format (e.g. ₹8,00,000, Rs. 75000/-, Rs 2,50,000 per annum)
+    m = re.search(
+        r'(?:annual|family|gross|household|parental)?\s*(?:family\s*)?income\b[a-zA-Z\s,]{0,45}?(?:should\s*not\s*be\s*more\s*than|must\s*not\s*exceed|not\s*exceeding|not\s*exceed|is\s*less\s*than|less\s*than|below|under|up\s*to|upto|within|ceiling\s*of|limit\s*(?:of\s*)?)?\s*(?:rs\.?|inr|₹)\s*([0-9,]+)',
+        text_clean
+    )
+    if m:
+        val_str = m.group(1).replace(",", "").strip()
+        try:
+            val = int(val_str)
+            if 10000 <= val <= 2500000:
+                return val
+        except ValueError:
+            pass
+
+    # Pattern 4: Direct "income not exceeding [numeric] / below [numeric]"
+    m = re.search(
+        r'income\s+(?:is\s+)?(?:below|under|less\s+than|upto|up\s+to|not\s+exceeding|not\s+more\s+than|does\s*not\s*exceed)\s*(?:rs\.?|inr|₹)?\s*([0-9,]+)',
+        text_clean
+    )
+    if m:
+        val_str = m.group(1).replace(",", "").strip()
+        try:
+            val = int(val_str)
+            if 10000 <= val <= 2500000:
+                return val
+        except ValueError:
+            pass
+
+    # Pattern 5: Hindi text "वार्षिक आय ₹X से कम / अधिक न हो"
+    m = re.search(
+        r'(?:वार्षिक|पारिवारिक)?\s*आय\b[^\d]{0,25}?(?:₹|रुपये|रु\.?)?\s*([0-9,]+)',
+        text_clean
+    )
+    if m:
+        val_str = m.group(1).replace(",", "").strip()
+        try:
+            val = int(val_str)
+            if 10000 <= val <= 2500000:
+                return val
         except ValueError:
             pass
 
@@ -1024,7 +1057,7 @@ def transform_csv_record(row: dict) -> dict:
         "age_max": age_max,
         "gender": row.get("gender_applicable", "Female").strip(),
         "caste_categories": json.dumps(caste_categories),
-        "income_max": clean_int(row.get("max_income_limit"), 0),
+        "income_max": raw_income if raw_income > 0 else extract_income_cap(f"{name} {row.get('eligibility_criteria_text', '')} {row.get('scheme_benefits', '')}", default_income=0),
         "residence": row.get("residence_type", "All").strip(),
         "eligible_states": json.dumps(eligible_states),
         "requires_bpl": clean_bool(row.get("is_bpl_required"), False),
@@ -1063,6 +1096,10 @@ def transform_json_record(item: dict) -> dict:
         current_max=eff_max
     )
 
+    raw_income = clean_int(eligibility.get("max_income") or eligibility.get("income_max"), 0)
+    extracted_income = extract_income_cap(f"{name} {item.get('summary', '')} {item.get('benefits_text', '')}", default_income=0)
+    income_max = raw_income if raw_income > 0 else extracted_income
+
     return {
         "scheme_id": scheme_id,
         "name": name,
@@ -1082,7 +1119,7 @@ def transform_json_record(item: dict) -> dict:
         "age_max": age_max,
         "gender": eligibility.get("gender", "Female"),
         "caste_categories": json.dumps(["All"]),
-        "income_max": clean_int(eligibility.get("max_income"), 0),
+        "income_max": income_max,
         "residence": "All",
         "eligible_states": json.dumps(["All"]),
         "requires_bpl": clean_bool(eligibility.get("requires_bpl"), False),
@@ -1374,6 +1411,14 @@ def merge_and_deduplicate_schemes(records: list) -> list:
             )
             rec["age_min"] = new_min
             rec["age_max"] = new_max
+
+        # 4. Extract income cap from merged text if not already populated
+        cur_income = clean_int(rec.get("income_max"), 0)
+        if cur_income == 0:
+            combined_inc_text = f"{rec.get('name', '')} {rec.get('description', '')} {rec.get('eligibility_text', '')} {rec.get('benefits', '')}"
+            inferred_income = extract_income_cap(combined_inc_text, default_income=0)
+            if inferred_income > 0:
+                rec["income_max"] = inferred_income
 
     deduplicated = sorted(list(schemes_by_id.values()), key=lambda x: x.get("name", ""))
     print(f"✓ Deduplicated {len(records)} records into {len(deduplicated)} unique schemes ({collision_count} merge collision(s) resolved)")
