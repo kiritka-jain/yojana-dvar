@@ -639,6 +639,10 @@ def infer_age_bounds_from_content(
         elif "entrepreneur" in life_stage_tags:
             age_min, age_max = 18, 65
 
+    # Invariant: age_min must never exceed age_max
+    if age_min > age_max:
+        age_max = 100
+
     return age_min, age_max
 
 def extract_income_cap(text: str, default_income: int = 0) -> int:
@@ -903,10 +907,13 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
         row.get("Beneficiaries") or row.get("target_beneficiary") or
         row.get("beneficiary_type") or ""
     ).strip()
-    beneficiary_type = extract_specific_beneficiary_type(
-        f"{name} {raw_ben} {eligibility_text} {details} {tags}",
-        fallback=raw_ben if raw_ben else "Women & Girls"
-    )
+    if raw_ben and raw_ben not in ["Women & Girls", "Women"]:
+        beneficiary_type = raw_ben
+    else:
+        beneficiary_type = extract_specific_beneficiary_type(
+            f"{name} {raw_ben} {eligibility_text} {details} {tags}",
+            fallback=raw_ben if raw_ben else "Women & Girls"
+        )
 
     documents_required = (
         row.get("documents") or row.get("Documents Required") or 

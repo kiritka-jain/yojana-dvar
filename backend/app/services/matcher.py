@@ -134,6 +134,41 @@ class EligibilityMatcher:
         if is_intercaste_scheme and user_marital not in ["intercaste_marriage", "all"]:
             return False, 0, []
 
+        # 3.3 Restrictive Occupation & Beneficiary Hard Gate (TICKET-201)
+        user_occupation = (profile.occupation or "").strip().lower()
+        RESTRICTIVE_OCCUPATION_GATES = [
+            ("safai karamchari", ["daily wage labor", "other", "self-employed / artisan", "sanitation worker"]),
+            ("sanitation worker", ["daily wage labor", "other", "self-employed / artisan", "sanitation worker"]),
+            ("manual scavenger", ["daily wage labor", "other"]),
+            ("construction worker", ["daily wage labor", "construction worker"]),
+            ("building worker", ["daily wage labor"]),
+            ("bocw", ["daily wage labor"]),
+            ("beedi worker", ["daily wage labor", "self-employed / artisan", "other"]),
+            ("bidi worker", ["daily wage labor", "self-employed / artisan", "other"]),
+            ("handloom", ["self-employed / artisan", "daily wage labor"]),
+            ("weaver", ["self-employed / artisan", "daily wage labor"]),
+            ("street vendor", ["self-employed / artisan", "daily wage labor", "other"]),
+            ("svanidhi", ["self-employed / artisan", "daily wage labor", "other"]),
+            ("hawker", ["self-employed / artisan", "daily wage labor", "other"]),
+            ("anganwadi", ["salaried", "other"]),
+            ("asha worker", ["salaried", "other"]),
+            ("ex-servicem", []),
+            ("war widow", []),
+        ]
+
+        for keyword, allowed_occupations in RESTRICTIVE_OCCUPATION_GATES:
+            if keyword in scheme_full_text:
+                # Disqualify minors or explicit students from manual labor / trade schemes
+                if profile.age < 18 or user_life_stage == "student" or user_occupation == "student":
+                    return False, 0, []
+                # If specific allowed occupations are configured and user provided an occupation
+                if allowed_occupations and user_occupation:
+                    if not any(allowed in user_occupation for allowed in allowed_occupations):
+                        return False, 0, []
+                elif not allowed_occupations:
+                    # Schemes strictly for defense / ex-servicemen without matching status
+                    return False, 0, []
+
         # 4. State Coverage Check
         scheme_state = str(scheme.get("state", "All")).strip()
         eligible_states_raw = scheme.get("eligible_states", "[\"All\"]")
@@ -231,6 +266,12 @@ class EligibilityMatcher:
         # Income Targeting Boost (+10)
         if income_max > 0:
             score += 10
+
+        # Occupation Alignment Boost (+15)
+        if user_occupation and user_occupation not in ["other", ""]:
+            if user_occupation in scheme_full_text or (user_occupation == "student" and "student" in clean_tags):
+                score += 15
+                reasons.append(f"Targeted for your occupation category ('{profile.occupation}')")
             
         # Cap score at 100%
         final_score = min(score, 100)
