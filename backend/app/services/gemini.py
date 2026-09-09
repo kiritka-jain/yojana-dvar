@@ -146,12 +146,13 @@ Scheme Entitlement Details:
 
 Guardrails & Instructions:
 1. Tone: Warm, encouraging, empathetic, and plain-language.
-2. Advisory only: Do NOT guarantee official approval; state that the applicant meets the eligibility criteria and is encouraged to apply.
-3. Language: Generate the entire response strictly in {lang_name}.
-4. Document Checklist Note: If scheme is widow pension or marital assistance, explicitly highlight necessary certificates (e.g. Husband's Death Certificate or Marriage Certificate).
-5. Output Format: Return ONLY a valid JSON object matching this structure:
+2. Conciseness: The "summary" MUST be strictly 1–2 short, punchy sentences (under 40 words) directly stating what the beneficiary receives and why she qualifies. Do NOT write lengthy paragraphs.
+3. Advisory only: Do NOT guarantee official approval; state that the applicant meets the eligibility criteria and is encouraged to apply.
+4. Language: Generate the entire response strictly in {lang_name}.
+5. Document Checklist Note: If scheme is widow pension or marital assistance, explicitly highlight necessary certificates (e.g. Husband's Death Certificate or Marriage Certificate).
+6. Output Format: Return ONLY a valid JSON object matching this structure:
 {{
-  "summary": "Plain language explanation addressing the user directly on why she qualifies.",
+  "summary": "1-2 short, crystal-clear sentences (under 40 words) directly explaining what the applicant receives and why she qualifies.",
   "key_benefits": ["Key benefit 1", "Key benefit 2"],
   "documents_required": ["Document 1", "Document 2"],
   "next_steps": "Actionable instructions on where to apply online or offline."
@@ -239,14 +240,13 @@ Instructions:
             else:
                 profile_context_hi = f"आपकी आयु ({profile.age} वर्ष) और राज्य ({state_hi}) के आधार पर"
 
-            if desc_hi and desc_hi != benefits_hi:
+            if benefits_hi:
                 summary = (
-                    f"{profile_context_hi} आप '{name_hi}' के लिए उपयुक्त पात्र हैं। {desc_hi} "
-                    f"योजना के तहत मुख्य लाभ: {benefits_hi}"
+                    f"{profile_context_hi} आप '{name_hi}' के लिए उपयुक्त पात्र हैं। मुख्य लाभ: {benefits_hi}"
                 )
             else:
                 summary = (
-                    f"{profile_context_hi} आप '{name_hi}' के लिए उपयुक्त पात्र हैं। मुख्य लाभ: {benefits_hi}"
+                    f"{profile_context_hi} आप '{name_hi}' के लिए उपयुक्त पात्र हैं।"
                 )
 
             key_benefits = [
@@ -264,14 +264,13 @@ Instructions:
             else:
                 profile_context_en = f"Based on your profile (Age {profile.age}, {state_en}),"
 
-            if desc_en and desc_en != benefits_raw:
+            if benefits_raw:
                 summary = (
-                    f"{profile_context_en} you appear eligible for '{scheme_name_en}'. {desc_en} "
-                    f"Key entitlements include: {benefits_raw}"
+                    f"{profile_context_en} you appear eligible for '{scheme_name_en}'. Key entitlements include: {benefits_raw}"
                 )
             else:
                 summary = (
-                    f"{profile_context_en} you appear eligible for '{scheme_name_en}'. Key entitlements include: {benefits_raw}"
+                    f"{profile_context_en} you appear eligible for '{scheme_name_en}'."
                 )
 
             key_benefits = [

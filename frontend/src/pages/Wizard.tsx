@@ -927,7 +927,7 @@ export const Wizard: React.FC = () => {
                     isBpl: false,
                     title: t('incomeTierLow'),
                     desc: t('incomeTierLowDesc'),
-                    icon: '🌾',
+                    icon: '🪙',
                     isActive: (p: typeof profile) => p.income > 0 && p.income <= 150000 && !p.is_bpl,
                   },
                   {
@@ -936,7 +936,7 @@ export const Wizard: React.FC = () => {
                     isBpl: false,
                     title: t('incomeTierMid'),
                     desc: t('incomeTierMidDesc'),
-                    icon: '💼',
+                    icon: '💰',
                     isActive: (p: typeof profile) => p.income > 150000 && p.income <= 300000,
                   },
                   {
@@ -945,7 +945,7 @@ export const Wizard: React.FC = () => {
                     isBpl: false,
                     title: t('incomeTierHigh'),
                     desc: t('incomeTierHighDesc'),
-                    icon: '🏢',
+                    icon: '🏦',
                     isActive: (p: typeof profile) => p.income > 300000,
                   }
                 ].map((tier) => {

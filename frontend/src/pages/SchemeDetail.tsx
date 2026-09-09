@@ -141,6 +141,28 @@ function parseEligibilityPoints(eligibilityText?: string): string[] {
   return points.length > 0 ? points : [eligibilityText];
 }
 
+function condenseToShortSummary(text: string, maxSentences = 2, maxChars = 220): string {
+  if (!text) return '';
+  const cleaned = text
+    .replace(/\s+/g, ' ')
+    .replace(/^(The scheme\s*“?[^”"]*”?\s*was launched by|The scheme\s*“?[^”"]*”?\s*aims to|This scheme aims to|Under this scheme|यह योजना\s*|योजना के तहत\s*)/i, '')
+    .trim();
+  
+  const sentences = cleaned.match(/[^.!?।]+[.!?।]+/g) || [cleaned];
+  let result = sentences.slice(0, maxSentences).join(' ').trim();
+  
+  if (result.length > maxChars) {
+    result = result.substring(0, maxChars);
+    const lastSpace = result.lastIndexOf(' ');
+    if (lastSpace > 50) {
+      result = result.substring(0, lastSpace) + '...';
+    } else {
+      result = result + '...';
+    }
+  }
+  return result;
+}
+
 export const SchemeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
@@ -261,7 +283,7 @@ export const SchemeDetail: React.FC = () => {
     return getLocalizedSchemeField(scheme, 'description', siteLanguage);
   }, [scheme, siteLanguage]);
 
-  // Resilient fallback summary text utilizing native catalog description & benefits
+  // Concise, plain-language summary text (Ticket 3.1: Short 1-2 punchy sentences)
   const displaySummaryText = useMemo(() => {
     if (
       explanation?.summary &&
@@ -269,21 +291,22 @@ export const SchemeDetail: React.FC = () => {
       explanation.language === siteLanguage &&
       explanation.scheme_id === scheme?.scheme_id
     ) {
-      return explanation.summary;
+      return condenseToShortSummary(explanation.summary, 2, 220);
     }
     if (!scheme) return '';
 
     if (siteLanguage === 'hi') {
-      if (displayDescription && displayDescription !== displayBenefits) {
-        return `${displayName}: ${displayDescription} मुख्य लाभ: ${displayBenefits}`;
-      }
-      return `${displayName} के अंतर्गत पात्र लाभार्थियों को मुख्य लाभ प्रदान किए जाते हैं: ${displayBenefits}`;
+      const bestText = displayDescription && displayDescription !== displayBenefits 
+        ? displayDescription 
+        : displayBenefits;
+      return condenseToShortSummary(bestText, 2, 220);
     }
-    if (displayDescription && displayDescription !== displayBenefits) {
-      return `${displayName}: ${displayDescription} Key Entitlements: ${displayBenefits}`;
-    }
-    return `Under ${displayName}, eligible beneficiaries receive: ${displayBenefits}`;
-  }, [scheme, displayName, displayDescription, displayBenefits, explanation, siteLanguage]);
+
+    const bestText = displayDescription && displayDescription !== displayBenefits 
+      ? displayDescription 
+      : displayBenefits;
+    return condenseToShortSummary(bestText, 2, 220);
+  }, [scheme, displayDescription, displayBenefits, explanation, siteLanguage]);
 
   // Audio Narration Handler
   const handleAudioNarration = () => {
