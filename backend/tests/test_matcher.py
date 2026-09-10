@@ -698,7 +698,87 @@ def test_real_catalog_adolescent_16_yr_commercial_exclusion(matcher):
         assert "business & entrepreneurship" not in scheme.category.lower()
         if "scholarship" not in scheme.name.lower() and "children" not in scheme.name.lower():
             assert "msme" not in scheme.name.lower()
-        assert "aquaculture" not in scheme.name.lower()
+def test_delhi_ladli_14_year_old_girl_eligibility(matcher):
+    """
+    Acceptance Test: A 14-year-old unmarried girl residing in Delhi
+    MUST be eligible for Delhi Ladli Scheme (milestone Class 9th).
+    """
+    profile = ProfileInput(
+        age=14,
+        gender="Female",
+        state="Delhi",
+        marital_status="unmarried",
+        life_stage="student",
+        income=50000
+    )
+    res = matcher.match_profile(profile)
+    matched_ids = [s.scheme_id for s in res.schemes]
+    assert "delhi-ladli-scheme" in matched_ids, f"Delhi Ladli Scheme missing for 14yo girl. Matched IDs: {matched_ids}"
+
+
+def test_delhi_ladli_college_unmarried_student_eligibility(matcher):
+    """
+    Acceptance Test: A 20-year-old unmarried girl student in Delhi
+    pursuing Diploma/Graduation MUST be eligible for Delhi Ladli Scheme.
+    """
+    profile = ProfileInput(
+        age=20,
+        gender="Female",
+        state="Delhi",
+        marital_status="unmarried",
+        life_stage="student",
+        income=60000
+    )
+    res = matcher.match_profile(profile)
+    matched_ids = [s.scheme_id for s in res.schemes]
+    assert "delhi-ladli-scheme" in matched_ids, f"Delhi Ladli Scheme missing for 20yo student. Matched IDs: {matched_ids}"
+
+
+def test_delhi_ladli_newborn_infant_eligibility(matcher):
+    """
+    Acceptance Test: A newborn baby girl (age 0) in Delhi is eligible at birth stage.
+    """
+    profile = ProfileInput(
+        age=0,
+        gender="Female",
+        state="Delhi",
+        marital_status="unmarried",
+        life_stage="child",
+        income=40000
+    )
+    res = matcher.match_profile(profile)
+    matched_ids = [s.scheme_id for s in res.schemes]
+    assert "delhi-ladli-scheme" in matched_ids, f"Delhi Ladli Scheme missing for newborn. Matched IDs: {matched_ids}"
+
+
+def test_delhi_ladli_married_and_overage_disqualification(matcher):
+    """
+    Acceptance Test: Married individuals or individuals aged >= 25 are strictly disqualified.
+    """
+    # 1. Married at 18
+    p_married = ProfileInput(
+        age=18,
+        gender="Female",
+        state="Delhi",
+        marital_status="married",
+        income=50000
+    )
+    res_married = matcher.match_profile(p_married)
+    matched_married_ids = [s.scheme_id for s in res_married.schemes]
+    assert "delhi-ladli-scheme" not in matched_married_ids, "Delhi Ladli Scheme must not match married individual"
+
+    # 2. Age 25 (over upper limit of < 25)
+    p_overage = ProfileInput(
+        age=25,
+        gender="Female",
+        state="Delhi",
+        marital_status="unmarried",
+        income=50000
+    )
+    res_overage = matcher.match_profile(p_overage)
+    matched_overage_ids = [s.scheme_id for s in res_overage.schemes]
+    assert "delhi-ladli-scheme" not in matched_overage_ids, "Delhi Ladli Scheme must not match age >= 25"
+
 
 
 

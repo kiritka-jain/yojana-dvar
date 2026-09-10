@@ -146,10 +146,15 @@ def test_kaggle_dataset_extracted_constraints():
     assert ssy["age_min"] == 0
     assert ssy["age_max"] == 10
 
-    # 3. Ladli Behna
-    ladli = schemes_by_id.get("mukhyamantri-ladli-behna-yojana") or schemes_by_id.get("chief-minister-ladli-behna-yojana") or schemes_by_id.get("delhi-ladli-scheme")
+    # 3. Ladli Behna & Delhi Ladli
+    ladli = schemes_by_id.get("mukhyamantri-ladli-behna-yojana") or schemes_by_id.get("chief-minister-ladli-behna-yojana")
     assert ladli is not None
     assert ladli["age_max"] >= 18
+
+    delhi_ladli = schemes_by_id.get("delhi-ladli-scheme")
+    assert delhi_ladli is not None
+    assert delhi_ladli["age_min"] == 0
+    assert delhi_ladli["age_max"] == 24
 
     # 4. Majhi Ladki
     ladki = schemes_by_id.get("mukhyamantri-majhi-ladki-bahin-yojana") or schemes_by_id.get("chief-ministers-majhi-ladki-bahin-scheme")

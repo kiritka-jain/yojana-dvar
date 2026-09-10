@@ -402,6 +402,16 @@ class EligibilityMatcher:
         if is_intercaste_scheme and user_marital not in ["intercaste_marriage", "all"]:
             return False, 0, []
 
+        # (c) Exclusive Unmarried Girl Child Scheme Gate:
+        scheme_id = str(scheme.get("scheme_id", "")).strip().lower()
+        is_unmarried_exclusive_scheme = (
+            "unmarried girl" in scheme_full_text or 
+            "unmarried daughter" in scheme_full_text or 
+            scheme_id in ["delhi-ladli-scheme", "delhi-ladli-yojna"]
+        )
+        if is_unmarried_exclusive_scheme and user_marital in ["married", "intercaste_marriage", "widow", "divorced"]:
+            return False, 0, []
+
         # 3.3 Restrictive Occupation & Beneficiary Hard Gate (TICKET-201)
         user_occupation = (profile.occupation or "").strip().lower()
 

@@ -54,6 +54,8 @@ MALE_EXCLUSIVE_KEYWORDS = [
 # Audited Explicit Scheme Age Bounds (Ticket YD-DATA-2.1 / TICKET-101)
 SCHEME_EXPLICIT_AGE_BOUNDS = {
     # Student / Education / Youth schemes
+    "delhi-ladli-scheme": (0, 24),
+    "delhi-ladli-yojna": (0, 24),
     "gaura-devi-kanya-dhan-yojana": (14, 22),
     "moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme": (17, 25),
     "mukhyamantri-kanya-utthan-yojana": (0, 25),
@@ -1119,6 +1121,10 @@ def infer_age_bounds_from_content(
     """
     if life_stage_tags is None:
         life_stage_tags = []
+
+    slug = slugify(name)
+    if slug in SCHEME_EXPLICIT_AGE_BOUNDS:
+        return SCHEME_EXPLICIT_AGE_BOUNDS[slug]
 
     age_min = current_min
     age_max = current_max
@@ -2193,6 +2199,27 @@ def merge_and_deduplicate_schemes(records: list) -> list:
             )
             rec["age_min"] = new_min
             rec["age_max"] = new_max
+
+        # Enrich specific landmark schemes with audited multi-stage milestone text
+        if rec_id in ["delhi-ladli-scheme", "delhi-ladli-yojna"]:
+            rec["beneficiary_type"] = "Students & Scholars, Girl Child"
+            rec["benefits"] = (
+                "Financial assistance is provided in the form of term deposits sanctioned across 7 milestone stages: "
+                "1. Within 1 year of birth (Institutional Delivery: ₹ 11,000/- or Home Delivery: ₹ 10,000/-); "
+                "2. On admission in Class 1st: ₹ 5,000/-; "
+                "3. On admission in Class 6th: ₹ 5,000/-; "
+                "4. On admission in Class 9th: ₹ 5,000/-; "
+                "5. On passing Class 10th & admission in Class 11th/12th: ₹ 5,000/-; "
+                "6. On admission in Polytechnic / ITI after Class 10th; "
+                "7. On admission in Diploma or Graduation courses. "
+                "Maturity amount is released to the unmarried girl on attaining maturity."
+            )
+            rec["eligibility_text"] = (
+                "The girl should be born in Delhi as shown by birth certificate issued by MCD/NDMC. "
+                "The applicant family must be a bonafide resident of NCT of Delhi for at least three years preceding date of application. "
+                "Annual family income must not exceed ₹ 1,00,000. Beneficiary must be an unmarried girl child / student aged up to 24 years (under 25). "
+                "School / college must be recognized by Delhi Govt. or MCD/NDMC. Registration open at birth, Class I, VI, IX, XI, XII, Polytechnic/ITI, Diploma/Graduation."
+            )
 
         # 4. Extract income cap from merged text if not already populated
         cur_income = clean_int(rec.get("income_max"), 0)
