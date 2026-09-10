@@ -576,6 +576,92 @@ function parseEligibilityPoints(eligibilityText?: string): string[] {
   return points.length > 0 ? points : [eligibilityText];
 }
 
+function formatCasteCategories(rawCaste: string | string[] | undefined, lang: 'en' | 'hi' = 'en'): string {
+  if (!rawCaste) {
+    return lang === 'hi' ? 'सभी सामाजिक वर्ग (All Categories)' : 'All Categories (General, SC, ST, OBC)';
+  }
+
+  let categories: string[] = [];
+  if (Array.isArray(rawCaste)) {
+    categories = rawCaste;
+  } else if (typeof rawCaste === 'string') {
+    const trimmed = rawCaste.trim();
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) {
+          categories = parsed;
+        }
+      } catch {
+        categories = [trimmed.replace(/[\[\]"']/g, '')];
+      }
+    } else {
+      categories = trimmed.split(/[,/]/).map((s) => s.trim()).filter(Boolean);
+    }
+  }
+
+  const cleanCats = categories.map((c) => String(c).trim()).filter(Boolean);
+  if (cleanCats.length === 0 || cleanCats.some((c) => c.toLowerCase() === 'all')) {
+    return lang === 'hi' ? 'सभी सामाजिक वर्ग (All Categories)' : 'All Categories (General, SC, ST, OBC)';
+  }
+
+  const casteMapHi: Record<string, string> = {
+    SC: 'अनुसूचित जाति (SC)',
+    ST: 'अनुसूचित जनजाति (ST)',
+    OBC: 'अन्य पिछड़ा वर्ग (OBC)',
+    General: 'सामान्य वर्ग (General)',
+    EWS: 'आर्थिक कमजोर वर्ग (EWS)',
+    Minority: 'अल्पसंख्यक वर्ग (Minority)'
+  };
+
+  if (lang === 'hi') {
+    const hiCats = cleanCats.map((c) => casteMapHi[c] || c);
+    return hiCats.length === 1 ? `केवल ${hiCats[0]}` : hiCats.join(' / ');
+  }
+
+  return cleanCats.length === 1 ? `${cleanCats[0]} Only` : `${cleanCats.join(' & ')} Only`;
+}
+
+function formatAgeBounds(ageMin: number | undefined, ageMax: number | undefined, lang: 'en' | 'hi' = 'en'): string {
+  const min = ageMin ?? 0;
+  const max = ageMax ?? 100;
+
+  if (min === 0 && max >= 100) {
+    return lang === 'hi' ? 'सभी आयु वर्ग पात्र (All Ages)' : 'All Ages Eligible';
+  }
+  if (min === 0 && max <= 10) {
+    return lang === 'hi' ? `0 से ${max} वर्ष (बालिकाएं व शिशु)` : `0 – ${max} Yrs (Infants & Children)`;
+  }
+  if (min === 0 && max < 100) {
+    return lang === 'hi' ? `0 से ${max} वर्ष (बालिकाएं व किशोरियां)` : `0 – ${max} Yrs (Girls & Youth)`;
+  }
+  if (min >= 18 && max >= 100) {
+    return lang === 'hi' ? '18+ वर्ष (वयस्क महिलाएं)' : '18+ Years (Adults)';
+  }
+  if (min >= 60) {
+    return lang === 'hi' ? `${min}+ वर्ष (वरिष्ठ नागरिक)` : `${min}+ Years (Senior Citizens)`;
+  }
+  return lang === 'hi' ? `${min} से ${max} वर्ष` : `${min} – ${max} Yrs`;
+}
+
+function formatResidenceScope(residence: string | undefined, lang: 'en' | 'hi' = 'en'): string {
+  const res = (residence || 'All').trim().toLowerCase();
+  if (res === 'rural') {
+    return lang === 'hi' ? 'केवल ग्रामीण क्षेत्र (Rural Only)' : 'Rural Areas Only';
+  }
+  if (res === 'urban') {
+    return lang === 'hi' ? 'केवल शहरी क्षेत्र (Urban Only)' : 'Urban / Municipal Areas Only';
+  }
+  return lang === 'hi' ? 'ग्रामीण व शहरी दोनों (All Areas)' : 'Rural & Urban (All Areas)';
+}
+
+function formatIncomeCap(incomeMax: number | undefined, lang: 'en' | 'hi' = 'en'): string {
+  if (incomeMax && incomeMax > 0) {
+    return `≤ ₹${incomeMax.toLocaleString('en-IN')}`;
+  }
+  return lang === 'hi' ? 'कोई अधिकतम आय सीमा नहीं (No Limit)' : 'No Maximum Income Limit';
+}
+
 function formatCrispQuickSummary(text: string, maxSentences = 4, lang: 'en' | 'hi' = 'en'): string {
   if (!text) return '';
   const cleaned = text
@@ -1209,32 +1295,20 @@ export const SchemeDetail: React.FC = () => {
   }, [documentsList, readyDocsCount]);
 
   // Localized Snapshot Attributes
+  const displayAge = useMemo(() => {
+    return formatAgeBounds(scheme?.age_min, scheme?.age_max, siteLanguage);
+  }, [scheme?.age_min, scheme?.age_max, siteLanguage]);
+
+  const displayIncome = useMemo(() => {
+    return formatIncomeCap(scheme?.income_max, siteLanguage);
+  }, [scheme?.income_max, siteLanguage]);
+
   const displayCaste = useMemo(() => {
-    if (!scheme?.caste_categories || scheme.caste_categories.toLowerCase() === 'all') {
-      return siteLanguage === 'hi' ? 'सभी वर्ग (All Categories)' : 'All Categories';
-    }
-    if (siteLanguage === 'hi') {
-      return scheme.caste_categories
-        .replace(/General/gi, 'सामान्य')
-        .replace(/SC/gi, 'अनुसूचित जाति (SC)')
-        .replace(/ST/gi, 'अनुसूचित जनजाति (ST)')
-        .replace(/OBC/gi, 'अन्य पिछड़ा वर्ग (OBC)')
-        .replace(/Minority/gi, 'अल्पसंख्यक');
-    }
-    return scheme.caste_categories;
+    return formatCasteCategories(scheme?.caste_categories, siteLanguage);
   }, [scheme?.caste_categories, siteLanguage]);
 
   const displayResidence = useMemo(() => {
-    if (!scheme?.residence || scheme.residence.toLowerCase() === 'both' || scheme.residence.toLowerCase() === 'all') {
-      return siteLanguage === 'hi' ? 'ग्रामीण व शहरी (Rural & Urban)' : 'Rural & Urban';
-    }
-    if (scheme.residence.toLowerCase() === 'rural') {
-      return siteLanguage === 'hi' ? 'केवल ग्रामीण (Rural)' : 'Rural Only';
-    }
-    if (scheme.residence.toLowerCase() === 'urban') {
-      return siteLanguage === 'hi' ? 'केवल शहरी (Urban)' : 'Urban Only';
-    }
-    return scheme.residence;
+    return formatResidenceScope(scheme?.residence, siteLanguage);
   }, [scheme?.residence, siteLanguage]);
 
   const displayGender = useMemo(() => {
@@ -1252,53 +1326,148 @@ export const SchemeDetail: React.FC = () => {
   // Structured localized eligibility points for Tab 2
   const localizedEligibilityPoints = useMemo(() => {
     if (!scheme) return [];
+    const minA = scheme.age_min ?? 0;
+    const maxA = scheme.age_max ?? 100;
+    const isUnconstrainedAge = minA === 0 && maxA >= 100;
+
     if (siteLanguage === 'hi') {
       const points: string[] = [];
       
-      // Age condition
-      if (scheme.age_min !== undefined || scheme.age_max !== undefined) {
-        const minA = scheme.age_min ?? 0;
-        const maxA = scheme.age_max ?? 100;
+      // 1. Age condition
+      if (isUnconstrainedAge) {
+        points.push('आयु पात्रता: यह योजना सभी आयु वर्ग की पात्र बालिकाओं एवं महिलाओं के लिए खुली है।');
+      } else if (minA === 0 && maxA <= 10) {
+        points.push(`आयु सीमा: 0 से ${maxA} वर्ष तक की नवजात बालिकाएं एवं छोटी बच्चियां पात्र हैं।`);
+      } else if (minA >= 18 && maxA >= 100) {
+        points.push('आयु सीमा: 18 वर्ष या उससे अधिक आयु की वयस्क महिलाएं पात्र हैं।');
+      } else if (minA >= 60) {
+        points.push(`आयु सीमा: ${minA} वर्ष या उससे अधिक आयु की वरिष्ठ नागरिक महिलाएं पात्र हैं।`);
+      } else {
         points.push(`आयु सीमा: आवेदक की आयु ${minA} से ${maxA} वर्ष के मध्य होनी चाहिए।`);
       }
 
-      // Gender & Target Group
-      if (scheme.gender && scheme.gender.toLowerCase() === 'female') {
-        points.push(`लिंग पात्रता: यह योजना विशेष रूप से महिला लाभार्थियों एवं बालिकाओं के लिए है।`);
+      // 2. Gender & Target Group
+      if (!scheme.gender || scheme.gender.toLowerCase() === 'female') {
+        points.push('लिंग पात्रता: यह योजना विशेष रूप से महिला लाभार्थियों एवं बालिकाओं के कल्याण हेतु समर्पित है।');
+      } else {
+        points.push('लिंग पात्रता: सभी पात्र नागरिक (महिला व पुरुष) इस योजना के अंतर्गत लाभ ले सकते हैं।');
       }
 
-      // State Residence
+      // 3. State Residence / Domicile
       if (isCentral) {
-        points.push(`निवास पात्रता: संपूर्ण भारत के सभी राज्यों एवं केंद्र शासित प्रदेशों की नागरिक पात्र हैं।`);
+        points.push('निवास दायरा: संपूर्ण भारत (सभी 28 राज्यों व 8 केंद्र शासित प्रदेशों) की स्थायी निवासी पात्र हैं।');
       } else {
-        points.push(`निवास पात्रता: आवेदक ${getStateDisplayName(scheme.state, 'hi')} राज्य की स्थायी / मूल निवासी होनी चाहिए।`);
+        points.push(`मूल निवास: आवेदक ${getStateDisplayName(scheme.state, 'hi')} राज्य की स्थायी / मूल निवासी होनी चाहिए।`);
       }
 
-      // Income limit
+      // 4. Area Scope (Rural/Urban)
+      const resLower = (scheme.residence || 'All').trim().toLowerCase();
+      if (resLower === 'rural') {
+        points.push('क्षेत्रीय दायरा: यह योजना केवल ग्रामीण क्षेत्रों (ग्राम पंचायत / गांव) के निवासियों हेतु है।');
+      } else if (resLower === 'urban') {
+        points.push('क्षेत्रीय दायरा: यह योजना केवल शहरी स्थानीय निकायों (नगर निगम / नगर पालिका) के निवासियों हेतु है।');
+      }
+
+      // 5. Income limit
       if (scheme.income_max && scheme.income_max > 0) {
-        points.push(`आय सीमा: पारिवारिक वार्षिक आय ₹${scheme.income_max.toLocaleString('en-IN')} से अधिक नहीं होनी चाहिए।`);
+        points.push(`वार्षिक आय सीमा: परिवार की कुल वार्षिक आय ₹${scheme.income_max.toLocaleString('en-IN')} से कम या बराबर होनी चाहिए।`);
       } else {
-        points.push(`आय सीमा: कोई अनिवार्य अधिकतम आय सीमा प्रतिबंध नहीं है।`);
+        points.push('आय सीमा: इस योजना के लिए कोई अनिवार्य अधिकतम आय सीमा प्रतिबंध नहीं है।');
       }
 
-      // Priority criteria
+      // 6. Social Category / Caste
+      const casteDisplay = formatCasteCategories(scheme.caste_categories, 'hi');
+      if (casteDisplay.includes('केवल')) {
+        points.push(`सामाजिक वर्ग: यह योजना विशेष रूप से ${casteDisplay} के आवेदकों के लिए आरक्षित / लक्षित है।`);
+      }
+
+      // 7. Priority criteria
       if (scheme.requires_bpl) {
-        points.push(`राशन कार्ड: बीपीएल (BPL), अंत्योदय अथवा आर्थिक रूप से कमजोर वर्ग (EWS) परिवारों को प्राथमिकता दी जाती है।`);
+        points.push('आर्थिक प्राथमिकता: बीपीएल (BPL), अंत्योदय (AAY) अथवा आर्थिक रूप से कमजोर वर्ग (EWS) परिवारों को प्राथमिकता दी जाती है।');
       }
       if (scheme.requires_disability) {
-        points.push(`दिव्यांगता श्रेणी: 40% या अधिक दिव्यांगता (UDID कार्ड धारक) महिला लाभार्थियों के लिए विशेष सहायता उपलब्ध है।`);
+        points.push('दिव्यांगता श्रेणी: 40% या अधिक दिव्यांगता (UDID कार्ड धारक) लाभार्थियों के लिए विशेष प्रावधान व प्राथमिकता उपलब्ध है।');
       }
 
-      // Append any specific additional lines if present in catalog eligibility text
-      const rawPoints = parseEligibilityPoints(scheme.eligibility_text);
-      if (rawPoints.length > 0 && points.length <= 2) {
-        points.push(...rawPoints);
-      }
+      // Append catalog eligibility text narrative bullet points
+      const rawPoints = parseEligibilityPoints(scheme.eligibility_text_hi || scheme.eligibility_text);
+      rawPoints.forEach((p) => {
+        if (p && p.length > 8 && !points.some((existing) => existing.includes(p.substring(0, 20)))) {
+          points.push(p);
+        }
+      });
+
       return points;
     }
 
-    // English Fallback
-    return parseEligibilityPoints(scheme.eligibility_text);
+    // English Language Points
+    const points: string[] = [];
+
+    // 1. Age condition
+    if (isUnconstrainedAge) {
+      points.push('Age Criterion: Open to female beneficiaries across all age groups.');
+    } else if (minA === 0 && maxA <= 10) {
+      points.push(`Age Limit: Open to newborn baby girls and female children aged 0 to ${maxA} years.`);
+    } else if (minA >= 18 && maxA >= 100) {
+      points.push('Age Limit: Applicant must be an adult woman aged 18 years and above.');
+    } else if (minA >= 60) {
+      points.push(`Age Limit: Applicant must be a senior citizen aged ${minA} years and above.`);
+    } else {
+      points.push(`Age Limit: Applicant must be between ${minA} and ${maxA} years of age.`);
+    }
+
+    // 2. Gender & Target Group
+    if (!scheme.gender || scheme.gender.toLowerCase() === 'female') {
+      points.push('Gender Eligibility: Exclusively dedicated to women beneficiaries and girl children.');
+    } else {
+      points.push('Gender Eligibility: Open to all eligible citizens (Men & Women).');
+    }
+
+    // 3. State Residence / Domicile
+    if (isCentral) {
+      points.push('Domicile Scope: Resident Indian citizens across all 28 States & 8 Union Territories.');
+    } else {
+      points.push(`State Domicile: Applicant must be a permanent resident / domicile holder of ${scheme.state}.`);
+    }
+
+    // 4. Area Scope (Rural/Urban)
+    const resLower = (scheme.residence || 'All').trim().toLowerCase();
+    if (resLower === 'rural') {
+      points.push('Area Requirement: Strictly restricted to rural areas (Gram Panchayats / Villages).');
+    } else if (resLower === 'urban') {
+      points.push('Area Requirement: Restricted to urban local body areas (Municipalities / Corporations).');
+    }
+
+    // 5. Income limit
+    if (scheme.income_max && scheme.income_max > 0) {
+      points.push(`Income Ceiling: Total annual family income must not exceed ₹${scheme.income_max.toLocaleString('en-IN')}.`);
+    } else {
+      points.push('Income Limit: No mandatory maximum family income limit is imposed.');
+    }
+
+    // 6. Social Category / Caste
+    const casteDisplay = formatCasteCategories(scheme.caste_categories, 'en');
+    if (casteDisplay.includes('Only')) {
+      points.push(`Social Category: Targeted specifically for ${casteDisplay}.`);
+    }
+
+    // 7. Priority criteria
+    if (scheme.requires_bpl) {
+      points.push('Economic Priority: Prioritizes Below Poverty Line (BPL) / Antyodaya / EWS ration cardholders.');
+    }
+    if (scheme.requires_disability) {
+      points.push('Special Assistance: Benchmark disability of 40%+ (UDID Card) qualifies for targeted benefits.');
+    }
+
+    // Append narrative bullet points
+    const rawPoints = parseEligibilityPoints(scheme.eligibility_text);
+    rawPoints.forEach((p) => {
+      if (p && p.length > 8 && !points.some((existing) => existing.toLowerCase().includes(p.substring(0, 20).toLowerCase()))) {
+        points.push(p);
+      }
+    });
+
+    return points;
   }, [scheme, siteLanguage, isCentral]);
 
   // Loading Skeleton State
@@ -1604,8 +1773,8 @@ export const SchemeDetail: React.FC = () => {
                   <Calendar className="w-3.5 h-3.5 text-saffron-600" />
                   <span>{t('detailAgeLimit')}</span>
                 </div>
-                <div className="font-bold text-charcoal-900 text-sm">
-                  {scheme.age_min ?? 0} – {scheme.age_max ?? 100} {siteLanguage === 'hi' ? 'वर्ष' : 'Yrs'}
+                <div className="font-bold text-charcoal-900 text-sm" title={displayAge}>
+                  {displayAge}
                 </div>
               </div>
 
@@ -1614,10 +1783,8 @@ export const SchemeDetail: React.FC = () => {
                   <IndianRupee className="w-3.5 h-3.5 text-forest-600" />
                   <span>{t('detailIncomeLimit')}</span>
                 </div>
-                <div className="font-bold text-forest-700 text-sm">
-                  {scheme.income_max && scheme.income_max > 0 
-                    ? `≤ ₹${scheme.income_max.toLocaleString('en-IN')}` 
-                    : t('detailNoIncomeLimit')}
+                <div className="font-bold text-forest-700 text-sm" title={displayIncome}>
+                  {displayIncome}
                 </div>
               </div>
 
@@ -1626,7 +1793,7 @@ export const SchemeDetail: React.FC = () => {
                   <Tag className="w-3.5 h-3.5 text-saffron-600" />
                   <span>{t('detailCaste')}</span>
                 </div>
-                <div className="font-bold text-charcoal-900 text-sm line-clamp-1">
+                <div className="font-bold text-charcoal-900 text-sm line-clamp-1" title={displayCaste}>
                   {displayCaste}
                 </div>
               </div>
@@ -1636,7 +1803,7 @@ export const SchemeDetail: React.FC = () => {
                   <MapPin className="w-3.5 h-3.5 text-saffron-600" />
                   <span>{t('detailResidence')}</span>
                 </div>
-                <div className="font-bold text-charcoal-900 text-sm">
+                <div className="font-bold text-charcoal-900 text-sm" title={displayResidence}>
                   {displayResidence}
                 </div>
               </div>
@@ -1644,10 +1811,21 @@ export const SchemeDetail: React.FC = () => {
 
             {/* Special Eligibility Priority Badges */}
             <div className="flex flex-wrap items-center gap-2 pt-1">
+              {isCentral ? (
+                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-teal-50 text-teal-900 border border-teal-200 flex items-center gap-1.5">
+                  <span>🏛️</span>
+                  <span>{siteLanguage === 'hi' ? 'अखिल भारतीय योजना (Central)' : 'All India Scheme (Central)'}</span>
+                </span>
+              ) : (
+                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-900 border border-indigo-200 flex items-center gap-1.5">
+                  <span>📍</span>
+                  <span>{siteLanguage === 'hi' ? `${getStateDisplayName(scheme.state, 'hi')} राज्य योजना` : `${scheme.state} State Scheme`}</span>
+                </span>
+              )}
               {scheme.requires_bpl && (
                 <span className="px-3 py-1 rounded-xl text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-700" />
-                  <span>{siteLanguage === 'hi' ? 'बीपीएल / अंत्योदय कार्ड धारक प्राथमिकता' : 'BPL / Antyodaya Priority'}</span>
+                  <span>{siteLanguage === 'hi' ? 'बीपीएल / अंत्योदय प्राथमिकता' : 'BPL / Antyodaya Priority'}</span>
                 </span>
               )}
               {scheme.requires_disability && (
