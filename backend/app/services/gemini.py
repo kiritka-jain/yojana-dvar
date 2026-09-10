@@ -148,7 +148,12 @@ Scheme Entitlement Details:
 
 Guardrails & Instructions:
 1. Tone: Warm, encouraging, empathetic, and plain-language.
-2. Conciseness: The "summary" MUST be strictly 1–2 short, punchy sentences (under 40 words) directly stating what the beneficiary receives and why she qualifies. Do NOT write lengthy paragraphs.
+2. Quick Summary Structure (Mandatory 3–4 Sentences): The "summary" MUST be strictly 3 to 4 short, crisp, and complete sentences (approx. 60–90 words) providing a comprehensive yet easy-to-understand overview:
+   - Sentence 1 (Objective): What the scheme is and its core welfare objective.
+   - Sentence 2 (Eligibility / Target): Who specifically qualifies based on the applicant's demographic profile and criteria.
+   - Sentence 3 (Core Benefits): The exact financial incentive, subsidy, pension, or welfare support provided.
+   - Sentence 4 (Next Step / Channel): Actionable guidance on how and where to apply (via official portal {apply_link} or nearest CSC/nodal office).
+   Ensure every sentence is grammatically complete and ends with proper terminal punctuation ('.' in English, '।' in Hindi). Do NOT use bullet points, hanging clauses, or ellipsis.
 3. Advisory only: Do NOT guarantee official approval; state that the applicant meets the eligibility criteria and is encouraged to apply.
 4. Language: Generate the entire response strictly in {lang_name}.
 5. Document Checklist & Statutory Requirements:
@@ -156,7 +161,7 @@ Guardrails & Instructions:
    - If applicant is under 18 years (minor child/student): Under the Child & Adolescent Labour Act 2016 and Indian Contract Act 1872, explain that this is an educational/welfare benefit for the child, and application/disbursement is facilitated via the parent or legal guardian.
 6. Output Format: Return ONLY a valid JSON object matching this structure:
 {{
-  "summary": "1-2 short, crystal-clear sentences (under 40 words) directly explaining what the applicant receives and why she qualifies.",
+  "summary": "3-4 short, crisp, and complete sentences directly explaining the scheme objective, qualification, tangible benefits, and application step.",
   "key_benefits": ["Key benefit 1", "Key benefit 2"],
   "documents_required": ["Document 1", "Document 2"],
   "next_steps": "Actionable instructions on where to apply online via the official portal ({apply_link}) or offline at the nearest nodal office/CSC."
@@ -206,9 +211,9 @@ Instructions:
         return json.loads(cleaned.strip())
 
     def _generate_fallback_explanation(self, scheme: Dict[str, Any], profile: ProfileInput, lang: str) -> ExplainResponse:
-        """Generates dynamic catalog-backed explanation when Gemini API is unavailable or rate-limited."""
+        """Generates dynamic catalog-backed 3-4 sentence crisp explanation when Gemini API is unavailable or rate-limited."""
         scheme_name_en = scheme.get("name", "Welfare Scheme")
-        desc_en = (scheme.get("description") or "").strip()
+        desc_en = _trim_text(scheme.get("description"), 250)
         benefits_raw = scheme.get("benefits", "Government welfare benefits and financial support.")
         docs_raw = scheme.get("documents_required", "Aadhaar Card, Bank Account Details, Identity Proof")
         app_process = (scheme.get("application_process") or "").strip()
@@ -246,14 +251,29 @@ Instructions:
             else:
                 profile_context_hi = f"आपकी आयु ({profile.age} वर्ष) और राज्य ({state_hi}) के आधार पर"
 
-            if benefits_hi:
-                summary = (
-                    f"{profile_context_hi} आप '{name_hi}' के लिए उपयुक्त पात्र हैं। मुख्य लाभ: {benefits_hi}"
-                )
+            # Sentence 1: Scheme Objective
+            clean_desc_hi = _trim_text(desc_hi, 200).rstrip("।.,; ") if desc_hi else ""
+            if clean_desc_hi and not clean_desc_hi.startswith(name_hi):
+                s1_hi = f"'{name_hi}' एक प्रमुख सरकारी योजना है जिसका उद्देश्य {clean_desc_hi} प्रदान करना है।"
             else:
-                summary = (
-                    f"{profile_context_hi} आप '{name_hi}' के लिए उपयुक्त पात्र हैं।"
-                )
+                s1_hi = f"'{name_hi}' {state_hi} के नागरिकों के कल्याण एवं सशक्तिकरण हेतु संचालित एक प्रमुख सरकारी योजना है।"
+            if not s1_hi.rstrip().endswith(("।", "!", "?")):
+                s1_hi = s1_hi.rstrip(".,;") + "।"
+
+            # Sentence 2: Qualification
+            s2_hi = f"{profile_context_hi} आप इस योजना की प्राथमिक पात्रता शर्तों को पूरा करते हैं।"
+
+            # Sentence 3: Key Benefits
+            clean_ben_hi = _trim_text(benefits_hi, 200).rstrip("।;,.")
+            s3_hi = f"मुख्य लाभ: {clean_ben_hi}।"
+
+            # Sentence 4: Application Channel & Guidance
+            if profile.age < 18:
+                s4_hi = f"18 वर्ष से कम आयु के लिए आवेदन माता-पिता/अभिभावक के माध्यम से आधिकारिक पोर्टल ({apply_url}) अथवा नजदीकी सेवा केंद्र पर किया जा सकता है।"
+            else:
+                s4_hi = f"इच्छुक आवेदक आवश्यक दस्तावेजों सहित आधिकारिक पोर्टल ({apply_url}) अथवा नजदीकी जन सेवा केंद्र (CSC) के माध्यम से आवेदन कर सकते हैं।"
+
+            summary = f"{s1_hi} {s2_hi} {s3_hi} {s4_hi}"
 
             key_benefits = [
                 benefits_hi,
@@ -271,19 +291,37 @@ Instructions:
                     next_steps = f"आवश्यक दस्तावेजों के साथ आधिकारिक पोर्टल ({apply_url}) पर आवेदन करें।"
             disclaimer = DISCLAIMER_HI
         else:
+            stage_str_en = profile.life_stage.capitalize() if profile.life_stage else "General"
             if has_specific_stage:
-                profile_context_en = f"Based on your profile (Age {profile.age}, {state_en}, Life Stage: {profile.life_stage.capitalize()}),"
+                profile_context_en = f"Based on your profile (Age {profile.age}, {state_en}, Life Stage: {stage_str_en})"
             else:
-                profile_context_en = f"Based on your profile (Age {profile.age}, {state_en}),"
+                profile_context_en = f"Based on your profile (Age {profile.age}, {state_en})"
 
-            if benefits_raw:
-                summary = (
-                    f"{profile_context_en} you appear eligible for '{scheme_name_en}'. Key entitlements include: {benefits_raw}"
-                )
+            # Sentence 1: Scheme Objective
+            clean_desc_en = _trim_text(desc_en, 200).rstrip(".,; ") if desc_en else ""
+            if clean_desc_en and not clean_desc_en.lower().startswith(scheme_name_en.lower()):
+                s1_en = f"{scheme_name_en} is a welfare initiative designed to {clean_desc_en[0].lower() + clean_desc_en[1:] if len(clean_desc_en) > 1 else clean_desc_en}."
+            elif clean_desc_en:
+                s1_en = f"{clean_desc_en}."
             else:
-                summary = (
-                    f"{profile_context_en} you appear eligible for '{scheme_name_en}'."
-                )
+                s1_en = f"{scheme_name_en} is a dedicated welfare initiative providing vital support in {state_en}."
+            if not s1_en.rstrip().endswith((".", "!", "?")):
+                s1_en = s1_en.rstrip(",;") + "."
+
+            # Sentence 2: Qualification
+            s2_en = f"{profile_context_en}, you meet the primary demographic and eligibility criteria."
+
+            # Sentence 3: Key Benefits
+            clean_ben_en = _trim_text(benefits_raw, 200).rstrip(".;,")
+            s3_en = f"Key entitlements include: {clean_ben_en}."
+
+            # Sentence 4: Application Channel
+            if profile.age < 18:
+                s4_en = f"Applications are facilitated by the parent or legal guardian via the official portal ({apply_url}) or local nodal office."
+            else:
+                s4_en = f"You can apply online via the official portal ({apply_url}) or visit your nearest Common Service Centre (CSC) with required documents."
+
+            summary = f"{s1_en} {s2_en} {s3_en} {s4_en}"
 
             key_benefits = [
                 benefits_raw,
@@ -300,7 +338,6 @@ Instructions:
                 else:
                     next_steps = f"Apply online through the nodal portal at {apply_url} with required verification documents."
             disclaimer = DISCLAIMER_EN
-
 
         return ExplainResponse(
             scheme_id=scheme.get("scheme_id", "scheme"),

@@ -576,25 +576,36 @@ function parseEligibilityPoints(eligibilityText?: string): string[] {
   return points.length > 0 ? points : [eligibilityText];
 }
 
-function condenseToShortSummary(text: string, maxSentences = 2, maxChars = 220): string {
+function formatCrispQuickSummary(text: string, maxSentences = 4, lang: 'en' | 'hi' = 'en'): string {
   if (!text) return '';
   const cleaned = text
+    .replace(/[*_~`#]/g, '')
+    .replace(/^[•\-\*\s:;,.]+/gm, '')
     .replace(/\s+/g, ' ')
     .replace(/^(The scheme\s*“?[^”"]*”?\s*was launched by|The scheme\s*“?[^”"]*”?\s*aims to|This scheme aims to|Under this scheme|यह योजना\s*|योजना के तहत\s*)/i, '')
     .trim();
+
+  if (!cleaned) return '';
+
+  // Tokenize by sentence boundaries (English .!? and Hindi ।!?)
+  const sentenceRegex = /[^.!?।]+(?:[.!?।]+|$)/g;
+  const matches = cleaned.match(sentenceRegex) || [cleaned];
   
-  const sentences = cleaned.match(/[^.!?।]+[.!?।]+/g) || [cleaned];
-  let result = sentences.slice(0, maxSentences).join(' ').trim();
-  
-  if (result.length > maxChars) {
-    result = result.substring(0, maxChars);
-    const lastSpace = result.lastIndexOf(' ');
-    if (lastSpace > 50) {
-      result = result.substring(0, lastSpace) + '...';
-    } else {
-      result = result + '...';
-    }
+  const validSentences = matches
+    .map((s) => s.trim())
+    .filter((s) => s.length > 5);
+
+  if (validSentences.length === 0) return cleaned;
+
+  const selected = validSentences.slice(0, maxSentences);
+  let result = selected.join(' ').trim();
+
+  // Ensure clean sentence termination
+  const terminalPunc = lang === 'hi' ? '।' : '.';
+  if (!result.endsWith('.') && !result.endsWith('!') && !result.endsWith('?') && !result.endsWith('।')) {
+    result = result.replace(/[,;:\-\s]+$/, '') + terminalPunc;
   }
+
   return result;
 }
 
@@ -1107,7 +1118,7 @@ export const SchemeDetail: React.FC = () => {
     return getLocalizedSchemeField(scheme, 'description', siteLanguage);
   }, [scheme, siteLanguage]);
 
-  // Concise, plain-language summary text (Ticket 3.1: Short 1-2 punchy sentences)
+  // Concise, plain-language 3-4 sentence quick summary text (Crisp and complete)
   const displaySummaryText = useMemo(() => {
     if (
       explanation?.summary &&
@@ -1115,21 +1126,14 @@ export const SchemeDetail: React.FC = () => {
       explanation.language === siteLanguage &&
       explanation.scheme_id === scheme?.scheme_id
     ) {
-      return condenseToShortSummary(explanation.summary, 2, 220);
+      return formatCrispQuickSummary(explanation.summary, 4, siteLanguage);
     }
     if (!scheme) return '';
-
-    if (siteLanguage === 'hi') {
-      const bestText = displayDescription && displayDescription !== displayBenefits 
-        ? displayDescription 
-        : displayBenefits;
-      return condenseToShortSummary(bestText, 2, 220);
-    }
 
     const bestText = displayDescription && displayDescription !== displayBenefits 
       ? displayDescription 
       : displayBenefits;
-    return condenseToShortSummary(bestText, 2, 220);
+    return formatCrispQuickSummary(bestText, 4, siteLanguage);
   }, [scheme, displayDescription, displayBenefits, explanation, siteLanguage]);
 
   // Dynamic Context-Aware Offline Touchpoints (Epic 2: Student, Maternity, Pension, Livelihood, General)

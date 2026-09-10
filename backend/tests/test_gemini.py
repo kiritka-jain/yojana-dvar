@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import asyncio
 import pytest
@@ -341,4 +342,32 @@ def test_gemini_fallback_minor_guardian_guidance(service):
     # Hindi fallback
     res_hi = service._generate_fallback_explanation(scheme, minor_profile, lang="hi")
     assert "माता-पिता/अभिभावक" in res_hi.next_steps
+
+
+def test_gemini_prompt_3_to_4_sentences_directive(service, sample_scheme, sample_profile):
+    """Verify Gemini explanation prompt explicitly mandates 3-4 crisp sentences."""
+    prompt_en = service._build_prompt(sample_scheme, sample_profile, lang="en")
+    assert "3 to 4 short, crisp, and complete sentences" in prompt_en
+    assert "Sentence 1 (Objective)" in prompt_en
+    assert "Sentence 2 (Eligibility / Target)" in prompt_en
+    assert "Sentence 3 (Core Benefits)" in prompt_en
+    assert "Sentence 4 (Next Step / Channel)" in prompt_en
+
+
+def test_generate_fallback_explanation_3_to_4_sentence_structure(service, sample_scheme, sample_profile):
+    """Verify fallback summary generates exactly 3 to 4 well-punctuated sentences in English and Hindi."""
+    res_en = service._generate_fallback_explanation(sample_scheme, sample_profile, lang="en")
+    # Split by sentence terminators followed by whitespace or end of string
+    sentences_en = [s.strip() for s in re.split(r"(?<=[a-zA-Z0-9\)])[.!?](?:\s+|$)", res_en.summary) if s.strip()]
+    assert 3 <= len(sentences_en) <= 4
+    assert res_en.summary.endswith((".", "!", "?"))
+    assert "..." not in res_en.summary
+
+    res_hi = service._generate_fallback_explanation(sample_scheme, sample_profile, lang="hi")
+    # Split by Hindi sentence terminators followed by whitespace or end of string
+    sentences_hi = [s.strip() for s in re.split(r"(?<=[a-zA-Z0-9\u0900-\u097F\)])[।!?](?:\s+|$)", res_hi.summary) if s.strip()]
+    assert 3 <= len(sentences_hi) <= 4
+    assert res_hi.summary.endswith(("।", "!", "?"))
+    assert "..." not in res_hi.summary
+
 
