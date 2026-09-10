@@ -202,28 +202,31 @@ export const Bookmarks: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredBookmarks.map((scheme) => (
-                <div key={scheme.scheme_id} className="relative group">
-                  <SchemeCard 
-                    scheme={scheme} 
-                    onBookmarkChange={(_id, isSaved) => {
-                      if (!isSaved) {
-                        handleRemoveBookmark(scheme.scheme_id, scheme.name);
-                      }
-                    }}
-                  />
+              {filteredBookmarks.map((scheme) => {
+                const localizedName = getLocalizedSchemeField(scheme, 'name', language);
+                return (
+                  <div key={scheme.scheme_id} className="relative group">
+                    <SchemeCard 
+                      scheme={scheme} 
+                      onBookmarkChange={(_id, isSaved, sName) => {
+                        if (!isSaved) {
+                          handleRemoveBookmark(scheme.scheme_id, sName || localizedName);
+                        }
+                      }}
+                    />
 
-                  {/* Quick Remove Action Pill */}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveBookmark(scheme.scheme_id, scheme.name)}
-                    className="absolute top-4 right-14 opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-xl bg-white/90 hover:bg-red-50 text-charcoal-500 hover:text-red-600 border border-cream-300 shadow-sm text-xs flex items-center gap-1 z-10"
-                    title={t('bookmarksRemoveBtn')}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ))}
+                    {/* Quick Remove Action Pill */}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveBookmark(scheme.scheme_id, localizedName)}
+                      className="absolute top-4 right-14 opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-xl bg-white/90 hover:bg-red-50 text-charcoal-500 hover:text-red-600 border border-cream-300 shadow-sm text-xs flex items-center gap-1 z-10"
+                      title={t('bookmarksRemoveBtn')}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : (

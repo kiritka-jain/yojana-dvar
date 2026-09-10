@@ -119,3 +119,19 @@ def test_match_engine_returns_localized_fields():
     top_scheme = data["schemes"][0]
     assert "name_hi" in top_scheme
     assert "application_process_hi" in top_scheme
+
+def test_bilingual_keyword_search():
+    """Verify bilingual search endpoint matches Hindi keywords (Ticket YD-I18N-303)."""
+    # Search in Devanagari for skill training
+    res_hi = client.get("/api/v1/schemes/search?q=कौशल&limit=10")
+    assert res_hi.status_code == 200
+    data_hi = res_hi.json()
+    assert data_hi["count"] > 0
+    assert any("कौशल" in str(s.get("name_hi", "")) or "कौशल" in str(s.get("category_hi", "")) for s in data_hi["schemes"])
+
+    # Search in Devanagari for pension
+    res_pension = client.get("/api/v1/schemes/search?q=पेंशन&limit=5")
+    assert res_pension.status_code == 200
+    data_pension = res_pension.json()
+    assert data_pension["count"] > 0
+

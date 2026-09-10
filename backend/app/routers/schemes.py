@@ -127,16 +127,26 @@ async def search_schemes(
             if scheme_gender not in ["all", "all india"] and scheme_gender != gender_str:
                 continue
 
-        # Check Keyword Search query
+        # Check Keyword Search query (bilingual English + Hindi matching)
         if query_str:
             searchable_text = " ".join([
                 str(scheme.get("name", "")),
+                str(scheme.get("name_hi", "")),
                 str(scheme.get("description", "")),
+                str(scheme.get("description_hi", "")),
                 str(scheme.get("ministry", "")),
+                str(scheme.get("ministry_hi", "")),
                 str(scheme.get("department", "")),
                 str(scheme.get("category", "")),
+                str(scheme.get("category_hi", "")),
                 str(scheme.get("benefits", "")),
-                str(scheme.get("eligibility_text", ""))
+                str(scheme.get("benefits_hi", "")),
+                str(scheme.get("eligibility_text", "")),
+                str(scheme.get("eligibility_text_hi", "")),
+                str(scheme.get("application_process", "")),
+                str(scheme.get("application_process_hi", "")),
+                str(scheme.get("documents_required", "")),
+                str(scheme.get("documents_required_hi", ""))
             ]).lower()
             
             if query_str not in searchable_text:

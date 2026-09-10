@@ -169,13 +169,22 @@ export const matchesSearchQuery = (scheme: SchemeMatchResult, query: string): bo
   const q = query.toLowerCase().trim();
   return Boolean(
     scheme.name?.toLowerCase().includes(q) ||
+    scheme.name_hi?.toLowerCase().includes(q) ||
     scheme.description?.toLowerCase().includes(q) ||
+    scheme.description_hi?.toLowerCase().includes(q) ||
     scheme.benefits?.toLowerCase().includes(q) ||
+    scheme.benefits_hi?.toLowerCase().includes(q) ||
     scheme.ministry?.toLowerCase().includes(q) ||
+    scheme.ministry_hi?.toLowerCase().includes(q) ||
     scheme.department?.toLowerCase().includes(q) ||
     scheme.category?.toLowerCase().includes(q) ||
+    scheme.category_hi?.toLowerCase().includes(q) ||
     scheme.eligibility_text?.toLowerCase().includes(q) ||
-    scheme.documents_required?.toLowerCase().includes(q)
+    scheme.eligibility_text_hi?.toLowerCase().includes(q) ||
+    scheme.documents_required?.toLowerCase().includes(q) ||
+    scheme.documents_required_hi?.toLowerCase().includes(q) ||
+    scheme.application_process?.toLowerCase().includes(q) ||
+    scheme.application_process_hi?.toLowerCase().includes(q)
   );
 };
 
