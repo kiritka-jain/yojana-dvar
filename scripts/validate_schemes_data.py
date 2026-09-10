@@ -21,13 +21,22 @@ ADULT_ONLY_KEYWORDS = [
     "marriage assistance", "kanya vivah", "vivah hetu", "wedding aid",
     "mudra", "stand up india", "stand-up india",
     "safai karamchari", "safai karamcharis",
-    "street vendor", "svanidhi", "swarojgar"
+    "street vendor", "svanidhi", "swarojgar",
+    "msme", "micro enterprise", "small enterprise", "medium enterprise",
+    "mega industry", "large industry", "thrust sector", "industrial unit",
+    "term loan", "working capital", "interest subsidy", "capital subsidy",
+    "sgst reimbursement", "stamp duty", "epf reimbursement", "patent registration",
+    "quality certification", "power connection charges", "udyam", "dpiit",
+    "aquaculture", "brackish water", "fish farming", "shrimp farming",
+    "agricultural skill development", "farmer training programme",
+    "training programme for women farmers", "training programme for farmers"
 ]
 
 PENSION_KEYWORDS = [
     "old age pension", "vridha pension", "vruddha pension", "senior citizen pension",
     "elderly pension", "vaya vandana", "vridhavastha"
 ]
+
 
 def validate_dataset():
     if not os.path.exists(DATA_FILE):

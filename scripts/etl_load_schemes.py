@@ -262,14 +262,25 @@ def classify_life_stage(record: dict) -> list:
     elif "general" not in assigned_tags and stage_scores["general"] >= 4:
         assigned_tags.append("general")
 
-    # If explicit tag was provided and is valid, merge or prioritize
-    explicit_raw = record.get("life_stage")
-    if explicit_raw and isinstance(explicit_raw, str):
-        exp_clean = explicit_raw.strip().lower()
-        if exp_clean in CANONICAL_LIFE_STAGES and exp_clean not in assigned_tags:
-            assigned_tags.insert(0, exp_clean)
+    # Commercial enterprise and agri-aqua guardrail: prevent student tagging on commercial schemes
+    is_commercial = any(kw in full_text for kw in [
+        "msme", "micro enterprise", "small enterprise", "medium enterprise",
+        "mega industry", "large industry", "thrust sector", "industrial unit",
+        "term loan", "working capital", "interest subsidy", "capital subsidy",
+        "sgst reimbursement", "stamp duty", "epf reimbursement", "patent registration",
+        "quality certification", "power connection charges", "udyam", "dpiit",
+        "aquaculture", "brackish water", "agricultural skill development",
+        "farmer training programme", "training programme for farmers"
+    ])
+    is_child_edu = any(cw in full_text for cw in ["girl child", "balika", "sukanya", "school", "scholarship", "vidyarthi", "chhatravritti"])
+    if is_commercial and not is_child_edu:
+        if "student" in assigned_tags:
+            assigned_tags.remove("student")
+        if "entrepreneur" not in assigned_tags:
+            assigned_tags.insert(0, "entrepreneur")
 
     return assigned_tags if assigned_tags else ["general"]
+
 
 
 # Specific Beneficiary Groups Extraction (TICKET-102)
@@ -558,7 +569,15 @@ ADULT_ONLY_KEYWORDS = [
     "svanidhi", "hawker", "livelihood mission", "swadhar greh", "ujjawala",
     "widow pension", "destitute pension", "divyang pension", "maternity benefit",
     "pmmvy", "janani suraksha", "artisan loan", "handloom weaver loan",
-    "micro enterprise", "commercial vehicle loan", "tractor loan"
+    "micro enterprise", "commercial vehicle loan", "tractor loan",
+    "msme", "small enterprise", "medium enterprise", "mega industry", "large industry",
+    "thrust sector", "industrial unit", "term loan", "working capital", "interest subsidy",
+    "capital subsidy", "sgst reimbursement", "stamp duty", "epf reimbursement",
+    "patent registration", "quality certification", "power connection charges",
+    "udyam", "dpiit", "investor facilitation", "aquaculture", "brackish water",
+    "fish farming", "shrimp farming", "agricultural skill development",
+    "farmer training programme", "training programme for women farmers",
+    "training programme for farmers", "fisheries development"
 ]
 
 PENSION_KEYWORDS = [
@@ -604,8 +623,8 @@ def infer_age_bounds_from_content(
             age_max = 80
         return age_min, age_max
 
-    # 3. Adult-only schemes (Hostels, Marriage, Business loans, SHGs, Mudra, Safai Karamchari)
-    if not any(cw in name_lower for cw in ["girl child", "balika", "sukanya", "school", "scholarship"]):
+    # 3. Adult-only schemes (Hostels, Marriage, Business loans, SHGs, Mudra, Safai Karamchari, MSME, Agri-Aqua)
+    if not any(cw in name_lower for cw in ["girl child", "balika", "sukanya", "school", "scholarship", "vidyarthi", "chhatravritti"]):
         # Working women hostels
         if "working women" in combined_text or "hostel" in name_lower and "student" not in combined_text:
             if age_min < 18:
@@ -618,8 +637,19 @@ def infer_age_bounds_from_content(
                 age_min = 18
             if age_max == 100:
                 age_max = 45
-        # Entrepreneur loans / Livelihood / Credit facilities
-        elif any(kw in combined_text for kw in ["mudra", "stand up india", "stand-up india", "business loan", "safai karamchari", "street vendor", "svanidhi", "self help group", "self-help group", "swarojgar", "credit facility"]):
+        # Entrepreneur loans / Livelihood / Credit facilities / MSME / Commercial Agri & Aqua
+        elif any(kw in combined_text for kw in [
+            "mudra", "stand up india", "stand-up india", "business loan", "safai karamchari",
+            "street vendor", "svanidhi", "self help group", "self-help group", "swarojgar", "credit facility",
+            "msme", "micro enterprise", "small enterprise", "medium enterprise",
+            "mega industry", "large industry", "thrust sector", "industrial unit",
+            "term loan", "working capital", "interest subsidy", "capital subsidy",
+            "sgst reimbursement", "stamp duty", "epf reimbursement", "patent registration",
+            "quality certification", "power connection charges", "udyam", "dpiit",
+            "investor facilitation", "aquaculture", "brackish water", "fish farming",
+            "shrimp farming", "agricultural skill development", "farmer training programme",
+            "training programme for women farmers", "training programme for farmers", "fisheries development"
+        ]):
             if age_min < 18:
                 age_min = 18
             if age_max == 100:
@@ -627,6 +657,7 @@ def infer_age_bounds_from_content(
         # General adult-only keyword check
         elif age_min < 18 and any(kw in name_lower for kw in ADULT_ONLY_KEYWORDS):
             age_min = 18
+
 
     # 4. Life-stage canonical default enforcement when still unconstrained (0, 100)
     if age_min == 0 and age_max == 100:
