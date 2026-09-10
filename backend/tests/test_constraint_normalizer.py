@@ -37,6 +37,13 @@ from etl_load_schemes import (
     ("Girl Child (up to 10 years of age)", 0, 10),
     ("Only girl child of family aged up to 30 years admitted into university.", 0, 30),
     ("Any resident Indian woman or girl. No upper age limit.", 0, 100),
+    ("The applicant should not be aged less than 18 years or above 60 years.", 18, 60),
+    ("The applicant should be between the age group of 18 to 35 years.", 18, 35),
+    ("Age limit: 18 - 45 years for female applicants.", 18, 45),
+    ("Girl students enrolled in Class 9 to 10 in recognized schools.", 14, 16),
+    ("Students pursuing undergraduate degree or diploma courses.", 17, 25),
+    ("Infants and newborn girl child nutrition support.", 0, 5),
+    ("Application deadline is 31st March 2025. 100% financial assistance.", 0, 100),
 ])
 def test_extract_age_bounds(narrative, expected_min, expected_max):
     min_age, max_age = extract_age_bounds(narrative)
@@ -44,7 +51,7 @@ def test_extract_age_bounds(narrative, expected_min, expected_max):
     assert max_age == expected_max
 
 # =============================================================================
-# 2. Income Cap Extraction Tests (Ticket 2.4)
+# 2. Income Cap Extraction Tests (Ticket 2.4 / Ticket 1.2)
 # =============================================================================
 
 @pytest.mark.parametrize("narrative,expected_income", [
@@ -57,13 +64,18 @@ def test_extract_age_bounds(narrative, expected_min, expected_max):
     ("Annual family income below Rs 2.5 Lakh.", 250000),
     ("Gross monthly salary does not exceed Rs 50,000 in metro cities.", 600000),
     ("Universal entitlement with no income cap.", 0),
+    ("The yearly income of the family should not be more than Rs. 56, 450/- in urban areas.", 56450),
+    ("Parental annual income does not exceed ₹ 1.50 Lakhs.", 150000),
+    ("Annual income limit of Rs. 75,000/- per annum.", 75000),
+    ("Beneficiaries under Economically Weaker Section (EWS) income limit.", 800000),
+    ("Beneficiaries must have no income bar.", 0),
 ])
 def test_extract_income_cap(narrative, expected_income):
     income = extract_income_cap(narrative)
     assert income == expected_income
 
 # =============================================================================
-# 3. Caste Categories Extraction Tests (Ticket 2.4)
+# 3. Caste Categories Extraction Tests (Ticket 2.4 / Ticket 1.3)
 # =============================================================================
 
 def test_extract_caste_categories():
@@ -78,15 +90,21 @@ def test_extract_caste_categories():
     assert "ST" in categories
     assert "OBC" in categories
 
+    brahmin_cat = extract_caste_categories("Funeral expenses for poor Brahmin families.")
+    assert "General" in brahmin_cat
+
     assert extract_caste_categories("All women and girls across all categories.") == ["All"]
+    assert extract_caste_categories("Open to all women regardless of caste.") == ["All"]
 
 # =============================================================================
-# 4. Residence Type Extraction Tests (Ticket 2.4)
+# 4. Residence Type Extraction Tests (Ticket 2.4 / Ticket 1.3)
 # =============================================================================
 
 def test_extract_residence_type():
     assert extract_residence_type("Targeting rural women and artisans") == "Rural"
+    assert extract_residence_type("Gram Panchayat and village residents") == "Rural"
     assert extract_residence_type("Urban street vendors and hawkers") == "Urban"
+    assert extract_residence_type("Nagar Nigam and municipality areas") == "Urban"
     assert extract_residence_type("All resident citizens of the state") == "All"
 
 # =============================================================================

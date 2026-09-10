@@ -923,75 +923,143 @@ def clean_bool(val, default=False) -> bool:
 
 def extract_age_bounds(text: str, default_min: int = 0, default_max: int = 100) -> tuple:
     """
-    Extracts numeric minimum and maximum age constraints from narrative eligibility text using regex (Ticket 2.4).
+    Extracts numeric minimum and maximum age constraints from narrative eligibility text (Ticket 1.1 / Epic 1).
+    Handles exact age spans, single bounds, educational grade mappings, and avoids false positives on dates/percentages.
     """
     if not text:
         return default_min, default_max
     
     text_clean = str(text).lower()
 
-    # Pattern 1: aged between X and Y / between X and Y years
-    m = re.search(r'(?:aged\s+)?between\s+(\d+)\s+(?:and|to|-)\s+(\d+)\s*(?:years|yrs)?', text_clean)
+    # Mask out calendar years (1900-2099) and percentages to prevent false positive age bounds
+    text_masked = re.sub(r'\b(?:19|20)\d{2}\b', ' ', text_clean)
+    text_masked = re.sub(r'\b\d+\s*%', ' ', text_masked)
+    text_masked = re.sub(r'\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+\d{1,2}\b', ' ', text_masked)
+    text_masked = re.sub(r'\b\d{1,2}(?:st|nd|rd|th)?\s+(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b', ' ', text_masked)
+    text_masked = re.sub(r'section\s+\d+[a-z0-9()]*', ' ', text_masked)
+
+    # Specific girl child schemes (SSY / birth of girl child / infant)
+    if "sukanya samriddhi" in text_clean or "sukanya" in text_clean:
+        return 0, 10
+    if "infant" in text_clean or "newborn" in text_clean or "birth of girl child" in text_clean or "at the time of birth" in text_clean:
+        return 0, 5
+
+    # Pattern 1: Explicit phrase "not less than X or above Y" / "not aged less than X years or above Y years"
+    m = re.search(
+        r'(?:not\s+(?:be\s+)?(?:aged\s+)?less\s+than\s+(\d{1,2})|minimum\s+age\s+(?:of\s+|is\s+)?(\d{1,2})).{1,50}?(?:above|more\s+than|maximum\s+age\s+(?:of\s+|is\s+)?)\s*(\d{1,2})\s*(?:years|yrs)?',
+        text_masked
+    )
+    if m:
+        a = int(m.group(1) or m.group(2))
+        b = int(m.group(3))
+        if 0 <= a < b <= 120 and "class" not in text_masked[max(0, m.start()-10):m.end()+10]:
+            return a, b
+
+    # Pattern 2: "between X and Y years" / "between X to Y years" / "between the age group of X to Y" / "between age of X to Y"
+    m = re.search(
+        r'(?:aged\s+)?between\s+(?:the\s+age(?:\s+group)?\s+of\s+)?(\d{1,2})\s*(?:and|to|-)\s*(\d{1,2})\s*(?:years|yrs)?(?:\s+of\s+age)?',
+        text_masked
+    )
     if m:
         min_age, max_age = int(m.group(1)), int(m.group(2))
-        if min_age <= max_age and max_age <= 120:
+        if 0 <= min_age < max_age <= 120 and "class" not in text_masked[max(0, m.start()-10):m.end()+10]:
             return min_age, max_age
 
-    # Pattern 2: aged X to Y years / aged X-Y years
-    m = re.search(r'aged\s+(\d+)\s*(?:to|-)\s*(\d+)\s*(?:years|yrs)?', text_clean)
+    # Pattern 3: "age limit of X - Y years" / "age limit: X to Y" / "age criteria: X to Y"
+    m = re.search(
+        r'(?:age\s*limit|age\s*criteria|age\s*bracket)\b[^\d]{0,25}?(\d{1,2})\s*(?:to|-)\s*(\d{1,2})\s*(?:years|yrs)?',
+        text_masked
+    )
     if m:
         min_age, max_age = int(m.group(1)), int(m.group(2))
-        if min_age <= max_age and max_age <= 120:
+        if 0 <= min_age < max_age <= 120:
             return min_age, max_age
 
-    # Pattern 3: X to Y years of age / X-Y years
-    m = re.search(r'(\d+)\s*(?:to|-)\s*(\d+)\s*(?:years|yrs)(?:\s+of\s+age)?', text_clean)
+    # Pattern 4: "aged X to Y years" / "aged X-Y years" / "age of X to Y years"
+    m = re.search(
+        r'(?:aged|age)\s*(?:of\s+)?(\d{1,2})\s*(?:to|-)\s*(\d{1,2})\s*(?:years|yrs)?(?:\s+of\s+age)?',
+        text_masked
+    )
     if m:
         min_age, max_age = int(m.group(1)), int(m.group(2))
-        if min_age <= max_age and max_age <= 120:
+        if 0 <= min_age < max_age <= 120 and "class" not in text_masked[max(0, m.start()-10):m.end()+10]:
             return min_age, max_age
 
-    # Pattern 4: aged X+ / X years and above / aged X years or older / aged X and above
-    m = re.search(r'(?:aged\s+)?(\d+)\s*(?:years|yrs)?\s*(?:\+|and\s+above|and\s+older|or\s+above|\babove\b|\bolder\b)(?!\s*%)', text_clean)
+    # Pattern 5: "X to Y years of age" / "X-Y years of age" / "X - Y years"
+    m = re.search(
+        r'\b(\d{1,2})\s*(?:to|-)\s*(\d{1,2})\s*(?:years|yrs)(?:\s+of\s+age)?\b',
+        text_masked
+    )
+    if m:
+        min_age, max_age = int(m.group(1)), int(m.group(2))
+        if 0 <= min_age < max_age <= 120 and "class" not in text_masked[max(0, m.start()-10):m.end()+10]:
+            return min_age, max_age
+
+    # Pattern 6: "completed X years and not exceeded Y years" / "attained X years and below Y years"
+    m = re.search(
+        r'(?:completed|attained)\s+(\d{1,2})\s*(?:years|yrs)?.{1,40}?(?:not\s+(?:exceeded|more\s+than)|below|under)\s+(\d{1,2})\s*(?:years|yrs)?',
+        text_masked
+    )
+    if m:
+        min_age, max_age = int(m.group(1)), int(m.group(2))
+        if 0 <= min_age < max_age <= 120:
+            return min_age, max_age
+
+    # Pattern 7: "aged X+ / X years and above / aged X years or older / aged X and above"
+    m = re.search(
+        r'(?:aged\s+)?(\d{1,2})\s*(?:years|yrs)?\s*(?:\+|and\s+above|and\s+older|or\s+above|\babove\b|\bolder\b)(?!\s*%)',
+        text_masked
+    )
     if m:
         min_age = int(m.group(1))
-        if min_age <= 100:
+        if 1 <= min_age <= 100:
             return min_age, default_max
 
-    # Pattern 5: at least X years / minimum age of X years
-    m = re.search(r'(?:at\s+least|atleast|minimum\s+(?:age\s+(?:of\s+)?)?)\s*(\d+)\s*(?:years|yrs)(?!\s*%)', text_clean)
+    # Pattern 8: "at least X years / minimum age of X years / completed X years"
+    m = re.search(
+        r'(?:at\s+least|atleast|minimum\s+(?:age\s+(?:of|is)\s+)?|completed\s+(?:the\s+age\s+of\s+)?)\s*(\d{1,2})\s*(?:years|yrs)(?!\s*%)',
+        text_masked
+    )
     if m:
         min_age = int(m.group(1))
-        if min_age <= 100:
+        if 1 <= min_age <= 100:
             return min_age, default_max
 
-    # Pattern 6: below X years / up to X years / under X years
-    m = re.search(r'(?:below|up\s+to|upto|under|maximum\s+(?:age\s+(?:of\s+)?)?)\s*(\d+)\s*(?:years|yrs)(?:\s+of\s+age)?(?!\s*%)', text_clean)
+    # Pattern 9: "below X years / up to X years / under X years / maximum age of X years"
+    m = re.search(
+        r'(?:below|up\s+to|upto|under|maximum\s+(?:age\s+(?:of|is)\s+)?|not\s+exceeding)\s*(\d{1,2})\s*(?:years|yrs)(?:\s+of\s+age)?(?!\s*%)',
+        text_masked
+    )
     if m:
         max_age = int(m.group(1))
-        if max_age <= 120:
+        if 1 <= max_age <= 120:
             return default_min, max_age
 
-    # Pattern 7: girl child (up to X years)
-    m = re.search(r'(?:girl\s+child|age|female)\s*\((?:up\s+to\s+)?(\d+)\s*(?:years|yrs)?\)', text_clean)
+    # Pattern 10: "aged below (\d+) years"
+    m = re.search(r'aged\s+below\s+(\d{1,2})\s*(?:years|yrs)?', text_masked)
     if m:
         max_age = int(m.group(1))
-        if max_age <= 120:
+        if 1 <= max_age <= 120:
             return default_min, max_age
 
-    # Pattern 8: aged below (\d+) years
-    m = re.search(r'aged\s+below\s+(\d+)\s*(?:years|yrs)?', text_clean)
-    if m:
-        max_age = int(m.group(1))
-        if max_age <= 120:
-            return default_min, max_age
-
-    # Pattern 9: adult woman aged 18+ / aged 18
-    m = re.search(r'aged\s+(\d+)\b', text_clean)
+    # Pattern 11: "aged X" / "adult woman aged 18"
+    m = re.search(r'\baged\s+(\d{1,2})\b', text_masked)
     if m:
         min_age = int(m.group(1))
         if 10 <= min_age <= 100:
             return min_age, default_max
+
+    # Educational class mappings if narrative refers explicitly to school/college tiers
+    if re.search(r'\b(?:class|grade|standard)\s+(?:9|10|ix|x)\b', text_clean) or "secondary school" in text_clean or "pre-matric" in text_clean:
+        return 14, 16
+    if re.search(r'\b(?:class|grade|standard)\s+(?:11|12|xi|xii)\b', text_clean) or "higher secondary" in text_clean or "intermediate" in text_clean:
+        return 16, 18
+    if re.search(r'\b(?:class|grade|standard)\s+(?:1|2|3|4|5|6|7|8)\b', text_clean) or "primary school" in text_clean or "middle school" in text_clean:
+        return 6, 14
+    if "undergraduate" in text_clean or "bachelor" in text_clean or "polytechnic" in text_clean or "diploma course" in text_clean:
+        return 17, 25
+    if "postgraduate" in text_clean or "master's" in text_clean or "masters" in text_clean or "phd" in text_clean or "doctorate" in text_clean or "fellowship" in text_clean:
+        return 20, 32
 
     return default_min, default_max
 
@@ -1042,6 +1110,13 @@ def infer_age_bounds_from_content(
 
     combined_text = f"{name} {description} {eligibility_text} {beneficiary_type}".lower()
     name_lower = name.lower()
+
+    # SSY / Newborn / Infant / Girl child birth schemes strictly start at 0
+    if any(kw in name_lower or kw in combined_text for kw in ["sukanya", "ssy", "newborn", "infant", "at the time of birth", "birth of girl child"]):
+        age_min = 0
+        if age_max == 100:
+            age_max = 10
+        return age_min, age_max
 
     # 1. Pension Schemes (unless orphan/family pension for minors)
     if any(kw in combined_text for kw in PENSION_KEYWORDS) or ("pension" in name_lower and "widow" not in name_lower and "student" not in combined_text and "orphan" not in combined_text and "family pension" not in combined_text):
@@ -1094,17 +1169,45 @@ def infer_age_bounds_from_content(
         elif age_min < 18 and any(kw in name_lower for kw in ADULT_ONLY_KEYWORDS):
             age_min = 18
 
-
-    # 4. Life-stage canonical default enforcement when still unconstrained (0, 100)
-    if age_min == 0 and age_max == 100:
-        if "student" in life_stage_tags:
-            age_min, age_max = 5, 30
-        elif "maternal" in life_stage_tags:
-            age_min, age_max = 18, 50
-        elif "senior" in life_stage_tags:
-            age_min, age_max = 60, 100
-        elif "entrepreneur" in life_stage_tags:
-            age_min, age_max = 18, 65
+    # 4. Contextual refinement for unconstrained or partially unconstrained schemes
+    if "maternal" in life_stage_tags or any(kw in combined_text for kw in ["pregnant", "maternity", "lactating", "pmmvy", "matru vandana"]):
+        if age_min < 18:
+            age_min = 18
+        if age_max == 100:
+            age_max = 50
+    elif any(kw in combined_text for kw in ["marriage", "vivah", "wedding", "kalyanam", "nikah", "shaadi", "shagun"]):
+        if age_min < 18:
+            age_min = 18
+        if age_max == 100:
+            age_max = 45
+    elif "senior" in life_stage_tags or any(kw in combined_text for kw in ["senior citizen", "elderly"]):
+        if age_min < 60:
+            age_min = 60
+    elif "student" in life_stage_tags:
+        if age_max <= 10 or any(kw in combined_text for kw in ["sukanya", "infant", "newborn", "birth"]):
+            age_min = 0
+            if age_max == 100:
+                age_max = 10
+        elif any(kw in combined_text for kw in ["higher education", "post-matric", "college", "university", "polytechnic", "diploma", "ug", "pg", "engineering", "medical", "phd", "masters"]):
+            if age_min == 0:
+                age_min = 16
+            if age_max == 100:
+                age_max = 30
+        elif any(kw in combined_text for kw in ["primary", "middle school", "pre-matric", "school student"]):
+            if age_min == 0:
+                age_min = 6
+            if age_max == 100:
+                age_max = 18
+        else:
+            if age_min == 0:
+                age_min = 6
+            if age_max == 100:
+                age_max = 25
+    elif "entrepreneur" in life_stage_tags:
+        if age_min < 18:
+            age_min = 18
+        if age_max == 100:
+            age_max = 65
 
     # Invariant: age_min must never exceed age_max
     if age_min > age_max:
@@ -1114,7 +1217,8 @@ def infer_age_bounds_from_content(
 
 def extract_income_cap(text: str, default_income: int = 0) -> int:
     """
-    Extracts maximum family/annual income cap in INR from narrative eligibility text (Ticket 2.4 / TICKET-103).
+    Extracts maximum annual family income limit from narrative eligibility text (Ticket 1.2 / Epic 1).
+    Handles annual/monthly caps, lakh multipliers, and Indian welfare thresholds (BPL, EWS).
     """
     if not text:
         return default_income
@@ -1122,125 +1226,147 @@ def extract_income_cap(text: str, default_income: int = 0) -> int:
     text_clean = str(text).lower()
 
     # Explicit statement of NO income limit
-    if "no income limit" in text_clean or "no income bar" in text_clean or "no ceiling on income" in text_clean or "without any income limit" in text_clean:
+    if any(phrase in text_clean for phrase in [
+        "no income limit", "no income bar", "no ceiling on income", "without any income limit",
+        "no maximum income", "irrespective of income", "no family income limit", "no income criteria"
+    ]):
         return 0
 
-    # Pattern 1: Monthly salary/income cap (annualize by * 12)
-    m = re.search(
-        r'monthly\s+(?:salary|income|earnings)\b[a-zA-Z\s,]{0,35}?(?:below|under|less\s+than|up\s+to|upto|not\s+exceeding|does\s*not\s*exceed)?\s*(?:rs\.?|inr|₹)?\s*([0-9,]+)',
-        text_clean
-    )
-    if m:
-        val_str = m.group(1).replace(",", "").strip()
-        try:
-            monthly_val = int(val_str)
-            if 1000 <= monthly_val <= 200000:
-                return monthly_val * 12
-        except ValueError:
-            pass
+    # Mask out calendar years (1900-2099) and percentages to prevent false matches
+    text_masked = re.sub(r'\b(?:19|20)\d{2}\b', ' ', text_clean)
+    text_masked = re.sub(r'\b\d+\s*%', ' ', text_masked)
+    text_masked = re.sub(r'\b\d+\s*hectares?\b', ' ', text_masked)
+    text_masked = re.sub(r'\b\d+\s*acres?\b', ' ', text_masked)
 
-    # Pattern 2: Income in Lakhs with decimals/digits (e.g. ₹2.5 Lakh, Rs 8 Lakhs, ₹3.00 Lakhs, 1.20 lakh per annum)
-    m = re.search(
-        r'(?:annual|family|gross|household|parental)?\s*(?:family\s*)?income\b[a-zA-Z\s,]{0,45}?(?:should\s*not\s*be\s*more\s*than|must\s*not\s*exceed|not\s*exceeding|not\s*exceed|is\s*less\s*than|less\s*than|below|under|up\s*to|upto|within|ceiling\s*of|limit\s*(?:of\s*)?)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|lac|lacs)',
-        text_clean
+    # 1. Lakhs phrases: e.g., "income less than 8 lakh", "income upto 2.5 lakhs", "income does not exceed 1.5 lakh"
+    lakh_match = re.search(
+        r'(?:income|earnings|turnover)[^\d]{0,60}?(?:less\s+than|below|up\s+to|upto|under|not\s+exceed(?:ing)?|ceiling\s+of|max(?:imum)?\s+(?:of\s+)?|within|limit\s+of)\s*(?:rs\.?|inr|₹)?\s*([0-9]+(?:\.[0-9]+)?)\s*(?:lakh|lakhs|lac|lacs)',
+        text_masked
     )
-    if m:
-        try:
-            val = int(float(m.group(1)) * 100000)
-            if 10000 <= val <= 2500000:  # Sensible range for income caps
-                return val
-        except ValueError:
-            pass
+    if lakh_match:
+        val = float(lakh_match.group(1))
+        if 0.2 <= val <= 50.0:
+            return int(val * 100000)
 
-    # Pattern 3: Numeric Income in Rupee format (e.g. ₹8,00,000, Rs. 75000/-, Rs 2,50,000 per annum)
-    m = re.search(
-        r'(?:annual|family|gross|household|parental)?\s*(?:family\s*)?income\b[a-zA-Z\s,]{0,45}?(?:should\s*not\s*be\s*more\s*than|must\s*not\s*exceed|not\s*exceeding|not\s*exceed|is\s*less\s*than|less\s*than|below|under|up\s*to|upto|within|ceiling\s*of|limit\s*(?:of\s*)?)?\s*(?:rs\.?|inr|₹)\s*([0-9,]+)',
-        text_clean
+    # Alternate Lakhs pattern: "Rs. 2.5 Lakh per annum" / "₹ 1.50 Lakhs"
+    lakh_alt = re.search(
+        r'(?:rs\.?|inr|₹)?\s*([0-9]+(?:\.[0-9]+)?)\s*(?:lakh|lakhs|lac|lacs)',
+        text_masked
     )
-    if m:
-        val_str = m.group(1).replace(",", "").strip()
-        try:
-            val = int(val_str)
+    if lakh_alt and any(w in text_masked for w in ["income", "salary", "earnings", "parental", "family", "annual"]):
+        val = float(lakh_alt.group(1))
+        if 0.2 <= val <= 50.0:
+            return int(val * 100000)
+
+    # 2. Monthly income phrases: e.g., "monthly income less than 15,000", "monthly salary up to Rs. 10000"
+    monthly_match = re.search(
+        r'(?:monthly\s+income|monthly\s+salary|per\s+month)[^\d]{0,40}?(?:less\s+than|below|up\s+to|upto|under|not\s+exceed(?:ing)?|max(?:imum)?\s+(?:of\s+)?|within|is|of)?\s*(?:rs\.?|inr|₹)?\s*(\d[\d\s,]*\d|\d+)',
+        text_masked
+    )
+    if monthly_match:
+        raw_num = re.sub(r'[\s,]', '', monthly_match.group(1))
+        if raw_num.isdigit():
+            m_val = int(raw_num)
+            if 1000 <= m_val <= 100000:
+                return m_val * 12
+
+    # 3. Numeric annual/family/gross/yearly income with currency symbol or income keywords:
+    annual_match = re.search(
+        r'(?:income|salary|earnings)[^\d]{0,80}?(?:less\s+than|below|up\s+to|upto|under|not\s+exceed(?:ing)?|not\s+be\s+more\s+than|not\s+more\s+than|ceiling\s+of|max(?:imum)?\s+(?:of\s+)?|within|limit\s+of|is|of)\s*(?:rs\.?|inr|₹)?\s*(\d[\d\s,]*\d|\d+)',
+        text_masked
+    )
+    if annual_match:
+        raw_num = re.sub(r'[\s,]', '', annual_match.group(1))
+        if raw_num.isdigit():
+            val = int(raw_num)
             if 10000 <= val <= 2500000:
                 return val
-        except ValueError:
-            pass
 
-    # Pattern 4: Direct "income not exceeding [numeric] / below [numeric]"
-    m = re.search(
-        r'income\s+(?:is\s+)?(?:below|under|less\s+than|upto|up\s+to|not\s+exceeding|not\s+more\s+than|does\s*not\s*exceed)\s*(?:rs\.?|inr|₹)?\s*([0-9,]+)',
-        text_clean
+    # 4. Phrase "income limit of Rs. X / per annum"
+    ann_alt = re.search(
+        r'(?:limit\s+of\s+)?(?:rs\.?|inr|₹)\s*(\d[\d\s,]*\d|\d+)\s*(?:/-)?\s*(?:per\s+annum|p\.a\.|annual|annually)',
+        text_masked
     )
-    if m:
-        val_str = m.group(1).replace(",", "").strip()
-        try:
-            val = int(val_str)
+    if ann_alt:
+        raw_num = re.sub(r'[\s,]', '', ann_alt.group(1))
+        if raw_num.isdigit():
+            val = int(raw_num)
             if 10000 <= val <= 2500000:
                 return val
-        except ValueError:
-            pass
 
-    # Pattern 5: Hindi text "वार्षिक आय ₹X से कम / अधिक न हो"
-    m = re.search(
-        r'(?:वार्षिक|पारिवारिक)?\s*आय\b[^\d]{0,25}?(?:₹|रुपये|रु\.?)?\s*([0-9,]+)',
-        text_clean
-    )
-    if m:
-        val_str = m.group(1).replace(",", "").strip()
-        try:
-            val = int(val_str)
-            if 10000 <= val <= 2500000:
-                return val
-        except ValueError:
-            pass
+    # 5. Statutory Welfare Categorization Defaults
+    if re.search(r'\b(?:economically\s+weaker\s+section|ews)\b', text_masked):
+        return 800000
+    if re.search(r'\b(?:below\s+poverty\s+line|bpl|antyodaya|aay)\b', text_masked):
+        return 120000
 
     return default_income
 
 def extract_caste_categories(text: str) -> list:
     """
-    Extracts applicable caste/social categories (SC, ST, OBC, General) from eligibility text (Ticket 2.4).
-    Returns ['All'] if universal or unrestricted.
+    Extracts applicable caste categories (Ticket 1.3 / Epic 1).
+    Returns list of matching categories: ["All"], or subset of ["SC", "ST", "OBC", "General"].
     """
     if not text:
         return ["All"]
-
+    
     text_clean = str(text).lower()
 
-    if "all categories" in text_clean or "all women" in text_clean or "any caste" in text_clean:
+    # Disjunctive / Universal / Inclusive Eligibility Lists
+    if any(phrase in text_clean for phrase in [
+        "all categories", "all women", "all citizens", "all communities",
+        "irrespective of caste", "open to all", "any category", "general category",
+        "any one of", "any of the following", "either of", "any other category",
+        "socially and economically disadvantaged sections", "disadvantaged sections of society"
+    ]):
         return ["All"]
 
-    categories = []
+    categories = set()
     
-    # Check SC/ST
-    if re.search(r'\bsc\b|\bst\b|scheduled\s+caste|scheduled\s+tribe|sc/st|sc\s+and\s+st', text_clean):
-        if "sc" in text_clean or "scheduled caste" in text_clean:
-            categories.append("SC")
-        if "st" in text_clean or "scheduled tribe" in text_clean:
-            categories.append("ST")
+    # Check SC
+    if re.search(r'\bsc\b|scheduled\s+caste|sc/st|sc\s+and\s+st|dalit|safai\s+karamchari|valmiki', text_clean):
+        categories.add("SC")
+
+    # Check ST
+    if re.search(r'\bst\b|scheduled\s+tribe|sc/st|sc\s+and\s+st|adivasi|tribal|pvtg', text_clean):
+        categories.add("ST")
 
     # Check OBC
-    if re.search(r'\bobc\b|\bbc\b|backward\s+class|other\s+backward', text_clean):
-        if "OBC" not in categories:
-            categories.append("OBC")
+    if re.search(r'\bobc\b|\bbc\b|backward\s+class|other\s+backward|ebc|mbc|sebc', text_clean):
+        categories.add("OBC")
 
-    # Check General / EWS
-    if "general" in text_clean or "all caste" in text_clean or "ews" in text_clean:
-        if "General" not in categories:
-            categories.append("General")
+    # Check General / EWS / Brahmin
+    if re.search(r'\bgeneral\s+category\b|open\s+category|\bews\b|economically\s+weaker\s+section|brahmin', text_clean):
+        categories.add("General")
 
-    categories = sorted(list(set(categories)))
-    return categories if categories else ["All"]
+    valid_cats = sorted(list(categories))
+    return valid_cats if valid_cats else ["All"]
 
 def extract_residence_type(text: str) -> str:
     """
-    Extracts target residence type (Rural, Urban, or All) from text (Ticket 2.4).
+    Extracts target residence type (Rural, Urban, or All) from narrative text (Ticket 1.3 / Epic 1).
     """
     if not text:
         return "All"
     text_clean = str(text).lower()
+
+    if any(phrase in text_clean for phrase in [
+        "both rural and urban", "rural and urban", "rural & urban", "across rural and urban",
+        "all states", "pan-india", "all over india", "all residents", "all citizens"
+    ]):
+        return "All"
     
-    is_rural = "rural" in text_clean
-    is_urban = "urban" in text_clean or "street vendor" in text_clean or "metro cities" in text_clean
+    rural_indicators = [
+        "rural", "gram panchayat", "gramin", "panchayat", "village", "villages",
+        "kisan", "farmer", "agricultural", "pmay-g", "rural development"
+    ]
+    urban_indicators = [
+        "urban", "nagar nigam", "nagar palika", "municipality", "municipal corporation",
+        "street vendor", "svanidhi", "pmay-u", "nulm", "slum dweller"
+    ]
+
+    is_rural = any(ind in text_clean for ind in rural_indicators)
+    is_urban = any(ind in text_clean for ind in urban_indicators)
 
     if is_rural and not is_urban:
         return "Rural"
@@ -1270,14 +1396,30 @@ def extract_boolean_flags(text: str) -> dict:
     ]
     requires_bpl = any(kw in text_clean for kw in bpl_keywords)
 
-    # Disability Indicators (only if not an optional alternate clause like 'or disability certificate')
-    if "or disability certificate" in text_clean or "or divyang certificate" in text_clean:
+    # Disability Indicators: only mandatory if not part of an inclusive/alternative list
+    disjunctive_indicators = [
+        "any one of", "any of the following", "either of", "one of these",
+        "women belonging to scheduled", "sc / st", "bpl ration card",
+        "or disability", "or divyang", "or handicapped", "disadvantaged sections"
+    ]
+    is_disjunctive = any(di in text_clean for di in disjunctive_indicators)
+
+    exclusive_disability_keywords = [
+        "disability pension", "divyang pension", "handicapped pension",
+        "for persons with disabilities", "for person with disability",
+        "students with disabilities", "students with disability",
+        "disabled persons", "disabled person", "divyangjan", "specially abled",
+        "blindness", "locomotor disability", "hearing impaired", "visually impaired",
+        "benchmark disability", "disability certificate"
+    ]
+
+    if is_disjunctive:
         requires_disability = False
     else:
         disability_keywords = [
             "disability", "disabled", "divyang", "specially abled", "handicap", "orthopedic"
         ]
-        requires_disability = any(kw in text_clean for kw in disability_keywords)
+        requires_disability = any(kw in text_clean for kw in exclusive_disability_keywords) or any(kw in text_clean for kw in disability_keywords)
 
     return {
         "requires_bpl": requires_bpl,
@@ -1430,8 +1572,9 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
     ).strip()
 
     eligibility_text = (
-        row.get("Eligibility") or row.get("eligibility_criteria_text") or
-        row.get("eligibility_text") or details or "Resident Indian citizen meeting scheme guidelines"
+        row.get("eligibility") or row.get("Eligibility") or
+        row.get("eligibility_criteria_text") or row.get("eligibility_text") or
+        details or "Resident Indian citizen meeting scheme guidelines"
     ).strip()
 
     tags = str(row.get("tags") or "").strip()
@@ -1851,7 +1994,14 @@ def merge_scheme_records(existing: dict, incoming: dict) -> dict:
         inc_states = ["All"]
     
     combined_states = list(set([s for s in ex_states + inc_states if s and s != "All"]))
-    merged["eligible_states"] = json.dumps(combined_states if combined_states else ["All"])
+    if merged["state"] != "All":
+        if not combined_states:
+            combined_states = [merged["state"]]
+        elif merged["state"] not in combined_states:
+            combined_states.append(merged["state"])
+        merged["eligible_states"] = json.dumps(combined_states)
+    else:
+        merged["eligible_states"] = json.dumps(combined_states if combined_states else ["All"])
 
     # 6. Caste Categories Union
     try:
@@ -1954,7 +2104,11 @@ def merge_and_deduplicate_schemes(records: list) -> list:
             continue
 
         norm_name = normalize_canonical_name(name)
-        primary_key = norm_name if norm_name else sid
+        rec_state = str(rec.get("state", "All")).strip().lower()
+        if rec_state not in ["all", "central", ""]:
+            primary_key = f"{norm_name}_{rec_state}" if norm_name else sid
+        else:
+            primary_key = norm_name if norm_name else sid
 
         if primary_key not in schemes_by_key:
             schemes_by_key[primary_key] = rec
@@ -1969,8 +2123,15 @@ def merge_and_deduplicate_schemes(records: list) -> list:
         if rec_id not in schemes_by_id:
             schemes_by_id[rec_id] = rec
         else:
-            schemes_by_id[rec_id] = merge_scheme_records(schemes_by_id[rec_id], rec)
-            collision_count += 1
+            ex_st = schemes_by_id[rec_id].get("state", "All")
+            inc_st = rec.get("state", "All")
+            if ex_st.lower() == inc_st.lower():
+                schemes_by_id[rec_id] = merge_scheme_records(schemes_by_id[rec_id], rec)
+                collision_count += 1
+            else:
+                new_id = f"{rec_id}-{slugify(inc_st)}"
+                rec["scheme_id"] = new_id
+                schemes_by_id[new_id] = rec
 
     # Enforce audited scheme age bounds, refined life-stage tags, and beneficiary types (TICKET-101 / TICKET-102)
     for rec in schemes_by_id.values():
@@ -2025,6 +2186,22 @@ def merge_and_deduplicate_schemes(records: list) -> list:
             inferred_income = extract_income_cap(combined_inc_text, default_income=0)
             if inferred_income > 0:
                 rec["income_max"] = inferred_income
+
+        # 5. Extract caste categories from merged text if defaulted to ["All"]
+        cur_caste = rec.get("caste_categories")
+        if not cur_caste or cur_caste in ['["All"]', "All", "['All']"]:
+            combined_caste_text = f"{rec.get('name', '')} {rec.get('description', '')} {rec.get('eligibility_text', '')} {rec.get('benefits', '')}"
+            inferred_caste = extract_caste_categories(combined_caste_text)
+            if inferred_caste and inferred_caste != ["All"]:
+                rec["caste_categories"] = json.dumps(inferred_caste)
+
+        # 6. Extract residence type from merged text if defaulted to All
+        cur_res = str(rec.get("residence", "All")).strip()
+        if cur_res.lower() == "all":
+            combined_res_text = f"{rec.get('name', '')} {rec.get('description', '')} {rec.get('eligibility_text', '')} {rec.get('benefits', '')}"
+            inferred_res = extract_residence_type(combined_res_text)
+            if inferred_res in ["Rural", "Urban"]:
+                rec["residence"] = inferred_res
 
     deduplicated = sorted(list(schemes_by_id.values()), key=lambda x: x.get("name", ""))
     print(f"✓ Deduplicated {len(records)} records into {len(deduplicated)} unique schemes ({collision_count} merge collision(s) resolved)")
