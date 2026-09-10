@@ -61,6 +61,31 @@ RESTRICTIVE_OCCUPATION_GATES: List[Tuple[str, List[str]]] = [
     ("training programme for farmers", ["farmer"]),
     ("women farmers and farmers", ["farmer"]),
     ("brackish water aquaculture", ["farmer", "self-employed / artisan"]),
+    ("farmer", ["farmer"]),
+    ("kisan", ["farmer"]),
+    ("krishi", ["farmer"]),
+    ("fasal bima", ["farmer"]),
+    ("soil health", ["farmer"]),
+    ("berojgari bhatta", ["unemployed"]),
+    ("unemployment allowance", ["unemployed"]),
+    ("journalist", ["journalist"]),
+    ("gad-hanji", ["boatman"]),
+    ("senior scientist", ["scientist"]),
+    ("physical research laboratory", ["scientist"]),
+    ("prl award", ["scientist"]),
+    ("foreign training", ["salaried"]),
+    ("futureskills prime", ["salaried", "unemployed"]),
+    ("karya prashikshan", ["unemployed"]),
+    ("physical education trainer", ["teacher"]),
+    ("taxi driver", ["driver", "transport"]),
+    ("auto driver", ["driver", "transport"]),
+    ("vahana mitra", ["driver", "transport"]),
+    ("auto/taxi", ["driver", "transport"]),
+    ("driving license", ["driver", "transport"]),
+    ("repertory grant", ["artist"]),
+    ("research associate", ["researcher", "scientist"]),
+    ("young artist", ["artist"]),
+    ("coffee development", ["farmer"]),
 ]
 
 # Pan-India Statutory Minor & Child Labour Guardrails (Child Labour Act 2016 / Indian Contract Act 1872 / RTE Act 2009)
@@ -90,11 +115,44 @@ COMMERCIAL_AGRI_AQUA_KEYWORDS: List[str] = [
 
 EXEMPT_CHILD_EDUCATION_KEYWORDS: List[str] = [
     "girl child", "balika", "sukanya", "school student", "school girls",
-    "scholarship", "scholarships", "chhatravritti", "pre-matric", "post-matric",
+    "scholarship", "scholarships", "chhatravritti", "pre-matric", "pre matric",
     "poshan", "mid day meal", "mid-day meal", "child welfare", "anganwadi",
     "infant", "newborn", "pediatric", "immunization", "merit-cum-means",
     "tuition fee waiver", "student fellowship", "hostel for students"
 ]
+
+# Educational Level & Grade Taxonomies for Stage-Appropriate Student Matching
+SECONDARY_AND_POST_MATRIC_KEYWORDS: List[str] = [
+    "after matric", "post-matric", "post matric", "postmatric", "matric examination",
+    "passed matric", "passed 10th", "class 10", "class x", "class 11", "class xi",
+    "class 12", "class xii", "10+2", "10 + 2", "higher secondary", "senior secondary",
+    "intermediate examination", "secondary school examination", "matriculation",
+    "class ix", "class 9", "class 9th", "class 10th", "class 11th", "class 12th"
+]
+
+TERTIARY_AND_COLLEGE_DEGREE_KEYWORDS: List[str] = [
+    "degree", "diploma", "undergraduate", "postgraduate", "post-graduate", "post graduation",
+    "master's", "masters degree", "bachelor", "bachelor's", "phd", "m.phil", "mphil",
+    "doctorate", "engineering college", "engineering student", "polytechnic", "iti level", "iti course",
+    "higher professional", "higher education", "fellowship", "internship",
+    "college", "university", "iit", "nit", "iim", "mbbs", "medical college",
+    "b.tech", "btech", "m.tech", "mtech", "b.sc", "m.sc", "b.a", "m.a",
+    "b.com", "m.com", "bca", "mca", "bba", "mba", "bed", "b.ed", "llb", "llm"
+]
+
+FACULTY_AND_EMPLOYEE_KEYWORDS: List[str] = [
+    "college teachers", "librarians", "vice chancellors", "professors", "faculty",
+    "commission members", "ugc officers", "assistant professor", "associate professor",
+    "beemit vyakti", "insured person under esic", "leprosy patient", "lepers"
+]
+
+EXEMPT_PRIMARY_MIDDLE_KEYWORDS: List[str] = [
+    "class 1", "class 2", "class 3", "class 4", "class 5", "class 6", "class 7", "class 8",
+    "class i", "class ii", "class iii", "class iv", "class v", "class vi", "class vii", "class viii",
+    "primary school", "middle school", "elementary", "pre-matric", "pre matric", "prematric",
+    "pm poshan", "mid-day meal", "midday meal", "middle merit", "child welfare"
+]
+
 
 
 
@@ -262,6 +320,73 @@ class EligibilityMatcher:
             if (has_enterprise_kw or has_agri_aqua_kw) and not is_child_exempt:
                 return False, 0, []
 
+        # (e) Educational Level & Grade Incompatibility Hard Gate
+        scheme_name_lower = scheme.get("name", "").strip().lower()
+
+        # Primary / Middle school children (<14 yrs, Classes 1-8)
+        if profile.age < 14:
+            # 1. Post-matric / Senior Secondary / College keywords in title without pre-matric coverage
+            has_post_in_title = any(pm in scheme_name_lower for pm in [
+                "post matric", "post-matric", "postmatric", "class 9", "class ix",
+                "class 10", "class x", "class 11", "class xi", "class 12", "class xii",
+                "10+2", "higher secondary", "senior secondary", "college", "degree",
+                "diploma", "iti", "engineering", "undergraduate", "postgraduate", "phd", "m.phil",
+                "middle merit"
+            ])
+            has_pre_in_title = any(pre in scheme_name_lower for pre in [
+                "pre-matric", "pre matric", "prematric", "class 1", "class 2", "class 3",
+                "class 4", "class 5", "class 6", "class 7", "class 8", "middle merit", "poshan"
+            ])
+            # If title specifies post-matric / 10+2 without pre-matric
+            if has_post_in_title and not has_pre_in_title and "middle merit" not in scheme_name_lower:
+                return False, 0, []
+
+            # 2. Secondary board exams or college requirements in text without primary/elementary coverage
+            has_secondary_kw = any(kw in scheme_full_text for kw in SECONDARY_AND_POST_MATRIC_KEYWORDS)
+            has_tertiary_kw = any(kw in scheme_full_text for kw in TERTIARY_AND_COLLEGE_DEGREE_KEYWORDS)
+            has_primary_exempt = any(pw in scheme_full_text for pw in EXEMPT_PRIMARY_MIDDLE_KEYWORDS)
+
+            if (has_secondary_kw or has_tertiary_kw) and not has_primary_exempt:
+                return False, 0, []
+
+            # 3. Explicit post-matric / secondary grade thresholds
+            if any(req in scheme_full_text for req in [
+                "after matric", "post-matric only", "degree course", "diploma level",
+                "iti level", "engineering college", "undergraduate course", "class ix level",
+                "class 9 level", "class 10 examination", "class x examination", "10th pass",
+                "12th pass", "10+2 examination", "matric examination", "passed matric",
+                "class 10th-12th", "class 11 and 12", "class 11th and 12th"
+            ]) and not any(pre in scheme_full_text for pre in ["pre & post", "pre-and-post", "class 1 to 10", "classes 1 to 10", "primary to", "middle merit"]):
+                return False, 0, []
+
+
+        # Secondary / High school adolescents (<18 yrs) cannot qualify for tertiary/college degrees or faculty grants
+        if profile.age < 18:
+            has_tertiary_kw = any(kw in scheme_full_text for kw in TERTIARY_AND_COLLEGE_DEGREE_KEYWORDS)
+            is_school_level = any(sw in scheme_full_text for sw in ["school", "class 9", "class 10", "class 11", "class 12", "10+2", "higher secondary", "balika", "girl child", "intermediate"])
+            if has_tertiary_kw and not is_school_level:
+                return False, 0, []
+
+        # Students & minors cannot qualify for adult faculty grants, municipal awards, or adult cash allowances
+        if profile.age < 18 or user_life_stage == "student" or user_occupation == "student":
+            if any(kw in scheme_full_text for kw in FACULTY_AND_EMPLOYEE_KEYWORDS):
+                return False, 0, []
+
+            has_institutional_kw = any(kw in scheme_full_text for kw in [
+                "bed & breakfast", "homestay establishment", "sanitation reward",
+                "shahar yojna", "swachata puraskar", "travel support scheme", "travel grant"
+            ])
+            if has_institutional_kw and not any(cw in scheme_full_text for cw in ["scholarship", "poshan", "pre-matric", "school"]):
+                return False, 0, []
+
+            if profile.age < 18:
+                has_adult_cash_kw = any(kw in scheme_full_text for kw in [
+                    "pyari behna", "ladli behna", "nari samman", "sukh-samman",
+                    "sukh samman", "mahila samman savings"
+                ])
+                if has_adult_cash_kw and not any(cw in scheme_full_text for cw in ["balika", "sukanya", "kanya sumangala", "majhi bhagyashree"]):
+                    return False, 0, []
+
 
 
         # 3.2 Marital Status Incompatibility Gate
@@ -308,8 +433,41 @@ class EligibilityMatcher:
         user_state_lower = user_state.lower()
         state_matched = False
         if scheme_state_lower in ["all", "all india"] or "all" in eligible_states_set:
-            state_matched = True
-            reasons.append("Available central scheme across all States/UTs")
+            # Detect single state exclusivity embedded in description or portal requirements
+            exclusive_state_signals = [
+                ("rajasthan sso", "rajasthan"),
+                ("jan aadhar", "rajasthan"),
+                ("jan-aadhaar", "rajasthan"),
+                ("bhamashah", "rajasthan"),
+                ("gargi puruskar", "rajasthan"),
+                ("saraswati vidya yojana", "chhattisgarh"),
+                ("ysr vahana mitra", "andhra pradesh"),
+                ("government of bihar", "bihar"),
+                ("government of chhattisgarh", "chhattisgarh"),
+                ("government of rajasthan", "rajasthan"),
+                ("government of gujarat", "gujarat"),
+                ("government of maharashtra", "maharashtra"),
+                ("government of karnataka", "karnataka"),
+                ("government of kerala", "kerala"),
+                ("government of tamil nadu", "tamil nadu"),
+                ("government of punjab", "punjab"),
+                ("government of haryana", "haryana"),
+                ("government of odisha", "odisha"),
+                ("government of west bengal", "west bengal"),
+                ("government of assam", "assam"),
+                ("government of telangana", "telangana"),
+                ("government of uttar pradesh", "uttar pradesh"),
+                ("government of uttarakhand", "uttarakhand"),
+                ("government of jharkhand", "jharkhand"),
+            ]
+            has_other_state_sig = False
+            for sig, st in exclusive_state_signals:
+                if sig in scheme_full_text and user_state_lower != st:
+                    has_other_state_sig = True
+                    break
+            if not has_other_state_sig:
+                state_matched = True
+                reasons.append("Available central scheme across all States/UTs")
         elif scheme_state_lower == user_state_lower or user_state_lower in eligible_states_set:
             state_matched = True
             reasons.append(f"Targeted state scheme for residents of {user_state}")

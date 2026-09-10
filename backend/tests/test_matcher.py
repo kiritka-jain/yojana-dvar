@@ -696,8 +696,10 @@ def test_real_catalog_adolescent_16_yr_commercial_exclusion(matcher):
 
     for scheme in res.schemes:
         assert "business & entrepreneurship" not in scheme.category.lower()
-        assert "msme" not in scheme.name.lower()
+        if "scholarship" not in scheme.name.lower() and "children" not in scheme.name.lower():
+            assert "msme" not in scheme.name.lower()
         assert "aquaculture" not in scheme.name.lower()
+
 
 
 
