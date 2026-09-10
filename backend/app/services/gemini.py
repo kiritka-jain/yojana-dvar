@@ -149,7 +149,9 @@ Guardrails & Instructions:
 2. Conciseness: The "summary" MUST be strictly 1–2 short, punchy sentences (under 40 words) directly stating what the beneficiary receives and why she qualifies. Do NOT write lengthy paragraphs.
 3. Advisory only: Do NOT guarantee official approval; state that the applicant meets the eligibility criteria and is encouraged to apply.
 4. Language: Generate the entire response strictly in {lang_name}.
-5. Document Checklist Note: If scheme is widow pension or marital assistance, explicitly highlight necessary certificates (e.g. Husband's Death Certificate or Marriage Certificate).
+5. Document Checklist & Statutory Requirements:
+   - If scheme is widow pension or marital assistance, explicitly highlight necessary certificates (e.g. Husband's Death Certificate or Marriage Certificate).
+   - If applicant is under 18 years (minor child/student): Under the Child & Adolescent Labour Act 2016 and Indian Contract Act 1872, explain that this is an educational/welfare benefit for the child, and application/disbursement is facilitated via the parent or legal guardian.
 6. Output Format: Return ONLY a valid JSON object matching this structure:
 {{
   "summary": "1-2 short, crystal-clear sentences (under 40 words) directly explaining what the applicant receives and why she qualifies.",
@@ -158,6 +160,7 @@ Guardrails & Instructions:
   "next_steps": "Actionable instructions on where to apply online or offline."
 }}"""
         return prompt
+
 
     def _build_portfolio_prompt(self, top_schemes: List[Dict[str, Any]], profile: ProfileInput, lang: str) -> str:
         """Constructs multi-scheme portfolio summary prompt within token budget (Ticket 4.3)."""
@@ -183,8 +186,9 @@ Top Matched Schemes ({len(top_schemes)} schemes):
 
 Instructions:
 1. Write an encouraging holistic summary in {lang_name} describing the combined impact of these entitlements.
-2. Provide a 3-step prioritized action plan for applying.
-3. Return ONLY a valid JSON object matching:
+2. If applicant is a minor (under 18 years / student), emphasize education, nutrition, and child welfare development, highlighting parent/guardian facilitation.
+3. Provide a 3-step prioritized action plan for applying.
+4. Return ONLY a valid JSON object matching:
 {{
   "holistic_summary": "Encouraging summary connecting the schemes to her life stage and goals.",
   "action_plan": ["Step 1: ...", "Step 2: ...", "Step 3: ..."]
@@ -253,10 +257,16 @@ Instructions:
                 benefits_hi,
                 "आधिकारिक सरकारी पोर्टल अथवा स्थानीय सेवा केंद्र के माध्यम से प्रत्यक्ष लाभ (DBT) सुविधा।"
             ]
-            if app_process:
-                next_steps = f"{app_process} (आधिकारिक पोर्टल: {apply_url})"
+            if profile.age < 18:
+                if app_process:
+                    next_steps = f"{app_process} (आधिकारिक पोर्टल: {apply_url}। 18 वर्ष से कम आयु के लिए आवेदन माता-पिता/अभिभावक के माध्यम से किया जाता है।)"
+                else:
+                    next_steps = f"माता-पिता/अभिभावक के साथ आवश्यक दस्तावेजों सहित आधिकारिक पोर्टल ({apply_url}) पर आवेदन करें।"
             else:
-                next_steps = f"आवश्यक दस्तावेजों के साथ आधिकारिक पोर्टल ({apply_url}) पर आवेदन करें।"
+                if app_process:
+                    next_steps = f"{app_process} (आधिकारिक पोर्टल: {apply_url})"
+                else:
+                    next_steps = f"आवश्यक दस्तावेजों के साथ आधिकारिक पोर्टल ({apply_url}) पर आवेदन करें।"
             disclaimer = DISCLAIMER_HI
         else:
             if has_specific_stage:
@@ -277,11 +287,18 @@ Instructions:
                 benefits_raw,
                 "Direct Benefit Transfer (DBT) and entitlement distribution through official nodal channels."
             ]
-            if app_process:
-                next_steps = f"{app_process} (Portal: {apply_url})"
+            if profile.age < 18:
+                if app_process:
+                    next_steps = f"{app_process} (Portal: {apply_url}. Note: For applicants under 18, applications and bank accounts are facilitated by the parent or legal guardian.)"
+                else:
+                    next_steps = f"Apply online through the nodal portal at {apply_url} via parent/legal guardian with required verification documents."
             else:
-                next_steps = f"Apply online through the nodal portal at {apply_url} with required verification documents."
+                if app_process:
+                    next_steps = f"{app_process} (Portal: {apply_url})"
+                else:
+                    next_steps = f"Apply online through the nodal portal at {apply_url} with required verification documents."
             disclaimer = DISCLAIMER_EN
+
 
         return ExplainResponse(
             scheme_id=scheme.get("scheme_id", "scheme"),

@@ -285,3 +285,57 @@ def test_generate_portfolio_summary_async_mock(service, sample_scheme, sample_pr
             assert result.is_fallback is False
             assert "maternal support" in result.holistic_summary
             assert len(result.action_plan) == 3
+
+
+def test_gemini_prompt_minor_statutory_directive(service):
+    """Verify that prompt builders include statutory minor directives (Child Labour Act 2016 / Contract Act 1872)."""
+    minor_profile = ProfileInput(
+        state="Gujarat",
+        age=10,
+        gender="Female",
+        caste="General",
+        income=0,
+        life_stage="student"
+    )
+    scheme = {
+        "name": "Pre-Matric Scholarship",
+        "ministry": "Ministry of Social Justice",
+        "description": "Scholarship for school students",
+        "beneficiary_type": "School Students",
+        "benefits": "Tuition and book grant",
+        "eligibility_text": "Class 1 to 10 students",
+        "documents_required": "School ID, Aadhaar",
+        "application_process": "Apply via National Scholarship Portal"
+    }
+    prompt = service._build_prompt(scheme, minor_profile, lang="en")
+    assert "Child & Adolescent Labour Act 2016" in prompt
+    assert "Indian Contract Act 1872" in prompt
+    assert "legal guardian" in prompt
+
+
+def test_gemini_fallback_minor_guardian_guidance(service):
+    """Verify fallback next_steps contains parent/guardian facilitation guidance for minors (<18)."""
+    minor_profile = ProfileInput(
+        state="Gujarat",
+        age=10,
+        gender="Female",
+        caste="General",
+        income=0,
+        life_stage="student"
+    )
+    scheme = {
+        "scheme_id": "pre-matric-scholarship",
+        "name": "Pre-Matric Scholarship",
+        "benefits": "Rs 3000 annual scholarship",
+        "documents_required": "Aadhaar, School Bonafide",
+        "application_process": "Register on scholarships.gov.in",
+        "apply_url": "https://scholarships.gov.in"
+    }
+    # English fallback
+    res_en = service._generate_fallback_explanation(scheme, minor_profile, lang="en")
+    assert "parent or legal guardian" in res_en.next_steps
+
+    # Hindi fallback
+    res_hi = service._generate_fallback_explanation(scheme, minor_profile, lang="hi")
+    assert "माता-पिता/अभिभावक" in res_hi.next_steps
+
