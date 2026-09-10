@@ -628,4 +628,77 @@ def test_minor_student_permitted_for_child_scholarships(matcher, base_scheme):
     assert score >= 50
 
 
+def test_real_catalog_minor_age_10_student_zero_commercial_schemes(matcher):
+    """
+    Integration Test: Matches an age 10 student against the live 3,288-scheme catalog.
+    Verifies that NO commercial enterprise, MSME, industrial, loan, or aquaculture schemes are returned.
+    """
+    profile = ProfileInput(age=10, gender="Female", state="Gujarat", life_stage="student", limit=50)
+    res = matcher.match_profile(profile)
+
+
+    assert res.count > 0, "Expected at least 1 educational/child scheme for age 10"
+
+    commercial_terms = [
+        "msme", "micro enterprise", "small enterprise", "medium enterprise",
+        "mega industry", "large industry", "thrust sector", "industrial unit",
+        "term loan", "working capital", "interest subsidy", "capital subsidy",
+        "sgst reimbursement", "stamp duty", "epf reimbursement", "patent registration",
+        "quality certification", "power connection charges", "aquaculture",
+        "brackish water", "training programme for farmers"
+    ]
+
+    for scheme in res.schemes:
+        name_lower = scheme.name.lower()
+        cat_lower = scheme.category.lower()
+        desc_lower = scheme.description.lower()
+        full_text = f"{name_lower} {cat_lower} {desc_lower}"
+
+        # Must not be Business & Entrepreneurship
+        assert "business & entrepreneurship" not in cat_lower, f"Violating scheme matched: {scheme.name}"
+
+        # Must not match commercial enterprise terms
+        for term in commercial_terms:
+            assert term not in name_lower, f"Commercial term '{term}' found in matched scheme '{scheme.name}'"
+
+
+def test_real_catalog_pan_india_states_minor_safety(matcher):
+    """
+    Pan-India Integration Test: Scans major states across North, South, East, West,
+    and Central India to verify consistent zero commercial leakage for minors.
+    """
+    pan_india_states = [
+        "Gujarat", "Maharashtra", "Uttar Pradesh", "Tamil Nadu", "Bihar",
+        "Karnataka", "Rajasthan", "West Bengal", "Madhya Pradesh", "Kerala",
+        "Assam", "Odisha", "Punjab", "Haryana", "Telangana", "Andhra Pradesh"
+    ]
+
+    for state in pan_india_states:
+        profile = ProfileInput(age=10, gender="Female", state=state, life_stage="student", limit=50)
+        res = matcher.match_profile(profile)
+
+        for scheme in res.schemes:
+            assert "business & entrepreneurship" not in scheme.category.lower(), (
+                f"State '{state}' leaked business scheme '{scheme.name}' to minor"
+            )
+            assert "msme" not in scheme.name.lower(), (
+                f"State '{state}' leaked MSME scheme '{scheme.name}' to minor"
+            )
+
+
+def test_real_catalog_adolescent_16_yr_commercial_exclusion(matcher):
+    """
+    Adolescent Boundary Test: Verifies that a 16-year-old high school student
+    remains protected from commercial debt/MSME/industrial schemes.
+    """
+    profile_teen = ProfileInput(age=16, gender="Female", state="Gujarat", life_stage="student", limit=50)
+    res = matcher.match_profile(profile_teen)
+
+    for scheme in res.schemes:
+        assert "business & entrepreneurship" not in scheme.category.lower()
+        assert "msme" not in scheme.name.lower()
+        assert "aquaculture" not in scheme.name.lower()
+
+
+
 

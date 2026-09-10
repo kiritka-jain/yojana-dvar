@@ -89,12 +89,13 @@ COMMERCIAL_AGRI_AQUA_KEYWORDS: List[str] = [
 ]
 
 EXEMPT_CHILD_EDUCATION_KEYWORDS: List[str] = [
-    "girl child", "balika", "sukanya", "school", "scholarship", "vidyarthi",
-    "chhatravritti", "pre-matric", "post-matric", "poshan", "mid day meal",
-    "mid-day meal", "child welfare", "anganwadi", "infant", "newborn",
-    "pediatric", "immunization", "education", "tuition", "hostel for students",
-    "shiksha", "vidya", "merit-cum-means"
+    "girl child", "balika", "sukanya", "school student", "school girls",
+    "scholarship", "scholarships", "chhatravritti", "pre-matric", "post-matric",
+    "poshan", "mid day meal", "mid-day meal", "child welfare", "anganwadi",
+    "infant", "newborn", "pediatric", "immunization", "merit-cum-means",
+    "tuition fee waiver", "student fellowship", "hostel for students"
 ]
+
 
 
 class EligibilityMatcher:
@@ -246,15 +247,21 @@ class EligibilityMatcher:
         # commercial aquaculture/farming, debt-bearing loans, and adult trade labor schemes.
         if profile.age < 18 or user_life_stage == "student" or user_occupation == "student":
             category_lower = scheme.get("_category_lower", str(scheme.get("category", "")).strip().lower())
-            is_commercial_category = any(cat in category_lower for cat in [
-                "business & entrepreneurship", "banking, financial services and insurance", "business", "entrepreneurship"
+            is_business_cat = any(cat in category_lower for cat in [
+                "business & entrepreneurship", "business", "entrepreneurship"
             ])
+            is_banking_cat = "banking, financial services and insurance" in category_lower
             has_enterprise_kw = any(kw in scheme_full_text for kw in COMMERCIAL_ENTERPRISE_KEYWORDS)
             has_agri_aqua_kw = any(kw in scheme_full_text for kw in COMMERCIAL_AGRI_AQUA_KEYWORDS)
             is_child_exempt = any(cw in scheme_full_text for cw in EXEMPT_CHILD_EDUCATION_KEYWORDS)
 
-            if (is_commercial_category or has_enterprise_kw or has_agri_aqua_kw) and not is_child_exempt:
+            if is_business_cat and not is_child_exempt:
                 return False, 0, []
+            if is_banking_cat and not is_child_exempt:
+                return False, 0, []
+            if (has_enterprise_kw or has_agri_aqua_kw) and not is_child_exempt:
+                return False, 0, []
+
 
 
         # 3.2 Marital Status Incompatibility Gate
