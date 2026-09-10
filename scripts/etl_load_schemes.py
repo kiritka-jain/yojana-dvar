@@ -1015,6 +1015,16 @@ def extract_age_bounds(text: str, default_min: int = 0, default_max: int = 100) 
         if 1 <= min_age <= 100:
             return min_age, default_max
 
+    # Pattern 7b: "above X years / over X years / exceeding X years"
+    m = re.search(
+        r'(?:above|over|exceeding|minimum\s+(?:of\s+)?)\s*(\d{1,2})\s*(?:years|yrs)(?:\s+of\s+age)?(?!\s*%)',
+        text_masked
+    )
+    if m:
+        min_age = int(m.group(1))
+        if 1 <= min_age <= 100:
+            return min_age, default_max
+
     # Pattern 8: "at least X years / minimum age of X years / completed X years"
     m = re.search(
         r'(?:at\s+least|atleast|minimum\s+(?:age\s+(?:of|is)\s+)?|completed\s+(?:the\s+age\s+of\s+)?)\s*(\d{1,2})\s*(?:years|yrs)(?!\s*%)',
@@ -1033,7 +1043,12 @@ def extract_age_bounds(text: str, default_min: int = 0, default_max: int = 100) 
     if m:
         max_age = int(m.group(1))
         if 1 <= max_age <= 120:
-            return default_min, max_age
+            lower = default_min
+            if "post-graduate" in text_clean or "postgraduate" in text_clean or "phd" in text_clean or "fellowship" in text_clean or "master" in text_clean:
+                lower = 21
+            elif "undergraduate" in text_clean or "degree" in text_clean or "bachelor" in text_clean or "college" in text_clean:
+                lower = 17
+            return lower, max_age
 
     # Pattern 10: "aged below (\d+) years"
     m = re.search(r'aged\s+below\s+(\d{1,2})\s*(?:years|yrs)?', text_masked)
@@ -1050,15 +1065,15 @@ def extract_age_bounds(text: str, default_min: int = 0, default_max: int = 100) 
             return min_age, default_max
 
     # Educational class mappings if narrative refers explicitly to school/college tiers
-    if re.search(r'\b(?:class|grade|standard)\s+(?:9|10|ix|x)\b', text_clean) or "secondary school" in text_clean or "pre-matric" in text_clean:
+    if re.search(r'\b(?:class|classes|grade|grades|standard|standards)\s+(?:9|10|ix|x)\b', text_clean) or "secondary school" in text_clean or "pre-matric" in text_clean:
         return 14, 16
-    if re.search(r'\b(?:class|grade|standard)\s+(?:11|12|xi|xii)\b', text_clean) or "higher secondary" in text_clean or "intermediate" in text_clean:
+    if re.search(r'\b(?:class|classes|grade|grades|standard|standards)\s+(?:11|12|xi|xii)\b', text_clean) or "higher secondary" in text_clean or "intermediate" in text_clean:
         return 16, 18
-    if re.search(r'\b(?:class|grade|standard)\s+(?:1|2|3|4|5|6|7|8)\b', text_clean) or "primary school" in text_clean or "middle school" in text_clean:
+    if re.search(r'\b(?:class|classes|grade|grades|standard|standards)\s+(?:1|2|3|4|5|6|7|8)\b', text_clean) or "primary school" in text_clean or "middle school" in text_clean:
         return 6, 14
     if "undergraduate" in text_clean or "bachelor" in text_clean or "polytechnic" in text_clean or "diploma course" in text_clean:
         return 17, 25
-    if "postgraduate" in text_clean or "master's" in text_clean or "masters" in text_clean or "phd" in text_clean or "doctorate" in text_clean or "fellowship" in text_clean:
+    if "post-graduate" in text_clean or "postgraduate" in text_clean or "master's" in text_clean or "masters" in text_clean or "phd" in text_clean or "doctorate" in text_clean or "fellowship" in text_clean:
         return 20, 32
 
     return default_min, default_max

@@ -117,11 +117,15 @@ def validate_dataset():
     else:
         print(f"✓ PASS: Zero senior citizen pensions have age_min < 60.")
 
-    # 4. Demographic & Distribution Stats
+    # 4. Demographic & Distribution Thresholds (Epic 4: Ticket 4.2)
     bounded_age_count = sum(1 for s in schemes if not (int(s.get("age_min", 0)) == 0 and int(s.get("age_max", 100)) == 100))
     income_cap_count = sum(1 for s in schemes if int(s.get("income_max", 0)) > 0)
+    s5_30_count = sum(1 for s in schemes if int(s.get("age_min", 0)) == 5 and int(s.get("age_max", 100)) == 30)
     
     stage_counts = {}
+    caste_set = set()
+    residence_set = set()
+    
     for s in schemes:
         tags = s.get("life_stage_tags", [])
         if isinstance(tags, str):
@@ -131,12 +135,41 @@ def validate_dataset():
                 tags = []
         for t in tags:
             stage_counts[t] = stage_counts.get(t, 0) + 1
+            
+        caste_raw = s.get("caste_categories", "[\"All\"]")
+        if isinstance(caste_raw, str):
+            try:
+                parsed_caste = json.loads(caste_raw)
+                caste_set.update(parsed_caste if isinstance(parsed_caste, list) else [parsed_caste])
+            except Exception:
+                caste_set.add(caste_raw)
+        elif isinstance(caste_raw, list):
+            caste_set.update(caste_raw)
+            
+        residence = s.get("residence", "All")
+        residence_set.add(str(residence).strip().capitalize())
+
+    bounded_pct = (bounded_age_count / len(schemes)) * 100
+    income_pct = (income_cap_count / len(schemes)) * 100
+    s5_30_pct = (s5_30_count / len(schemes)) * 100
 
     print(f"\n📊 Summary Statistics:")
-    print(f"   - Schemes with bounded age filters: {bounded_age_count} / {len(schemes)} ({bounded_age_count/len(schemes)*100:.1f}%)")
-    print(f"   - Schemes with extracted income caps: {income_cap_count} / {len(schemes)} ({income_cap_count/len(schemes)*100:.1f}%)")
+    print(f"   - Schemes with bounded age filters: {bounded_age_count} / {len(schemes)} ({bounded_pct:.1f}%)")
+    print(f"   - Schemes with generic 5-30 student fallback: {s5_30_count} / {len(schemes)} ({s5_30_pct:.2f}%)")
+    print(f"   - Schemes with extracted income caps: {income_cap_count} / {len(schemes)} ({income_pct:.1f}%)")
+    print(f"   - Caste categories identified: {sorted(list(caste_set))}")
+    print(f"   - Residence scopes identified: {sorted(list(residence_set))}")
     print(f"   - Life stage distribution: {stage_counts}")
+
+    # Assertions for Quality Gate
+    assert bounded_pct >= 75.0, f"❌ FAIL: Expected >= 75% bounded age schemes, got {bounded_pct:.1f}%"
+    assert s5_30_pct <= 5.0, f"❌ FAIL: Expected <= 5% generic 5-30 fallback, got {s5_30_pct:.2f}%"
+    assert income_pct >= 20.0, f"❌ FAIL: Expected >= 20% income caps extracted, got {income_pct:.1f}%"
+    assert {"SC", "ST", "OBC", "General", "All"}.issubset(caste_set), f"❌ FAIL: Missing required caste categories in {caste_set}"
+    assert {"Rural", "Urban", "All"}.issubset(residence_set), f"❌ FAIL: Missing required residence types in {residence_set}"
+
     print(f"\n✅ DATASET INTEGRITY & QUALITY VALIDATION PASSED!")
 
 if __name__ == "__main__":
     validate_dataset()
+

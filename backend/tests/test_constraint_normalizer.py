@@ -159,3 +159,48 @@ def test_kaggle_dataset_extracted_constraints():
     ignwps = schemes_by_id.get("indira-gandhi-national-widow-pension-scheme") or schemes_by_id.get("ignwps-pension") or schemes_by_id.get("indira-gandhi-national-widow-pension-scheme-ignwps")
     assert ignwps is not None
     assert ignwps["age_min"] >= 18
+
+# =============================================================================
+# 7. Additional Edge Case Tests (Epic 4: Ticket 4.1)
+# =============================================================================
+
+@pytest.mark.parametrize("narrative,expected_min,expected_max", [
+    ("Super senior citizens aged 80 years and above receiving special monthly allowance.", 80, 100),
+    ("Senior citizens above 65 years of age.", 65, 100),
+    ("Elderly women aged 70 years and above.", 70, 100),
+    ("ITI / Vocational training program for youth aged 15 to 29 years.", 15, 29),
+    ("Post-graduate research fellowship for scholars up to 35 years.", 21, 35),
+    ("Girl students studying in Class 1 to 8 in government schools.", 6, 14),
+    ("High school girl students in Classes 11 and 12.", 16, 18),
+])
+def test_edge_case_age_bounds(narrative, expected_min, expected_max):
+    min_age, max_age = extract_age_bounds(narrative)
+    assert min_age == expected_min
+    assert max_age == expected_max
+
+@pytest.mark.parametrize("narrative,expected_income", [
+    ("Annual household income strictly below ₹ 1,00,000/- p.a.", 100000),
+    ("Family income ceiling of Rs. 48,000 per annum for rural applicants.", 48000),
+    ("Parental annual income limit Rs. 6.00 Lakhs per annum.", 600000),
+    ("Income limit of Rs. 8 Lakh per year under EWS criteria.", 800000),
+    ("No ceiling on annual family income.", 0),
+])
+def test_edge_case_income_caps(narrative, expected_income):
+    income = extract_income_cap(narrative)
+    assert income == expected_income
+
+def test_diverse_caste_and_residence_scenarios():
+    # EBC & Minority
+    minority_text = "Targeting Economically Backward Classes (EBC) and minority communities."
+    caste = extract_caste_categories(minority_text)
+    assert "OBC" in caste or "General" in caste
+
+    # Tribal / PVTG
+    st_text = "Assistance to primitive tribal groups and Scheduled Tribes (ST)."
+    assert "ST" in extract_caste_categories(st_text)
+
+    # Rural Panchayat vs Municipal Urban
+    assert extract_residence_type("Rural cottage industries in panchayat samiti") == "Rural"
+    assert extract_residence_type("Municipal corporation street vendors") == "Urban"
+    assert extract_residence_type("Applicable across state without regional restrictions") == "All"
+
