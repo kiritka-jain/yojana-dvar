@@ -613,14 +613,19 @@ class GovTransEngine:
             text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
 
         # Translate remaining common keywords while keeping URLs safe
-        # Extract URLs temporarily
+        # Extract URLs temporarily (case-insensitive to protect Https:// and .IN domains)
         url_tokens = {}
         def _save_url(m):
             token = f"__URL_TOKEN_{len(url_tokens)}__"
             url_tokens[token] = m.group(0)
             return token
 
-        text_safe = re.sub(r'(https?://[^\s"\'\)<>]+|www\.[^\s"\'\)<>]+|[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)', _save_url, text)
+        text_safe = re.sub(
+            r'(https?://[^\s"\'\)<>]+|www\.[^\s"\'\)<>]+|[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)', 
+            _save_url, 
+            text, 
+            flags=re.IGNORECASE
+        )
 
         # Translate keywords in safe text
         text_translated = cls._apply_word_translations(text_safe)

@@ -239,3 +239,32 @@ class TestPersonaAcceptance:
             is_delhi = sch_state == "delhi" or "delhi" in eligible_states
             assert is_central or is_delhi, f"Foreign state scheme {scheme.name} ({scheme.state}) matched Delhi student"
 
+    def test_persona_bilingual_hindi_fidelity(self):
+        """
+        Ticket YD-I18N-401 & YD-I18N-403: E2E Acceptance Test for Hindi localization across personas.
+        Verifies that matched schemes for all personas have non-empty Hindi names, guidelines, and benefits.
+        """
+        persona = ProfileInput(
+            age=24,
+            gender="Female",
+            state="Uttar Pradesh",
+            marital_status="unmarried",
+            caste="OBC",
+            income=80000,
+            residence="Rural",
+            life_stage="student",
+            occupation="Student",
+            is_bpl=False,
+            has_disability=False,
+            limit=20
+        )
+
+        resp = matcher_service.match_profile(persona)
+        assert resp.count > 0
+
+        for scheme in resp.schemes:
+            assert scheme.name_hi is not None and len(scheme.name_hi) > 0, f"Scheme {scheme.scheme_id} missing name_hi"
+            assert scheme.application_process_hi is not None and len(scheme.application_process_hi) > 0, f"Scheme {scheme.scheme_id} missing application_process_hi"
+            assert scheme.ministry_hi is not None and len(scheme.ministry_hi) > 0, f"Scheme {scheme.scheme_id} missing ministry_hi"
+
+
