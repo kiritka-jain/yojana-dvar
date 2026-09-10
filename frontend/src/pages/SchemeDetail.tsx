@@ -44,7 +44,10 @@ import {
   Landmark,
   Laptop,
   FileDown,
-  Lock
+  Lock,
+  GraduationCap,
+  Stethoscope,
+  Briefcase
 } from 'lucide-react';
 import { extractUrls } from '../utils/urlParser';
 
@@ -207,6 +210,395 @@ function condenseToShortSummary(text: string, maxSentences = 2, maxChars = 220):
   return result;
 }
 
+interface OfflineTouchpoint {
+  id: string;
+  icon: React.ComponentType<{ className?: string }>;
+  cardClass: string;
+  iconBgClass: string;
+  titleClass: string;
+  roleClass: string;
+  badgeBorderClass: string;
+  badgeTextClass: string;
+  badgeIconClass: string;
+  title: string;
+  role: string;
+  action: string;
+  badge: string;
+}
+
+function getOfflineTouchpoints(scheme: SchemeMatchResult, lang: 'en' | 'hi'): OfflineTouchpoint[] {
+  const cat = (scheme.category || '').toLowerCase();
+  const tags = (scheme.life_stage_tags || '').toLowerCase();
+  const benType = (scheme.beneficiary_type || '').toLowerCase();
+  const name = (scheme.name || '').toLowerCase();
+  const desc = (scheme.description || '').toLowerCase();
+
+  const isStudent = 
+    cat.includes('education') || 
+    cat.includes('scholarship') || 
+    tags.includes('student') || 
+    tags.includes('youth') || 
+    benType.includes('student') || 
+    benType.includes('scholar') || 
+    benType.includes('children') || 
+    benType.includes('girl child') || 
+    benType.includes('girls') || 
+    name.includes('scholarship') || 
+    name.includes('student') || 
+    name.includes('fellowship') || 
+    name.includes('school') || 
+    name.includes('merit') || 
+    name.includes('ladli') || 
+    name.includes('pragati') || 
+    name.includes('saksham') || 
+    name.includes('super 30') || 
+    name.includes('internship') || 
+    name.includes('coaching') || 
+    desc.includes('scholarship') || 
+    desc.includes('secondary education');
+
+  const isMaternity = 
+    cat.includes('health') || 
+    cat.includes('maternity') || 
+    cat.includes('nutrition') || 
+    tags.includes('pregnant') || 
+    tags.includes('lactating') || 
+    tags.includes('infant') || 
+    benType.includes('pregnant') || 
+    benType.includes('lactating') || 
+    benType.includes('mother') || 
+    name.includes('matru') || 
+    name.includes('pmmvy') || 
+    name.includes('maternity') || 
+    name.includes('poshan') || 
+    name.includes('janani') || 
+    desc.includes('pregnant') || 
+    desc.includes('maternity');
+
+  const isPension = 
+    cat.includes('pension') || 
+    cat.includes('social security') || 
+    tags.includes('widow') || 
+    tags.includes('senior') || 
+    tags.includes('pwd') || 
+    tags.includes('disability') || 
+    benType.includes('widow') || 
+    benType.includes('elderly') || 
+    benType.includes('senior') || 
+    benType.includes('disability') || 
+    name.includes('pension') || 
+    name.includes('widow') || 
+    name.includes('divyang') || 
+    name.includes('ignwps') || 
+    name.includes('old age') || 
+    desc.includes('pension');
+
+  const isLivelihood = 
+    cat.includes('business') || 
+    cat.includes('entrepreneur') || 
+    cat.includes('employment') || 
+    cat.includes('skill') || 
+    cat.includes('credit') || 
+    cat.includes('agriculture') || 
+    cat.includes('livelihood') || 
+    tags.includes('entrepreneur') || 
+    tags.includes('shg') || 
+    tags.includes('artisan') || 
+    tags.includes('farmer') || 
+    benType.includes('entrepreneur') || 
+    benType.includes('shg') || 
+    benType.includes('women entrepreneur') || 
+    benType.includes('farmer') || 
+    name.includes('mudra') || 
+    name.includes('stand-up') || 
+    name.includes('svanidhi') || 
+    name.includes('shg') || 
+    name.includes('startup') || 
+    name.includes('livelihood') || 
+    name.includes('kisan') || 
+    desc.includes('loan') || 
+    desc.includes('entrepreneur');
+
+  if (isStudent) {
+    return [
+      {
+        id: 'student_school',
+        icon: GraduationCap,
+        cardClass: 'bg-indigo-50/70 border-indigo-200 text-charcoal-800',
+        iconBgClass: 'bg-indigo-100 text-indigo-800',
+        titleClass: 'text-indigo-950',
+        roleClass: 'text-indigo-800',
+        badgeBorderClass: 'border-indigo-200/60',
+        badgeTextClass: 'text-indigo-900',
+        badgeIconClass: 'text-indigo-600',
+        title: lang === 'hi' ? '1. विद्यालय / कॉलेज प्रधानाचार्य कार्यालय' : "1. School / College Principal's Office",
+        role: lang === 'hi' ? 'प्रधानाचार्य, हेडमास्टर या छात्रवृत्ति नोडल शिक्षक' : 'Principal, Headmaster or Scholarship In-Charge',
+        action: lang === 'hi' 
+          ? 'विद्यालय के प्रधानाचार्य या छात्रवृत्ति प्रभारी शिक्षक से मिलकर दाखिला व अंकतालिका सत्यापित कराएं, बोनाफाइड प्रमाण पत्र प्राप्त करें और ऑफलाइन फॉर्म स्कूल से अग्रसारित कराएं।' 
+          : 'Meet your school principal, headmaster, or scholarship teacher to verify student admission, attest marksheets/bonafide certificates, and forward offline scholarship forms directly.',
+        badge: lang === 'hi' ? '100% निःशुल्क विद्यालय सत्यापन' : '100% Free School Verification'
+      },
+      {
+        id: 'student_deo',
+        icon: Landmark,
+        cardClass: 'bg-emerald-50/70 border-emerald-200 text-charcoal-800',
+        iconBgClass: 'bg-emerald-100 text-emerald-800',
+        titleClass: 'text-emerald-950',
+        roleClass: 'text-emerald-800',
+        badgeBorderClass: 'border-emerald-200/60',
+        badgeTextClass: 'text-emerald-900',
+        badgeIconClass: 'text-emerald-600',
+        title: lang === 'hi' ? '2. जिला शिक्षा / समाज कल्याण अधिकारी (DEO / DSWO)' : '2. District Education / Social Welfare Office (DEO / DSWO)',
+        role: lang === 'hi' ? 'जिला शिक्षा अधिकारी (DEO) / ब्लॉक शिक्षा अधिकारी (BEO)' : 'District Education Officer (DEO) / Block Education Desk',
+        action: lang === 'hi' 
+          ? 'जिला कलेक्ट्रेट या ब्लॉक शिक्षा कार्यालय जाकर छात्रवृत्ति कोटा सत्यापन, विशेष प्रोत्साहन फॉर्म जमा व संस्थागत समस्या निवारण कराएं।' 
+          : 'Visit the District Education Office (DEO) or Social Welfare Office at the district collectorate for scholarship quota approval, physical verification, and appeal desk.',
+        badge: lang === 'hi' ? 'जिला शिक्षा एवं कल्याण पटल' : 'District Authority Desk'
+      },
+      {
+        id: 'student_csc',
+        icon: Laptop,
+        cardClass: 'bg-blue-50/70 border-blue-200 text-charcoal-800',
+        iconBgClass: 'bg-blue-100 text-blue-800',
+        titleClass: 'text-blue-950',
+        roleClass: 'text-blue-800',
+        badgeBorderClass: 'border-blue-200/60',
+        badgeTextClass: 'text-blue-900',
+        badgeIconClass: 'text-blue-600',
+        title: lang === 'hi' ? '3. जन सेवा केंद्र / CSC / साइबर कैफे' : '3. Common Service Center (CSC / Cyber Cafe)',
+        role: lang === 'hi' ? 'राष्ट्रीय छात्रवृत्ति पोर्टल (NSP) / राज्य पोर्टल फॉर्म व दस्तावेज स्कैनिंग' : 'National Scholarship Portal (NSP) / State Portal Upload & Document Scanning',
+        action: lang === 'hi' 
+          ? 'मात्र ₹20-50 के सरकारी शुल्क पर स्कूल आईडी, अंकतालिका व पासबुक स्कैन कराएं, बायोमेट्रिक आधार e-KYC कराएं और पक्की रसीद (Acknowledgement) प्राप्त करें।' 
+          : 'Pay nominal government rates (₹20-50) to scan Student ID, marksheets, bank passbook, complete biometric Aadhaar e-KYC, and get printed acknowledgement receipts.',
+        badge: lang === 'hi' ? 'डिजिटल फॉर्म व पक्की रसीद' : 'Portal Upload & Receipt'
+      }
+    ];
+  }
+
+  if (isMaternity) {
+    return [
+      {
+        id: 'mat_anganwadi',
+        icon: HeartHandshake,
+        cardClass: 'bg-rose-50/70 border-rose-200 text-charcoal-800',
+        iconBgClass: 'bg-rose-100 text-rose-800',
+        titleClass: 'text-rose-950',
+        roleClass: 'text-rose-800',
+        badgeBorderClass: 'border-rose-200/60',
+        badgeTextClass: 'text-rose-900',
+        badgeIconClass: 'text-rose-600',
+        title: lang === 'hi' ? '1. आंगनवाड़ी केंद्र / आशा बहू (ASHA Worker)' : '1. Anganwadi Center / ASHA Worker',
+        role: lang === 'hi' ? 'मातृ वंदना (PMMVY), पोषण, टीकाकरण व बालिका स्वास्थ्य' : 'Maternity (PMMVY), child nutrition, girl child & health schemes',
+        action: lang === 'hi' 
+          ? 'आंगनवाड़ी सेविका या आशा दीदी से मिलकर कागजी फॉर्म भरें, एमसीपी (MCP) कार्ड सत्यापित कराएं और ऑफलाइन जमा करें।' 
+          : 'Meet your local Anganwadi worker or ASHA didi for physical form filling, MCP card verification, and offline document submission.',
+        badge: lang === 'hi' ? '100% निःशुल्क मार्गदर्शन' : '100% Free Guidance'
+      },
+      {
+        id: 'mat_phc',
+        icon: Stethoscope,
+        cardClass: 'bg-emerald-50/70 border-emerald-200 text-charcoal-800',
+        iconBgClass: 'bg-emerald-100 text-emerald-800',
+        titleClass: 'text-emerald-950',
+        roleClass: 'text-emerald-800',
+        badgeBorderClass: 'border-emerald-200/60',
+        badgeTextClass: 'text-emerald-900',
+        badgeIconClass: 'text-emerald-600',
+        title: lang === 'hi' ? '2. प्राथमिक स्वास्थ्य केंद्र / सरकारी अस्पताल (PHC / CHC)' : '2. Primary Health Center (PHC / CHC / Govt Hospital)',
+        role: lang === 'hi' ? 'चिकित्सा अधिकारी जांच, जन्म पंजीकरण व संस्थागत प्रसव प्रमाणन' : 'Medical Officer ANC checkup, birth registration & delivery records',
+        action: lang === 'hi' 
+          ? 'नजदीकी सरकारी अस्पताल या पीएचसी जाकर गर्भावस्था पंजीकरण, एमसीपी कार्ड सत्यापन व डॉक्टर की मुहर लगवाएं।' 
+          : 'Visit the PHC or Community Health Center for pregnancy registration, MCP card stamp, and official medical officer certification.',
+        badge: lang === 'hi' ? 'चिकित्सकीय सत्यापन' : 'Medical Verification'
+      },
+      {
+        id: 'mat_csc',
+        icon: Laptop,
+        cardClass: 'bg-blue-50/70 border-blue-200 text-charcoal-800',
+        iconBgClass: 'bg-blue-100 text-blue-800',
+        titleClass: 'text-blue-950',
+        roleClass: 'text-blue-800',
+        badgeBorderClass: 'border-blue-200/60',
+        badgeTextClass: 'text-blue-900',
+        badgeIconClass: 'text-blue-600',
+        title: lang === 'hi' ? '3. जन सेवा केंद्र / CSC / ई-मित्र' : '3. Common Service Center (CSC / e-Mitra)',
+        role: lang === 'hi' ? 'PMMVY पोर्टल डिजिटल अपलोड व बैंक DBT आधार लिंकिंग' : 'PMMVY Portal Submission & Aadhaar DBT Linkage',
+        action: lang === 'hi' 
+          ? 'मात्र ₹20-50 के शुल्क पर MCP कार्ड, माता-पिता आधार व बैंक पासबुक अपलोड कराएं और रसीद प्राप्त करें।' 
+          : 'Pay nominal government rates (₹20-50) to scan MCP card, Aadhaar, bank passbook, and get official online acknowledgement.',
+        badge: lang === 'hi' ? 'डिजिटल फॉर्म व रसीद' : 'Portal Upload & Receipt'
+      }
+    ];
+  }
+
+  if (isPension) {
+    return [
+      {
+        id: 'pension_panchayat',
+        icon: Landmark,
+        cardClass: 'bg-amber-50/70 border-amber-200 text-charcoal-800',
+        iconBgClass: 'bg-amber-100 text-amber-800',
+        titleClass: 'text-amber-950',
+        roleClass: 'text-amber-800',
+        badgeBorderClass: 'border-amber-200/60',
+        badgeTextClass: 'text-amber-900',
+        badgeIconClass: 'text-amber-600',
+        title: lang === 'hi' ? '1. ग्राम पंचायत भवन / वार्ड पार्षद कार्यालय' : '1. Gram Panchayat Bhawan / Ward Councillor',
+        role: lang === 'hi' ? 'विधवा पेंशन (IGNWPS), वृद्धावस्था पेंशन व स्थानीय निवास सत्यापन' : 'Widow pension (IGNWPS), old-age pension & residence endorsement',
+        action: lang === 'hi' 
+          ? 'पंचायत कार्यालय में सचिव या ग्राम प्रधान/पार्षद से मिलकर पारिवारिक आय/निवास प्रमाणन व ऑफलाइन फॉर्म अग्रेषित कराएं।' 
+          : 'Visit the Panchayat office or Ward Councillor to verify local residence/income eligibility and submit verified application forms.',
+        badge: lang === 'hi' ? 'पात्रता सत्यापन व अनुशंसा' : 'Eligibility & Verification'
+      },
+      {
+        id: 'pension_tehsil',
+        icon: Building2,
+        cardClass: 'bg-emerald-50/70 border-emerald-200 text-charcoal-800',
+        iconBgClass: 'bg-emerald-100 text-emerald-800',
+        titleClass: 'text-emerald-950',
+        roleClass: 'text-emerald-800',
+        badgeBorderClass: 'border-emerald-200/60',
+        badgeTextClass: 'text-emerald-900',
+        badgeIconClass: 'text-emerald-600',
+        title: lang === 'hi' ? '2. तहसील कार्यालय / एसडीएम / बीडीओ (Tehsil / BDO)' : '2. Tehsil / Block Development Office (BDO / SDM)',
+        role: lang === 'hi' ? 'पेंशन स्वीकृति अधिकारी, मृत्यु प्रमाण पत्र जांच व सामाजिक सुरक्षा पटल' : 'Pension sanctioning officer & social security desk',
+        action: lang === 'hi' 
+          ? 'तहसीलदार या समाज कल्याण अधिकारी के समक्ष आय प्रमाण पत्र, आयु प्रमाण व पति का मृत्यु प्रमाण पत्र प्रस्तुत कर पेंशन स्वीकृति कराएं।' 
+          : 'Submit attested certificates to the Tehsildar, BDO, or Social Welfare Officer for official pension sanctioning and roster entry.',
+        badge: lang === 'hi' ? 'विभागीय स्वीकृति पटल' : 'Official Sanction Desk'
+      },
+      {
+        id: 'pension_csc',
+        icon: Laptop,
+        cardClass: 'bg-blue-50/70 border-blue-200 text-charcoal-800',
+        iconBgClass: 'bg-blue-100 text-blue-800',
+        titleClass: 'text-blue-950',
+        roleClass: 'text-blue-800',
+        badgeBorderClass: 'border-blue-200/60',
+        badgeTextClass: 'text-blue-900',
+        badgeIconClass: 'text-blue-600',
+        title: lang === 'hi' ? '3. जन सेवा केंद्र (CSC) / जीवन प्रमाण केंद्र' : '3. Common Service Center (CSC / Life Certificate)',
+        role: lang === 'hi' ? 'बायोमेट्रिक जीवन प्रमाण पत्र (Life Certificate) व पेंशन e-KYC' : 'Biometric Digital Life Certificate & Portal Submission',
+        action: lang === 'hi' 
+          ? 'बायोमेट्रिक फिंगरप्रिंट द्वारा जीवन प्रमाण पत्र अपडेट कराएं और पेंशन पोर्टल पर आवेदन अपलोड कर रसीद प्राप्त करें।' 
+          : 'Complete biometric fingerprint authentication, annual life certificate renewal, and obtain official receipt printouts.',
+        badge: lang === 'hi' ? 'बायोमेट्रिक e-KYC व रसीद' : 'Biometric e-KYC & Receipt'
+      }
+    ];
+  }
+
+  if (isLivelihood) {
+    return [
+      {
+        id: 'live_bank',
+        icon: Building2,
+        cardClass: 'bg-emerald-50/70 border-emerald-200 text-charcoal-800',
+        iconBgClass: 'bg-emerald-100 text-emerald-800',
+        titleClass: 'text-emerald-950',
+        roleClass: 'text-emerald-800',
+        badgeBorderClass: 'border-emerald-200/60',
+        badgeTextClass: 'text-emerald-900',
+        badgeIconClass: 'text-emerald-600',
+        title: lang === 'hi' ? '1. राष्ट्रीयकृत / ग्रामीण बैंक शाखा (Bank Branch)' : '1. Public Sector / Gramin Bank Branch',
+        role: lang === 'hi' ? 'मुद्रा ऋण (MUDRA), स्टैंड-अप इंडिया, SHG क्रेडिट लिंकेज' : 'MUDRA loan, Stand-Up India & SHG credit linkage officer',
+        action: lang === 'hi' 
+          ? 'नजदीकी बैंक शाखा प्रबंधक या ऋण अधिकारी से मिलकर प्रोजेक्ट रिपोर्ट, कोटेशन व सब्सिडी ऋण आवेदन ऑफलाइन जमा करें।' 
+          : 'Meet the Branch Manager or Loan Officer to submit project proposals, machinery quotations, and subsidy loan applications.',
+        badge: lang === 'hi' ? 'बैंक ऋण व सब्सिडी पटल' : 'Bank Credit & Subsidy Desk'
+      },
+      {
+        id: 'live_dic',
+        icon: Briefcase,
+        cardClass: 'bg-amber-50/70 border-amber-200 text-charcoal-800',
+        iconBgClass: 'bg-amber-100 text-amber-800',
+        titleClass: 'text-amber-950',
+        roleClass: 'text-amber-800',
+        badgeBorderClass: 'border-amber-200/60',
+        badgeTextClass: 'text-amber-900',
+        badgeIconClass: 'text-amber-600',
+        title: lang === 'hi' ? '2. जिला उद्योग केंद्र (DIC) / NRLM ब्लॉक मिशन' : '2. District Industries Centre (DIC) / NRLM Block Unit',
+        role: lang === 'hi' ? 'महिला उद्यमिता सहायता, कौशल प्रशिक्षण व मार्जिन मनी सब्सिडी' : 'Women entrepreneurship, skill development & subsidy clearance',
+        action: lang === 'hi' 
+          ? 'जिला उद्योग केंद्र (DIC) या ब्लॉक मिशन प्रबंधक (BMMU) से मिलकर स्वयं सहायता समूह (SHG) पंजीकरण व उद्यमिता प्रशिक्षण प्राप्त करें।' 
+          : 'Visit the DIC or Block Mission Management Unit (BMMU) to register your SHG enterprise, access EDP training, and claim capital subsidies.',
+        badge: lang === 'hi' ? 'उद्यमिता मार्गदर्शन' : 'Entrepreneurship Guidance'
+      },
+      {
+        id: 'live_csc',
+        icon: Laptop,
+        cardClass: 'bg-blue-50/70 border-blue-200 text-charcoal-800',
+        iconBgClass: 'bg-blue-100 text-blue-800',
+        titleClass: 'text-blue-950',
+        roleClass: 'text-blue-800',
+        badgeBorderClass: 'border-blue-200/60',
+        badgeTextClass: 'text-blue-900',
+        badgeIconClass: 'text-blue-600',
+        title: lang === 'hi' ? '3. जन सेवा केंद्र / डिजिटल सेवा केंद्र' : '3. Common Service Center (CSC / Digital Seva)',
+        role: lang === 'hi' ? 'उद्यम (Udyam MSME) पंजीकरण व सरकारी पोर्टल आवेदन' : 'Udyam MSME Registration & Online Portal Filing',
+        action: lang === 'hi' 
+          ? 'मात्र ₹20-50 में उद्यम आधार (MSME) पंजीयन कराएं, जीएसटी/पैन दस्तावेज अपलोड करें और योजना आवेदन जमा कराएं।' 
+          : 'Get instant Udyam MSME registration, upload PAN/Bank statements on nodal portals, and download official registration certificates.',
+        badge: lang === 'hi' ? 'उद्यम पंजीयन व रसीद' : 'Udyam Registration & Receipt'
+      }
+    ];
+  }
+
+  // Fallback General Touchpoints
+  return [
+    {
+      id: 'gen_panchayat',
+      icon: Landmark,
+      cardClass: 'bg-rose-50/70 border-rose-200 text-charcoal-800',
+      iconBgClass: 'bg-rose-100 text-rose-800',
+      titleClass: 'text-rose-950',
+      roleClass: 'text-rose-800',
+      badgeBorderClass: 'border-rose-200/60',
+      badgeTextClass: 'text-rose-900',
+      badgeIconClass: 'text-rose-600',
+      title: lang === 'hi' ? '1. ग्राम पंचायत भवन / नगर पालिका वार्ड कार्यालय' : '1. Gram Panchayat / Municipal Ward Office',
+      role: lang === 'hi' ? 'स्थानीय निवास, आय प्रमाण पत्र सत्यापन व ऑफलाइन आवेदन' : 'Local residence, income verification & physical form submission',
+      action: lang === 'hi' 
+        ? 'पंचायत सचिव या वार्ड पार्षद से मिलकर स्थानीय पात्रता सत्यापन कराएं और सरकारी योजना का ऑफलाइन फॉर्म जमा करें।' 
+        : 'Visit your Panchayat office or Municipal Ward desk to verify residency, check eligibility lists, and submit physical application forms.',
+      badge: lang === 'hi' ? '100% निःशुल्क मार्गदर्शन' : '100% Free Guidance'
+    },
+    {
+      id: 'gen_tehsil',
+      icon: Building2,
+      cardClass: 'bg-emerald-50/70 border-emerald-200 text-charcoal-800',
+      iconBgClass: 'bg-emerald-100 text-emerald-800',
+      titleClass: 'text-emerald-950',
+      roleClass: 'text-emerald-800',
+      badgeBorderClass: 'border-emerald-200/60',
+      badgeTextClass: 'text-emerald-900',
+      badgeIconClass: 'text-emerald-600',
+      title: lang === 'hi' ? '2. तहसील / ब्लॉक विकास अधिकारी (BDO Office)' : '2. Tehsil / Block Development Office (BDO)',
+      role: lang === 'hi' ? 'सक्षम अधिकारी प्रमाणन, जाति/आय प्रमाण पत्र व नोडल पटल' : 'Competent authority certification, certificates & nodal desk',
+      action: lang === 'hi' 
+        ? 'तहसीलदार या खंड विकास अधिकारी (BDO) कार्यालय जाकर आवश्यक सरकारी प्रमाण पत्र बनवाएं और योजना की स्वीकृति प्राप्त करें।' 
+        : 'Visit the Tehsildar or BDO office to obtain requisite certificates, verify scheme quotas, and get administrative sanctions.',
+      badge: lang === 'hi' ? 'प्रमाणन व स्वीकृति' : 'Certification & Sanction'
+    },
+    {
+      id: 'gen_csc',
+      icon: Laptop,
+      cardClass: 'bg-blue-50/70 border-blue-200 text-charcoal-800',
+      iconBgClass: 'bg-blue-100 text-blue-800',
+      titleClass: 'text-blue-950',
+      roleClass: 'text-blue-800',
+      badgeBorderClass: 'border-blue-200/60',
+      badgeTextClass: 'text-blue-900',
+      badgeIconClass: 'text-blue-600',
+      title: lang === 'hi' ? '3. जन सेवा केंद्र / CSC / ई-मित्र (Common Service Center)' : '3. Common Service Center (CSC / e-Mitra)',
+      role: lang === 'hi' ? 'सभी ऑनलाइन पोर्टल फॉर्म, आय/जाति/मूल निवास प्रमाण पत्र व बायोमेट्रिक KYC' : 'All central & state online portal submissions, certificates & biometric e-KYC',
+      action: lang === 'hi' 
+        ? 'मात्र ₹20 से ₹50 के सरकारी शुल्क पर दस्तावेज स्कैन कराएं, फॉर्म भरवाएं और पक्की रसीद (Acknowledgement) प्राप्त करें।' 
+        : 'Pay nominal government rates (₹20-50) to get documents scanned, Aadhaar authenticated, forms submitted, and printed acknowledgements.',
+      badge: lang === 'hi' ? 'डिजिटल फॉर्म व पक्की रसीद' : 'Portal Upload & Receipt'
+    }
+  ];
+}
+
 export const SchemeDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
@@ -351,6 +743,11 @@ export const SchemeDetail: React.FC = () => {
       : displayBenefits;
     return condenseToShortSummary(bestText, 2, 220);
   }, [scheme, displayDescription, displayBenefits, explanation, siteLanguage]);
+
+  // Dynamic Context-Aware Offline Touchpoints (Epic 2: Student, Maternity, Pension, Livelihood, General)
+  const offlineTouchpoints = useMemo(() => {
+    return scheme ? getOfflineTouchpoints(scheme, siteLanguage) : [];
+  }, [scheme, siteLanguage]);
 
   // Audio Narration Handler (Ticket 3.2: Voice guidance directing to official portal & CSC)
   const handleAudioNarration = () => {
@@ -1211,77 +1608,36 @@ export const SchemeDetail: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                {/* Touchpoint 1: Anganwadi / ASHA Worker */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-rose-50/70 border border-rose-200 text-charcoal-800 space-y-3 flex flex-col justify-between shadow-2xs">
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center font-bold">
-                      <HeartHandshake className="w-5 h-5" />
+                {offlineTouchpoints.map((point) => {
+                  const IconComp = point.icon;
+                  return (
+                    <div 
+                      key={point.id}
+                      className={`p-4 sm:p-5 rounded-2xl border ${point.cardClass} space-y-3 flex flex-col justify-between shadow-2xs`}
+                    >
+                      <div className="space-y-2">
+                        <div className={`w-10 h-10 rounded-xl ${point.iconBgClass} flex items-center justify-center font-bold`}>
+                          <IconComp className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className={`font-bold text-xs sm:text-sm leading-snug ${point.titleClass}`}>
+                            {point.title}
+                          </h4>
+                          <span className={`text-[11px] font-semibold block mt-0.5 ${point.roleClass}`}>
+                            {point.role}
+                          </span>
+                        </div>
+                        <p className="text-xs text-charcoal-700 leading-relaxed font-medium">
+                          {point.action}
+                        </p>
+                      </div>
+                      <div className={`pt-2 border-t ${point.badgeBorderClass} flex items-center gap-1.5 text-[11px] font-bold ${point.badgeTextClass}`}>
+                        <CheckCircle2 className={`w-3.5 h-3.5 ${point.badgeIconClass} flex-shrink-0`} />
+                        <span>{point.badge}</span>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-xs sm:text-sm text-rose-950 leading-snug">
-                        {t('offlinePoint1Title')}
-                      </h4>
-                      <span className="text-[11px] font-semibold text-rose-800 block mt-0.5">
-                        {t('offlinePoint1Role')}
-                      </span>
-                    </div>
-                    <p className="text-xs text-charcoal-700 leading-relaxed font-medium">
-                      {t('offlinePoint1Action')}
-                    </p>
-                  </div>
-                  <div className="pt-2 border-t border-rose-200/60 flex items-center gap-1.5 text-[11px] font-bold text-rose-900">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-rose-600 flex-shrink-0" />
-                    <span>{siteLanguage === 'hi' ? '100% निःशुल्क मार्गदर्शन' : '100% Free Guidance'}</span>
-                  </div>
-                </div>
-
-                {/* Touchpoint 2: Gram Panchayat Secretary / Bhawan */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-charcoal-800 space-y-3 flex flex-col justify-between shadow-2xs">
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                      <Landmark className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-xs sm:text-sm text-emerald-950 leading-snug">
-                        {t('offlinePoint2Title')}
-                      </h4>
-                      <span className="text-[11px] font-semibold text-emerald-800 block mt-0.5">
-                        {t('offlinePoint2Role')}
-                      </span>
-                    </div>
-                    <p className="text-xs text-charcoal-700 leading-relaxed font-medium">
-                      {t('offlinePoint2Action')}
-                    </p>
-                  </div>
-                  <div className="pt-2 border-t border-emerald-200/60 flex items-center gap-1.5 text-[11px] font-bold text-emerald-900">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                    <span>{siteLanguage === 'hi' ? 'पात्रता सत्यापन व अनुशंसा' : 'Eligibility & Verification'}</span>
-                  </div>
-                </div>
-
-                {/* Touchpoint 3: Common Service Center (CSC / e-Mitra) */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-blue-50/70 border border-blue-200 text-charcoal-800 space-y-3 flex flex-col justify-between shadow-2xs">
-                  <div className="space-y-2">
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
-                      <Laptop className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-xs sm:text-sm text-blue-950 leading-snug">
-                        {t('offlinePoint3Title')}
-                      </h4>
-                      <span className="text-[11px] font-semibold text-blue-800 block mt-0.5">
-                        {t('offlinePoint3Role')}
-                      </span>
-                    </div>
-                    <p className="text-xs text-charcoal-700 leading-relaxed font-medium">
-                      {t('offlinePoint3Action')}
-                    </p>
-                  </div>
-                  <div className="pt-2 border-t border-blue-200/60 flex items-center gap-1.5 text-[11px] font-bold text-blue-900">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                    <span>{siteLanguage === 'hi' ? 'डिजिटल फॉर्म व पक्की रसीद' : 'Portal Upload & Receipt'}</span>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           </div>
