@@ -106,35 +106,351 @@ const DEFAULT_PROFILE: ProfileInput = {
 };
 
 // Common Document Translations Dictionary for 100% Hindi Fidelity & Issuance Helper Badges
-const COMMON_DOC_TRANSLATIONS: Record<string, { hi: string; hint_hi: string; authority_hi: string; authority_en: string; isSpecial: boolean }> = {
-  'aadhaar': { hi: 'आधार कार्ड (Aadhaar Card)', hint_hi: 'पहचान व पते के सत्यापन हेतु', authority_hi: 'UIDAI / आधार सेवा केंद्र', authority_en: 'UIDAI / Aadhaar Center', isSpecial: false },
-  'bank passbook': { hi: 'बैंक पासबुक / खाता विवरण (Bank Passbook)', hint_hi: 'डीबीटी अनुदान सीधे बैंक खाते में प्राप्त करने हेतु', authority_hi: 'बैंक शाखा / डाकघर', authority_en: 'Bank Branch / Post Office', isSpecial: false },
-  'bank account': { hi: 'बैंक खाता विवरण (Bank Details)', hint_hi: 'आधार से लिंक बैंक खाता संख्या व IFSC कोड', authority_hi: 'बैंक शाखा / डाकघर', authority_en: 'Bank Branch / Post Office', isSpecial: false },
-  'income certificate': { hi: 'आय प्रमाण पत्र (Income Certificate)', hint_hi: 'पारिवारिक वार्षिक आय सीमा सत्यापन', authority_hi: 'तहसीलदार / CSC केंद्र', authority_en: 'Tehsildar / CSC Center', isSpecial: true },
-  'caste certificate': { hi: 'जाति प्रमाण पत्र (Caste Certificate)', hint_hi: 'आरक्षित श्रेणी प्रमाण पत्र (यदि लागू हो)', authority_hi: 'एसडीएम / ई-डिस्ट्रिक्ट केंद्र', authority_en: 'SDM / e-District Center', isSpecial: true },
-  'domicile': { hi: 'मूल निवास प्रमाण पत्र (Domicile Certificate)', hint_hi: 'राज्य में स्थायी निवास का प्रमाण', authority_hi: 'तहसीलदार / जन सेवा केंद्र', authority_en: 'Tehsildar / CSC Center', isSpecial: true },
-  'residence': { hi: 'निवास प्रमाण पत्र (Residence Certificate)', hint_hi: 'स्थानीय निवास सत्यापन हेतु', authority_hi: 'तहसीलदार / जन सेवा केंद्र', authority_en: 'Tehsildar / CSC Center', isSpecial: true },
-  'passport': { hi: 'पासपोर्ट साइज फोटो (Passport Photos)', hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो', authority_hi: 'घर पर उपलब्ध / फोटो स्टूडियो', authority_en: 'Recent Photograph', isSpecial: false },
-  'photo': { hi: 'पासपोर्ट साइज फोटो (Passport Photos)', hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो', authority_hi: 'घर पर उपलब्ध / फोटो स्टूडियो', authority_en: 'Recent Photograph', isSpecial: false },
-  'bpl': { hi: 'बीपीएल राशन कार्ड (BPL / Antyodaya Card)', hint_hi: 'गरीबी रेखा कार्ड या अंत्योदय अन्न योजना कार्ड', authority_hi: 'खाद्य एवं रसद विभाग', authority_en: 'Food & Civil Supplies Dept', isSpecial: false },
-  'ration card': { hi: 'राशन कार्ड (Ration Card)', hint_hi: 'परिवार के सदस्यों के नाम सहित राशन कार्ड', authority_hi: 'खाद्य एवं रसद विभाग', authority_en: 'Food & Civil Supplies Dept', isSpecial: false },
-  'disability': { hi: 'दिव्यांगता प्रमाण पत्र (Disability / UDID Card)', hint_hi: 'सीएमओ द्वारा जारी 40%+ दिव्यांगता कार्ड', authority_hi: 'मुख्य चिकित्सा अधिकारी (CMO)', authority_en: 'Chief Medical Officer (CMO)', isSpecial: true },
-  'birth certificate': { hi: 'जन्म प्रमाण पत्र (Birth Certificate)', hint_hi: 'बालिका/आवेदक की जन्म तिथि का प्रमाण', authority_hi: 'नगर निगम / ग्राम पंचायत', authority_en: 'Municipal / Panchayat Office', isSpecial: true },
-  'age proof': { hi: 'आयु प्रमाण पत्र (Age Proof)', hint_hi: '10वीं अंकतालिका या जन्म प्रमाण पत्र', authority_hi: 'विद्यालय / जन्म रजिस्ट्रार', authority_en: 'School / Registrar', isSpecial: false },
-  'educational': { hi: 'शैक्षणिक योग्यता प्रमाण पत्र (Educational Certificate)', hint_hi: 'अंकतालिका एवं विद्यालय/कॉलेज प्रमाण पत्र', authority_hi: 'संबंधित विद्यालय / कॉलेज', authority_en: 'School / University', isSpecial: true },
-  'marksheet': { hi: 'अंकतालिका / प्रमाण पत्र (Marksheet)', hint_hi: 'कक्षा उत्तीर्ण करने का प्रमाण', authority_hi: 'शिक्षा बोर्ड / कॉलेज', authority_en: 'Education Board / College', isSpecial: true },
-  'mcp card': { hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड', authority_hi: 'आंगनवाड़ी / सरकारी अस्पताल', authority_en: 'Anganwadi / Govt Hospital', isSpecial: true },
-  'mother and child': { hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड', authority_hi: 'आंगनवाड़ी / सरकारी अस्पताल', authority_en: 'Anganwadi / Govt Hospital', isSpecial: true },
-  'jan aadhaar': { hi: 'जन आधार कार्ड (Jan Aadhaar Card)', hint_hi: 'राजस्थान परिवार पहचान कार्ड', authority_hi: 'राजस्थान ई-मित्र केंद्र', authority_en: 'Rajasthan e-Mitra', isSpecial: false },
-  'land records': { hi: 'भूमि दस्तावेज / खतौनी (Land Records / RoR)', hint_hi: 'जमीन की जमाबंदी या पट्टा प्रति', authority_hi: 'राजस्व विभाग / लेखपाल', authority_en: 'Revenue Dept / Patwari', isSpecial: true },
-  'death certificate': { hi: 'पति का मृत्यु प्रमाण पत्र (Husband\'s Death Certificate)', hint_hi: 'विधवा पेंशन व पारिवारिक सहायता सत्यापन हेतु नगर निगम / ग्राम पंचायत द्वारा जारी', authority_hi: 'नगर निगम / ग्राम पंचायत', authority_en: 'Municipal / Panchayat Office', isSpecial: true },
-  'husband death certificate': { hi: 'पति का मृत्यु प्रमाण पत्र (Husband\'s Death Certificate)', hint_hi: 'विधवा पेंशन व पारिवारिक सहायता सत्यापन हेतु', authority_hi: 'नगर निगम / ग्राम पंचायत', authority_en: 'Municipal / Panchayat Office', isSpecial: true },
-  'marriage certificate': { hi: 'विवाह प्रमाण पत्र (Marriage Certificate)', hint_hi: 'विवाह पंजीकरण एवं अंतरजातीय विवाह प्रोत्साहन योजना सत्यापन', authority_hi: 'विवाह पंजीयक / एसडीएम कार्यालय / ई-डिस्ट्रिक्ट', authority_en: 'Marriage Registrar / SDM Office / e-District', isSpecial: true },
-  'intercaste certificate': { hi: 'अंतरजातीय विवाह प्रमाण पत्र (Inter-Caste Marriage Certificate)', hint_hi: 'पति एवं पत्नी दोनों का जाति प्रमाण पत्र व विवाह प्रमाण पत्र', authority_hi: 'एसडीएम / समाज कल्याण विभाग', authority_en: 'SDM / Social Welfare Dept', isSpecial: true },
-  'self-declaration': { hi: 'स्व-घोषणा पत्र (Self-Declaration)', hint_hi: 'शपथ पत्र या निर्धारित प्रारूप पर घोषणा', authority_hi: 'स्व-हस्ताक्षरित प्रारूप', authority_en: 'Self-Attested Format', isSpecial: false },
-  'affidavit': { hi: 'शपथ पत्र (Affidavit)', hint_hi: 'नोटरी या शपथ आयुक्त द्वारा सत्यापित', authority_hi: 'नोटरी / शपथ आयुक्त', authority_en: 'Notary / Oath Commissioner', isSpecial: true },
-  'mobile number': { hi: 'आधार लिंक मोबाइल नंबर (Mobile Number)', hint_hi: 'ओटीपी सत्यापन व एसएमएस सूचनाओं हेतु', authority_hi: 'सक्रिय मोबाइल सिम कार्ड', authority_en: 'Active Mobile SIM', isSpecial: false },
-  'voter id': { hi: 'मतदाता पहचान पत्र (Voter ID)', hint_hi: 'वैकल्पिक पहचान पत्र', authority_hi: 'चुनाव आयोग (ECI)', authority_en: 'Election Commission (ECI)', isSpecial: false },
+const COMMON_DOC_TRANSLATIONS: Record<string, { 
+  en?: string;
+  hi: string; 
+  hint_en?: string;
+  hint_hi: string; 
+  authority_hi: string; 
+  authority_en: string; 
+  isSpecial: boolean;
+}> = {
+  // Student & School Specific Documents
+  'school id': { 
+    en: "Copy of Student's School ID card or admission receipt",
+    hi: 'छात्रा का स्कूल पहचान पत्र या प्रवेश रसीद (School ID / Admission Receipt)', 
+    hint_en: 'Current academic session enrollment and identity proof',
+    hint_hi: 'वर्तमान शैक्षणिक सत्र में विद्यालय में अध्ययनरत होने का प्रमाण', 
+    authority_hi: 'संबंधित विद्यालय / कॉलेज प्रशासन', 
+    authority_en: 'School / College Administration', 
+    isSpecial: true 
+  },
+  'student id': { 
+    en: "Copy of Student's School ID card or admission receipt",
+    hi: 'छात्रा का स्कूल पहचान पत्र या प्रवेश रसीद (School ID Card)', 
+    hint_en: 'Current session student identification issued by school/college',
+    hint_hi: 'विद्यालय या कॉलेज द्वारा जारी पहचान पत्र', 
+    authority_hi: 'संबंधित विद्यालय / कॉलेज', 
+    authority_en: 'School / College Authority', 
+    isSpecial: true 
+  },
+  'admission receipt': { 
+    en: 'Admission Fee Receipt / Bonafide Certificate',
+    hi: 'दाखिला रसीद / बोनाफाइड प्रमाण पत्र (Admission Receipt / Bonafide)', 
+    hint_en: 'Proof of regular admission in recognized school or college',
+    hint_hi: 'मान्यता प्राप्त स्कूल या कॉलेज में नियमित दाखिले का प्रमाण पत्र', 
+    authority_hi: 'प्रधानाचार्य / हेडमास्टर', 
+    authority_en: 'School Principal / Headmaster', 
+    isSpecial: true 
+  },
+  'bonafide': { 
+    en: 'Bonafide Student Certificate',
+    hi: 'बोनाफाइड छात्र प्रमाण पत्र (Bonafide Certificate)', 
+    hint_en: 'Certificate of regular enrollment issued by School Principal or College Dean',
+    hint_hi: 'प्रधानाचार्य द्वारा जारी नियमित छात्र प्रमाण पत्र', 
+    authority_hi: 'विद्यालय प्रधानाचार्य / कॉलेज', 
+    authority_en: 'School Principal / College Registrar', 
+    isSpecial: true 
+  },
+  'parent aadhaar': { 
+    en: 'Student and Parent Aadhaar Cards (for identity verification and DBT linkage)',
+    hi: 'छात्रा एवं अभिभावक (माता/पिता) का आधार कार्ड', 
+    hint_en: 'For identity verification, age proof, and DBT scholarship linkage',
+    hint_hi: 'पहचान सत्यापन, आयु प्रमाण व डीबीटी छात्रवृत्ति लिंकिंग हेतु', 
+    authority_hi: 'UIDAI / आधार सेवा केंद्र', 
+    authority_en: 'UIDAI / Aadhaar Center', 
+    isSpecial: false 
+  },
+  'student and parent aadhaar': { 
+    en: 'Student and Parent Aadhaar Cards (for identity verification and DBT linkage)',
+    hi: 'छात्रा एवं अभिभावक (माता/पिता) का आधार कार्ड', 
+    hint_en: 'For identity verification, age proof, and DBT scholarship linkage',
+    hint_hi: 'पहचान सत्यापन, आयु प्रमाण व डीबीटी छात्रवृत्ति लिंकिंग हेतु', 
+    authority_hi: 'UIDAI / आधार सेवा केंद्र', 
+    authority_en: 'UIDAI / Aadhaar Center', 
+    isSpecial: false 
+  },
+  'student aadhaar': { 
+    en: 'Student and Parent Aadhaar Cards (for identity verification and DBT linkage)',
+    hi: 'छात्रा एवं अभिभावक (माता/पिता) का आधार कार्ड', 
+    hint_en: 'For identity verification, age proof, and DBT scholarship linkage',
+    hint_hi: 'पहचान सत्यापन, आयु प्रमाण व डीबीटी छात्रवृत्ति लिंकिंग हेतु', 
+    authority_hi: 'UIDAI / आधार सेवा केंद्र', 
+    authority_en: 'UIDAI / Aadhaar Center', 
+    isSpecial: false 
+  },
+  'delhi residence': { 
+    en: 'State / Delhi Residence Proof (if requested by the school)',
+    hi: 'राज्य / दिल्ली निवास प्रमाण पत्र (यदि विद्यालय द्वारा मांगा जाए)', 
+    hint_en: 'Domicile Certificate, Electricity Bill, or Ration Card showing local residence',
+    hint_hi: 'मूल निवास प्रमाण पत्र, बिजली बिल या राशन कार्ड', 
+    authority_hi: 'तहसीलदार / ई-डिस्ट्रिक्ट / एसडीएम', 
+    authority_en: 'Tehsildar / e-District / SDM', 
+    isSpecial: true 
+  },
+  'marksheet': { 
+    en: 'Previous Year Marksheet / Report Card (attested copy)',
+    hi: 'पिछली कक्षा की अंकतालिका / रिपोर्ट कार्ड (Previous Marksheet)', 
+    hint_en: 'Attested copy of previous class marksheet showing qualifying marks',
+    hint_hi: 'पात्रता अंकों के साथ पिछली कक्षा उत्तीर्ण करने का सत्यापित प्रमाण पत्र', 
+    authority_hi: 'शिक्षा बोर्ड / विद्यालय', 
+    authority_en: 'Education Board / School', 
+    isSpecial: true 
+  },
+  'report card': { 
+    en: 'Previous Academic Progress Report Card',
+    hi: 'प्रगति रिपोर्ट कार्ड (Report Card)', 
+    hint_en: 'Academic performance and attendance report card',
+    hint_hi: 'शैक्षणिक प्रदर्शन व उपस्थिति रिपोर्ट कार्ड', 
+    authority_hi: 'संबंधित विद्यालय / हेडमास्टर', 
+    authority_en: 'School / Headmaster', 
+    isSpecial: true 
+  },
+
+  // General & Demographics Documents
+  'aadhaar': { 
+    en: 'Aadhaar Card (identity & address proof)',
+    hi: 'आधार कार्ड (Aadhaar Card)', 
+    hint_en: 'For biometric identification and DBT subsidy linkage',
+    hint_hi: 'पहचान व पते के सत्यापन हेतु', 
+    authority_hi: 'UIDAI / आधार सेवा केंद्र', 
+    authority_en: 'UIDAI / Aadhaar Center', 
+    isSpecial: false 
+  },
+  'bank passbook': { 
+    en: 'Copy of Bank Passbook / Account Statement (showing Account Number and IFSC Code)',
+    hi: 'बैंक पासबुक / खाता विवरण (खाता संख्या व IFSC कोड सहित)', 
+    hint_en: 'Active bank account showing clear Account No and IFSC Code for DBT transfer',
+    hint_hi: 'डीबीटी अनुदान सीधे बैंक खाते में प्राप्त करने हेतु (खाता संख्या व IFSC कोड)', 
+    authority_hi: 'बैंक शाखा / डाकघर', 
+    authority_en: 'Bank Branch / Post Office', 
+    isSpecial: false 
+  },
+  'bank account': { 
+    en: 'Copy of Bank Passbook / Account Statement (showing Account Number and IFSC Code)',
+    hi: 'बैंक खाता विवरण (खाता संख्या व IFSC कोड सहित)', 
+    hint_en: 'Aadhaar-seeded bank account statement showing Account No and IFSC Code',
+    hint_hi: 'आधार से लिंक बैंक खाता संख्या व IFSC कोड', 
+    authority_hi: 'बैंक शाखा / डाकघर', 
+    authority_en: 'Bank Branch / Post Office', 
+    isSpecial: false 
+  },
+  'income certificate': { 
+    en: 'Family Income Certificate (issued by Revenue Authority)',
+    hi: 'आय प्रमाण पत्र (Income Certificate)', 
+    hint_en: 'Annual family income limit verification certificate',
+    hint_hi: 'पारिवारिक वार्षिक आय सीमा सत्यापन', 
+    authority_hi: 'तहसीलदार / CSC केंद्र', 
+    authority_en: 'Tehsildar / CSC Center', 
+    isSpecial: true 
+  },
+  'caste certificate': { 
+    en: 'Caste Certificate (SC / ST / OBC category, if applicable)',
+    hi: 'जाति प्रमाण पत्र (Caste Certificate)', 
+    hint_en: 'Reserved category certificate issued by competent authority',
+    hint_hi: 'आरक्षित श्रेणी प्रमाण पत्र (यदि लागू हो)', 
+    authority_hi: 'एसडीएम / ई-डिस्ट्रिक्ट केंद्र', 
+    authority_en: 'SDM / e-District Center', 
+    isSpecial: true 
+  },
+  'domicile': { 
+    en: 'Domicile / Permanent Residence Certificate',
+    hi: 'मूल निवास प्रमाण पत्र (Domicile Certificate)', 
+    hint_en: 'State or Union Territory permanent residency proof',
+    hint_hi: 'राज्य में स्थायी निवास का प्रमाण', 
+    authority_hi: 'तहसीलदार / जन सेवा केंद्र', 
+    authority_en: 'Tehsildar / CSC Center', 
+    isSpecial: true 
+  },
+  'residence': { 
+    en: 'State Residence Proof (Domicile / Electricity Bill / Ration Card)',
+    hi: 'निवास प्रमाण पत्र (Residence Certificate)', 
+    hint_en: 'Proof of local residence in the state / ward',
+    hint_hi: 'स्थानीय निवास सत्यापन हेतु', 
+    authority_hi: 'तहसीलदार / जन सेवा केंद्र', 
+    authority_en: 'Tehsildar / CSC Center', 
+    isSpecial: true 
+  },
+  'passport': { 
+    en: 'Recent Passport Size Photographs (2 copies)',
+    hi: 'पासपोर्ट साइज रंगीन फोटो (Passport Photos)', 
+    hint_en: 'Recent color passport-size photos with white background',
+    hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो', 
+    authority_hi: 'घर पर उपलब्ध / फोटो स्टूडियो', 
+    authority_en: 'Recent Photograph', 
+    isSpecial: false 
+  },
+  'photo': { 
+    en: 'Recent Passport Size Photographs',
+    hi: 'पासपोर्ट साइज रंगीन फोटो (Passport Photos)', 
+    hint_en: 'Recent color photographs of applicant',
+    hint_hi: 'नवीनतम रंगीन पासपोर्ट आकार की फोटो', 
+    authority_hi: 'घर पर उपलब्ध / फोटो स्टूडियो', 
+    authority_en: 'Recent Photograph', 
+    isSpecial: false 
+  },
+  'bpl': { 
+    en: 'BPL / Antyodaya Ration Card',
+    hi: 'बीपीएल राशन कार्ड (BPL / Antyodaya Card)', 
+    hint_en: 'Below Poverty Line or Antyodaya food security card',
+    hint_hi: 'गरीबी रेखा कार्ड या अंत्योदय अन्न योजना कार्ड', 
+    authority_hi: 'खाद्य एवं रसद विभाग', 
+    authority_en: 'Food & Civil Supplies Dept', 
+    isSpecial: false 
+  },
+  'ration card': { 
+    en: 'Ration Card (Family Members List)',
+    hi: 'राशन कार्ड (Ration Card)', 
+    hint_en: 'Food supply ration card with family member names',
+    hint_hi: 'परिवार के सदस्यों के नाम सहित राशन कार्ड', 
+    authority_hi: 'खाद्य एवं रसद विभाग', 
+    authority_en: 'Food & Civil Supplies Dept', 
+    isSpecial: false 
+  },
+  'disability': { 
+    en: 'Disability Certificate / UDID Card (40%+ disability)',
+    hi: 'दिव्यांगता प्रमाण पत्र (Disability / UDID Card)', 
+    hint_en: 'CMO-issued Unique Disability ID or certificate with 40%+ disability',
+    hint_hi: 'सीएमओ द्वारा जारी 40%+ दिव्यांगता कार्ड', 
+    authority_hi: 'मुख्य चिकित्सा अधिकारी (CMO)', 
+    authority_en: 'Chief Medical Officer (CMO)', 
+    isSpecial: true 
+  },
+  'birth certificate': { 
+    en: 'Birth Certificate (Applicant / Child)',
+    hi: 'जन्म प्रमाण पत्र (Birth Certificate)', 
+    hint_en: 'Official date of birth certificate from Registrar / Municipality',
+    hint_hi: 'बालिका/आवेदक की जन्म तिथि का प्रमाण', 
+    authority_hi: 'नगर निगम / ग्राम पंचायत', 
+    authority_en: 'Municipal / Panchayat Office', 
+    isSpecial: true 
+  },
+  'age proof': { 
+    en: 'Age Proof (10th Marksheet / Birth Certificate / Voter ID)',
+    hi: 'आयु प्रमाण पत्र (Age Proof)', 
+    hint_en: '10th class certificate or birth certificate showing date of birth',
+    hint_hi: '10वीं अंकतालिका या जन्म प्रमाण पत्र', 
+    authority_hi: 'विद्यालय / जन्म रजिस्ट्रार', 
+    authority_en: 'School / Registrar', 
+    isSpecial: false 
+  },
+  'educational': { 
+    en: 'Educational Qualification Certificates & Marksheets',
+    hi: 'शैक्षणिक योग्यता प्रमाण पत्र (Educational Certificate)', 
+    hint_en: 'Degree, diploma, or school passing certificates',
+    hint_hi: 'अंकतालिका एवं विद्यालय/कॉलेज प्रमाण पत्र', 
+    authority_hi: 'संबंधित विद्यालय / कॉलेज', 
+    authority_en: 'School / University', 
+    isSpecial: true 
+  },
+  'mcp card': { 
+    en: 'Mother and Child Protection (MCP) Card',
+    hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', 
+    hint_en: 'Health card issued by Anganwadi or Government Hospital for ANC/immunisation',
+    hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड', 
+    authority_hi: 'आंगनवाड़ी / सरकारी अस्पताल', 
+    authority_en: 'Anganwadi / Govt Hospital', 
+    isSpecial: true 
+  },
+  'mother and child': { 
+    en: 'Mother and Child Protection (MCP) Card',
+    hi: 'मातृ एवं बाल सुरक्षा कार्ड (MCP Card)', 
+    hint_en: 'Maternal health and child tracking card with doctor stamp',
+    hint_hi: 'आंगनवाड़ी या सरकारी अस्पताल से जारी कार्ड', 
+    authority_hi: 'आंगनवाड़ी / सरकारी अस्पताल', 
+    authority_en: 'Anganwadi / Govt Hospital', 
+    isSpecial: true 
+  },
+  'jan aadhaar': { 
+    en: 'Jan Aadhaar Card (Rajasthan Family ID)',
+    hi: 'जन आधार कार्ड (Jan Aadhaar Card)', 
+    hint_en: 'Rajasthan unified family identity card',
+    hint_hi: 'राजस्थान परिवार पहचान कार्ड', 
+    authority_hi: 'राजस्थान ई-मित्र केंद्र', 
+    authority_en: 'Rajasthan e-Mitra', 
+    isSpecial: false 
+  },
+  'land records': { 
+    en: 'Land Ownership Records / RoR / Khasra-Khatauni',
+    hi: 'भूमि दस्तावेज / खतौनी (Land Records / RoR)', 
+    hint_en: 'Land revenue registry or lease title copy',
+    hint_hi: 'जमीन की जमाबंदी या पट्टा प्रति', 
+    authority_hi: 'राजस्व विभाग / लेखपाल', 
+    authority_en: 'Revenue Dept / Patwari', 
+    isSpecial: true 
+  },
+  'death certificate': { 
+    en: "Husband's Death Certificate (for widow pension)",
+    hi: 'पति का मृत्यु प्रमाण पत्र (Husband\'s Death Certificate)', 
+    hint_en: 'Required for widow pension and family assistance eligibility verification',
+    hint_hi: 'विधवा पेंशन व पारिवारिक सहायता सत्यापन हेतु नगर निगम / ग्राम पंचायत द्वारा जारी', 
+    authority_hi: 'नगर निगम / ग्राम पंचायत', 
+    authority_en: 'Municipal / Panchayat Office', 
+    isSpecial: true 
+  },
+  'husband death certificate': { 
+    en: "Husband's Death Certificate (for widow pension)",
+    hi: 'पति का मृत्यु प्रमाण पत्र (Husband\'s Death Certificate)', 
+    hint_en: 'Official death certificate issued by Registrar / Municipality / Panchayat',
+    hint_hi: 'विधवा पेंशन व पारिवारिक सहायता सत्यापन हेतु', 
+    authority_hi: 'नगर निगम / ग्राम पंचायत', 
+    authority_en: 'Municipal / Panchayat Office', 
+    isSpecial: true 
+  },
+  'marriage certificate': { 
+    en: 'Marriage Registration Certificate',
+    hi: 'विवाह प्रमाण पत्र (Marriage Certificate)', 
+    hint_en: 'Official marriage certificate from Marriage Registrar or SDM Office',
+    hint_hi: 'विवाह पंजीकरण एवं अंतरजातीय विवाह प्रोत्साहन योजना सत्यापन', 
+    authority_hi: 'विवाह पंजीयक / एसडीएम कार्यालय / ई-डिस्ट्रिक्ट', 
+    authority_en: 'Marriage Registrar / SDM Office / e-District', 
+    isSpecial: true 
+  },
+  'intercaste certificate': { 
+    en: 'Inter-Caste Marriage Certificate & Joint Affidavit',
+    hi: 'अंतरजातीय विवाह प्रमाण पत्र (Inter-Caste Marriage Certificate)', 
+    hint_en: 'Caste certificates of both spouses and registered marriage proof',
+    hint_hi: 'पति एवं पत्नी दोनों का जाति प्रमाण पत्र व विवाह प्रमाण पत्र', 
+    authority_hi: 'एसडीएम / समाज कल्याण विभाग', 
+    authority_en: 'SDM / Social Welfare Dept', 
+    isSpecial: true 
+  },
+  'self-declaration': { 
+    en: 'Self-Declaration Form / Undertaking',
+    hi: 'स्व-घोषणा पत्र (Self-Declaration)', 
+    hint_en: 'Self-attested declaration format as prescribed by scheme rules',
+    hint_hi: 'शपथ पत्र या निर्धारित प्रारूप पर घोषणा', 
+    authority_hi: 'स्व-हस्ताक्षरित प्रारूप', 
+    authority_en: 'Self-Attested Format', 
+    isSpecial: false 
+  },
+  'affidavit': { 
+    en: 'Notarized Affidavit (Oath Commissioner)',
+    hi: 'शपथ पत्र (Affidavit)', 
+    hint_en: 'Affidavit attested by Notary Public or Oath Commissioner',
+    hint_hi: 'नोटरी या शपथ आयुक्त द्वारा सत्यापित', 
+    authority_hi: 'नोटरी / शपथ आयुक्त', 
+    authority_en: 'Notary / Oath Commissioner', 
+    isSpecial: true 
+  },
+  'mobile number': { 
+    en: 'Aadhaar-Linked Active Mobile Number (for OTP & SMS)',
+    hi: 'आधार लिंक मोबाइल नंबर (Mobile Number)', 
+    hint_en: 'Active mobile number linked with Aadhaar for OTP verification and DBT SMS alerts',
+    hint_hi: 'ओटीपी सत्यापन व एसएमएस सूचनाओं हेतु', 
+    authority_hi: 'सक्रिय मोबाइल सिम कार्ड', 
+    authority_en: 'Active Mobile SIM', 
+    isSpecial: false 
+  },
+  'voter id': { 
+    en: 'Voter Identity Card (EPIC)',
+    hi: 'मतदाता पहचान पत्र (Voter ID)', 
+    hint_en: 'Alternative photo identity card issued by Election Commission',
+    hint_hi: 'वैकल्पिक पहचान पत्र', 
+    authority_hi: 'चुनाव आयोग (ECI)', 
+    authority_en: 'Election Commission (ECI)', 
+    isSpecial: false 
+  },
 };
 
 function parseDocuments(docString?: string): string[] {
@@ -145,23 +461,135 @@ function parseDocuments(docString?: string): string[] {
     .filter((d) => d.length > 2);
 }
 
+function resolveSchemeDocuments(scheme?: SchemeMatchResult | null): string[] {
+  if (!scheme) return [];
+  
+  const parsed = parseDocuments(scheme.documents_required);
+  // Check if parsed has at least 2 distinct meaningful documents
+  const isGeneric = parsed.length === 0 || (parsed.length <= 1 && (
+    parsed[0].toLowerCase().includes('as per') || 
+    parsed[0].toLowerCase().includes('guideline') || 
+    parsed[0].toLowerCase().includes('website') ||
+    parsed[0].toLowerCase().includes('applicable') ||
+    parsed[0].length < 10
+  ));
+
+  if (!isGeneric && parsed.length >= 2) {
+    return parsed;
+  }
+
+  // Synthesize domain-aware fallback documents based on scheme metadata
+  const cat = (scheme.category || '').toLowerCase();
+  const tags = (scheme.life_stage_tags || '').toLowerCase();
+  const benType = (scheme.beneficiary_type || '').toLowerCase();
+  const name = (scheme.name || '').toLowerCase();
+  const desc = (scheme.description || '').toLowerCase();
+
+  const isStudent = 
+    cat.includes('education') || 
+    cat.includes('scholarship') || 
+    tags.includes('student') || 
+    tags.includes('youth') || 
+    benType.includes('student') || 
+    benType.includes('scholar') || 
+    benType.includes('children') || 
+    benType.includes('girl child') || 
+    benType.includes('girls') || 
+    name.includes('scholarship') || 
+    name.includes('student') || 
+    name.includes('fellowship') || 
+    name.includes('school') || 
+    name.includes('merit') || 
+    name.includes('ladli') || 
+    name.includes('pragati') || 
+    name.includes('saksham') || 
+    name.includes('super 30') || 
+    desc.includes('scholarship');
+
+  if (isStudent) {
+    const docs = [
+      "Copy of the student's School ID card or admission receipt",
+      "Student and parent Aadhaar cards (for identity verification and DBT linkage)",
+      "Copy of bank passbook / account statement (showing Account Number and IFSC Code)",
+      "Previous year Marksheet / Report Card (attested copy)",
+      "State / Delhi residence proof (if requested by the school)"
+    ];
+    if (scheme.income_max || (scheme.caste_categories && scheme.caste_categories.toLowerCase() !== 'all')) {
+      docs.push("Family Income Certificate & Category/Caste Certificate (if applicable)");
+    }
+    return docs;
+  }
+
+  const isMaternity = 
+    cat.includes('health') || 
+    cat.includes('maternity') || 
+    cat.includes('nutrition') || 
+    tags.includes('pregnant') || 
+    tags.includes('lactating') || 
+    benType.includes('pregnant') || 
+    name.includes('matru') || 
+    name.includes('pmmvy') || 
+    name.includes('maternity');
+
+  if (isMaternity) {
+    return [
+      "Mother and Child Protection (MCP) Card (from Anganwadi or Govt Hospital)",
+      "Aadhaar Card of pregnant woman and husband (identity proof)",
+      "Copy of bank passbook / account statement (showing Account Number and IFSC Code)",
+      "State residence proof / Ration Card",
+      "Institutional delivery / ANC checkup record"
+    ];
+  }
+
+  const isPension = 
+    cat.includes('pension') || 
+    tags.includes('widow') || 
+    tags.includes('senior') || 
+    benType.includes('widow') || 
+    name.includes('pension') || 
+    name.includes('widow');
+
+  if (isPension) {
+    const docs = [
+      "Aadhaar Card of applicant (identity and age proof)",
+      "Copy of bank passbook / account statement (showing Account Number and IFSC Code)",
+      "State residence proof / Domicile Certificate",
+      "Income Certificate / BPL Ration Card"
+    ];
+    if (name.includes('widow') || tags.includes('widow') || benType.includes('widow')) {
+      docs.push("Husband's Death Certificate (issued by Municipal / Panchayat office)");
+    }
+    return docs;
+  }
+
+  // General fallback documents
+  return [
+    "Aadhaar Card (identity & address proof)",
+    "Copy of bank passbook / account statement (showing Account Number and IFSC Code)",
+    "State residence proof / Domicile Certificate",
+    "Family Income Certificate / BPL Ration Card (if applicable)",
+    "Recent Passport Size Photographs (2 copies)"
+  ];
+}
+
 function localizeDocumentName(doc: string, lang: 'en' | 'hi'): { name: string; hint?: string; authority?: string; isSpecial: boolean } {
   const lower = doc.toLowerCase().trim();
   for (const [key, val] of Object.entries(COMMON_DOC_TRANSLATIONS)) {
     if (lower.includes(key)) {
       return { 
-        name: lang === 'hi' ? val.hi : doc, 
-        hint: lang === 'hi' ? val.hint_hi : undefined,
+        name: lang === 'hi' ? val.hi : (val.en || doc), 
+        hint: lang === 'hi' ? val.hint_hi : val.hint_en,
         authority: lang === 'hi' ? val.authority_hi : val.authority_en,
         isSpecial: val.isSpecial
       };
     }
   }
-  const isSpecialFallback = lower.includes('certificate') || lower.includes('marksheet') || lower.includes('proof') || lower.includes('affidavit') || lower.includes('praman');
+  const isSpecialFallback = lower.includes('certificate') || lower.includes('marksheet') || lower.includes('proof') || lower.includes('affidavit') || lower.includes('praman') || lower.includes('bonafide') || lower.includes('receipt') || lower.includes('id card');
   return { 
     name: doc,
+    hint: undefined,
     isSpecial: isSpecialFallback,
-    authority: isSpecialFallback ? (lang === 'hi' ? 'सक्षम अधिकारी / संस्थान' : 'Issuing Authority') : (lang === 'hi' ? 'घर पर उपलब्ध' : 'Available at Home')
+    authority: isSpecialFallback ? (lang === 'hi' ? 'सक्षम अधिकारी / संस्थान' : 'Issuing Authority / Institution') : (lang === 'hi' ? 'घर पर उपलब्ध' : 'Available at Home')
   };
 }
 
@@ -790,8 +1218,8 @@ export const SchemeDetail: React.FC = () => {
   };
 
   const documentsList = useMemo(() => {
-    return parseDocuments(scheme?.documents_required);
-  }, [scheme?.documents_required]);
+    return resolveSchemeDocuments(scheme);
+  }, [scheme]);
 
   const { commonDocsList, specialDocsList } = useMemo(() => {
     const common: string[] = [];
