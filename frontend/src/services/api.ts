@@ -51,15 +51,6 @@ export interface MatchResponse {
   execution_time_ms: number;
 }
 
-export interface DemoPersona {
-  id: string;
-  name: string;
-  title: string;
-  subtitle: string;
-  avatar: string;
-  description: string;
-  profile: ProfileInput;
-}
 
 export interface ExplainRequest {
   scheme_id: string;
@@ -140,83 +131,6 @@ export async function explainSchemeEligibility(
   return response.json();
 }
 
-export async function fetchDemoPersonas(): Promise<DemoPersona[]> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/personas`);
-    if (response.ok) {
-      return response.json();
-    }
-  } catch (err) {
-    console.warn("Could not fetch remote personas, using fallback:", err);
-  }
-
-  // Fallback personas if backend is unreachable
-  return [
-    {
-      id: "priya",
-      name: "Priya Sharma",
-      title: "19yo Student in Karnataka",
-      subtitle: "OBC Category • Higher Education Seeker",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
-      description: "19-year-old student from Karnataka seeking scholarships.",
-      profile: {
-        state: "Karnataka",
-        age: 19,
-        gender: "Female",
-        caste: "OBC",
-        income: 180000,
-        residence: "Urban",
-        marital_status: "unmarried",
-        life_stage: "student",
-        is_bpl: false,
-        has_disability: false,
-        limit: 10
-      }
-    },
-    {
-      id: "sunita",
-      name: "Sunita Devi",
-      title: "26yo Pregnant Mother in Bihar",
-      subtitle: "SC Category • BPL Household • Maternal Care",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sunita",
-      description: "26-year-old expecting mother eligible for maternity aid.",
-      profile: {
-        state: "Bihar",
-        age: 26,
-        gender: "Female",
-        caste: "SC",
-        income: 48000,
-        residence: "Rural",
-        marital_status: "married",
-        life_stage: "maternal",
-        is_bpl: true,
-        has_disability: false,
-        limit: 10
-      }
-    },
-    {
-      id: "lakshmi",
-      name: "Lakshmi Ammal",
-      title: "42yo Micro-Entrepreneur in Tamil Nadu",
-      subtitle: "General Category • Business Loan Seeker",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lakshmi",
-      description: "42-year-old entrepreneur looking for business loans.",
-      profile: {
-        state: "Tamil Nadu",
-        age: 42,
-        gender: "Female",
-        caste: "General",
-        income: 220000,
-        residence: "Urban",
-        marital_status: "married",
-        life_stage: "entrepreneur",
-        is_bpl: false,
-        has_disability: false,
-        limit: 10
-      }
-    }
-  ];
-}
 
 // ----------------------------------------------------------------------------
 // Local Bookmark Management

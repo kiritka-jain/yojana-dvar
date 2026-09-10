@@ -13,7 +13,6 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  loginDemo: (personaId: 'priya' | 'sunita' | 'lakshmi') => void;
   loginCustom: (email: string, displayName?: string) => void;
   logout: () => void;
 }
@@ -43,39 +42,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     }
   }, []);
-
-  const loginDemo = (personaId: 'priya' | 'sunita' | 'lakshmi') => {
-    let session: UserSession;
-    if (personaId === 'priya') {
-      session = {
-        uid: 'priya',
-        email: 'priya.sharma@example.com',
-        displayName: 'Priya Sharma',
-        avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Priya'
-      };
-    } else if (personaId === 'sunita') {
-      session = {
-        uid: 'sunita',
-        email: 'sunita.devi@example.com',
-        displayName: 'Sunita Devi',
-        avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sunita'
-      };
-    } else {
-      session = {
-        uid: 'lakshmi',
-        email: 'lakshmi.ammal@example.com',
-        displayName: 'Lakshmi Ammal',
-        avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lakshmi'
-      };
-    }
-
-    const devToken = `dev-token-${session.uid}`;
-    setCurrentUser(session);
-    setToken(devToken);
-    localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify(session));
-    localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, devToken);
-    window.dispatchEvent(new Event('yojana_auth_changed'));
-  };
 
   const loginCustom = (email: string, displayName?: string) => {
     const cleanId = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'user';
@@ -109,7 +75,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isAuthenticated: !!currentUser,
         isLoading,
-        loginDemo,
         loginCustom,
         logout,
       }}

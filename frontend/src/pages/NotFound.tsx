@@ -61,8 +61,8 @@ export const NotFound: React.FC = () => {
           <Link to="/bookmarks" className="p-2.5 rounded-xl bg-cream-50 hover:bg-cream-100 hover:text-saffron-800 transition-colors">
             🔖 {language === 'hi' ? 'सहेजी गई सूची' : 'Saved Bookmarks'}
           </Link>
-          <Link to="/profile" className="p-2.5 rounded-xl bg-cream-50 hover:bg-cream-100 hover:text-saffron-800 transition-colors">
-            👤 {language === 'hi' ? 'नागरिक सत्र' : 'Citizen Profile'}
+          <Link to="/find" className="p-2.5 rounded-xl bg-cream-50 hover:bg-cream-100 hover:text-saffron-800 transition-colors">
+            🎯 {language === 'hi' ? 'पात्रता जांच' : 'Find Schemes'}
           </Link>
           <Link to="/about" className="p-2.5 rounded-xl bg-cream-50 hover:bg-cream-100 hover:text-saffron-800 transition-colors">
             🏛️ {language === 'hi' ? 'हमारे बारे में' : 'About Platform'}

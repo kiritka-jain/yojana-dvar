@@ -242,15 +242,6 @@ export const Navbar: React.FC = () => {
                 )}
               </Link>
 
-              <Link
-                to="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 rounded-xl text-base font-medium transition-colors ${
-                  isActive('/profile') ? 'bg-saffron-100 text-saffron-900 font-bold' : 'text-charcoal-800 hover:bg-cream-200'
-                }`}
-              >
-                {language === 'hi' ? 'नागरिक प्रोफ़ाइल व सत्र' : 'Citizen Profile & Session'}
-              </Link>
 
               <Link
                 to="/about"

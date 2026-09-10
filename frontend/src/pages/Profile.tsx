@@ -3,53 +3,8 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useBookmarks } from '../context/BookmarkContext';
-import { fetchUserProfile, setStoredUserProfile } from '../services/api';
+import { fetchUserProfile, getStoredUserProfile } from '../services/api';
 import type { ProfileInput } from '../services/api';
-
-const DEMO_PROFILES: Record<'priya' | 'sunita' | 'lakshmi', ProfileInput> = {
-  priya: {
-    state: 'Karnataka',
-    age: 19,
-    gender: 'Female',
-    caste: 'OBC',
-    income: 180000,
-    residence: 'Urban',
-    life_stage: 'student',
-    occupation: 'Student',
-    education: 'Undergraduate',
-    is_bpl: false,
-    has_disability: false,
-    limit: 10
-  },
-  sunita: {
-    state: 'Bihar',
-    age: 26,
-    gender: 'Female',
-    caste: 'SC',
-    income: 48000,
-    residence: 'Rural',
-    life_stage: 'maternal',
-    occupation: 'Homemaker',
-    education: 'Secondary',
-    is_bpl: true,
-    has_disability: false,
-    limit: 10
-  },
-  lakshmi: {
-    state: 'Tamil Nadu',
-    age: 42,
-    gender: 'Female',
-    caste: 'General',
-    income: 220000,
-    residence: 'Urban',
-    life_stage: 'entrepreneur',
-    occupation: 'Self-Employed / Artisan',
-    education: 'Diploma',
-    is_bpl: false,
-    has_disability: false,
-    limit: 10
-  }
-};
 import { getStateDisplayName } from '../constants/states';
 import { 
   User, 
@@ -61,20 +16,19 @@ import {
   Globe, 
   Trash2, 
   Loader2, 
-  ShieldCheck, 
-  LogIn 
+  ShieldCheck 
 } from 'lucide-react';
 
 export const Profile: React.FC = () => {
   const { language, t } = useLanguage();
-  const { currentUser, token, isAuthenticated, loginDemo, logout } = useAuth();
+  const { currentUser, token, isAuthenticated, logout } = useAuth();
   const { bookmarkCount, clearBookmarks } = useBookmarks();
 
   const [savedProfile, setSavedProfile] = useState<ProfileInput | null>(null);
   const [profileLoading, setProfileLoading] = useState<boolean>(false);
   const [clearedNotice, setClearedNotice] = useState<boolean>(false);
 
-  // Load saved demographic profile from backend when authenticated
+  // Load saved demographic profile from backend when authenticated, or from local storage
   const loadProfile = useCallback(async () => {
     if (isAuthenticated && token) {
       setProfileLoading(true);
@@ -89,7 +43,8 @@ export const Profile: React.FC = () => {
         setProfileLoading(false);
       }
     } else {
-      setSavedProfile(null);
+      const stored = getStoredUserProfile();
+      setSavedProfile(stored);
     }
   }, [isAuthenticated, token]);
 
@@ -101,15 +56,6 @@ export const Profile: React.FC = () => {
     await clearBookmarks();
     setClearedNotice(true);
     setTimeout(() => setClearedNotice(false), 3000);
-  };
-
-  const handleSaveDemoProfile = async (persona: 'priya' | 'sunita' | 'lakshmi') => {
-    const prof = DEMO_PROFILES[persona];
-    if (prof) {
-      setStoredUserProfile(prof);
-      setSavedProfile(prof);
-    }
-    loginDemo(persona);
   };
 
   return (
@@ -160,44 +106,6 @@ export const Profile: React.FC = () => {
           )}
         </div>
 
-        {/* Guest Demo Persona Switcher (if not logged in) */}
-        {!isAuthenticated && (
-          <div className="p-4 sm:p-5 rounded-2xl bg-saffron-50/70 border border-saffron-200 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-saffron-900 uppercase tracking-wider">
-              <LogIn className="w-4 h-4 text-saffron-600" />
-              <span>{language === 'hi' ? '1-क्लिक नागरिक डेमो सत्र चुनें' : '1-Click Demo Citizen Profiles'}</span>
-            </div>
-            <p className="text-xs text-charcoal-600">
-              {language === 'hi' 
-                ? 'क्लाउड सिंक और व्यक्तिगत योजनाओं के परीक्षण हेतु किसी भी प्रोफाइल पर क्लिक करें:' 
-                : 'Test cloud bookmark syncing and personalized match recommendations by switching persona:'}
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleSaveDemoProfile('priya')}
-                className="p-2.5 rounded-xl bg-white border border-saffron-200 hover:border-saffron-400 text-xs font-bold text-charcoal-800 hover:bg-saffron-50 transition-all text-center"
-              >
-                👩‍🎓 Priya
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSaveDemoProfile('sunita')}
-                className="p-2.5 rounded-xl bg-white border border-saffron-200 hover:border-saffron-400 text-xs font-bold text-charcoal-800 hover:bg-saffron-50 transition-all text-center"
-              >
-                🤱 Sunita
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSaveDemoProfile('lakshmi')}
-                className="p-2.5 rounded-xl bg-white border border-saffron-200 hover:border-saffron-400 text-xs font-bold text-charcoal-800 hover:bg-saffron-50 transition-all text-center"
-              >
-                💼 Lakshmi
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Preferences & Session Stats */}
         <div className="space-y-3">
           <div className="p-4 rounded-2xl bg-cream-50 border border-cream-200 flex items-center justify-between text-xs sm:text-sm">
@@ -232,52 +140,50 @@ export const Profile: React.FC = () => {
         </div>
 
         {/* Saved Demographic Profile Details */}
-        {isAuthenticated && (
-          <div className="p-5 rounded-2xl bg-cream-50/80 border border-cream-200 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-forest-600" />
-                <span>{language === 'hi' ? 'सहेजी गई जनसांख्यिकीय प्रोफ़ाइल' : 'Saved Demographic Profile'}</span>
-              </span>
-              {profileLoading && <Loader2 className="w-3.5 h-3.5 text-saffron-600 animate-spin" />}
-            </div>
-
-            {savedProfile ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
-                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
-                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldState')}</span>
-                  <span className="font-bold text-charcoal-900">{getStateDisplayName(savedProfile.state, language)}</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
-                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldAge')}</span>
-                  <span className="font-bold text-charcoal-900">{savedProfile.age} {language === 'hi' ? 'वर्ष' : 'Yrs'}</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
-                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldCaste')}</span>
-                  <span className="font-bold text-charcoal-900">{savedProfile.caste || 'General'}</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
-                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldIncome')}</span>
-                  <span className="font-bold text-forest-700">₹{savedProfile.income?.toLocaleString('en-IN') || 0}</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
-                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldResidence')}</span>
-                  <span className="font-bold text-charcoal-900">{savedProfile.residence || 'Rural'}</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-cream-200">
-                  <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldLifeStage')}</span>
-                  <span className="font-bold text-saffron-800 capitalize">{savedProfile.life_stage || 'All'}</span>
-                </div>
-              </div>
-            ) : (
-              <p className="text-xs text-charcoal-500">
-                {language === 'hi' 
-                  ? 'कोई जनसांख्यिकीय प्रोफ़ाइल सहेजी नहीं गई है। योजना खोजक के माध्यम से अपनी जानकारी भरें।' 
-                  : 'No demographic profile saved yet. Complete the eligibility wizard to save your preferences.'}
-              </p>
-            )}
+        <div className="p-5 rounded-2xl bg-cream-50/80 border border-cream-200 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-charcoal-800 uppercase tracking-wider flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-forest-600" />
+              <span>{language === 'hi' ? 'सहेजी गई जनसांख्यिकीय प्रोफ़ाइल' : 'Saved Demographic Profile'}</span>
+            </span>
+            {profileLoading && <Loader2 className="w-3.5 h-3.5 text-saffron-600 animate-spin" />}
           </div>
-        )}
+
+          {savedProfile ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+              <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldState')}</span>
+                <span className="font-bold text-charcoal-900">{getStateDisplayName(savedProfile.state, language)}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldAge')}</span>
+                <span className="font-bold text-charcoal-900">{savedProfile.age} {language === 'hi' ? 'वर्ष' : 'Yrs'}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldCaste')}</span>
+                <span className="font-bold text-charcoal-900">{savedProfile.caste || 'General'}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldIncome')}</span>
+                <span className="font-bold text-forest-700">₹{savedProfile.income?.toLocaleString('en-IN') || 0}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldResidence')}</span>
+                <span className="font-bold text-charcoal-900">{savedProfile.residence || 'Rural'}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-cream-200">
+                <span className="text-charcoal-400 block text-[10px] uppercase font-bold">{t('fieldLifeStage')}</span>
+                <span className="font-bold text-saffron-800 capitalize">{savedProfile.life_stage || 'All'}</span>
+              </div>
+            </div>
+          ) : (
+            <p className="text-xs text-charcoal-500">
+              {language === 'hi' 
+                ? 'कोई जनसांख्यिकीय प्रोफ़ाइल सहेजी नहीं गई है। योजना खोजक के माध्यम से अपनी जानकारी भरें।' 
+                : 'No demographic profile saved yet. Complete the eligibility wizard to save your preferences.'}
+            </p>
+          )}
+        </div>
 
         {/* Clear Notice Toast */}
         {clearedNotice && (

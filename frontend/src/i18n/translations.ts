@@ -48,11 +48,6 @@ export interface TranslationDictionary {
   statFastMatching: string;
   statFastMatchingSub: string;
 
-  // Demo Personas Section
-  personaTitle: string;
-  personaSubtitle: string;
-  personaTryNow: string;
-  personaMatchMe: string;
 
   // Life Stages Section
   lifeStageTitle: string;
@@ -83,7 +78,6 @@ export interface TranslationDictionary {
   // Wizard Stepper & Steps
   wizardTitle: string;
   wizardSubtitle: string;
-  wizardPersonaLoaded: string;
   wizardStep1Title: string;
   wizardStep1Subtitle: string;
   wizardStep2Title: string;
@@ -432,10 +426,6 @@ export const translations: Record<Language, TranslationDictionary> = {
     statFastMatching: "Instant Eligibility",
     statFastMatchingSub: "Accurate & verified government criteria",
 
-    personaTitle: "Test With 1-Click Demo Profiles",
-    personaSubtitle: "Experience instant personalized scheme matching with real-world Indian demographic scenarios.",
-    personaTryNow: "Test this Profile",
-    personaMatchMe: "Run Match",
 
     lifeStageTitle: "Schemes For Every Stage of Life",
     lifeStageSubtitle: "From girl child education to maternal care, enterprise funding, and senior pension.",
@@ -464,7 +454,6 @@ export const translations: Record<Language, TranslationDictionary> = {
     // Wizard
     wizardTitle: "Find Government Schemes For You",
     wizardSubtitle: "Find direct cash grants, scholarships, and welfare benefits in 3 simple steps.",
-    wizardPersonaLoaded: "Demo profile pre-loaded. Feel free to adjust any fields or proceed.",
     wizardStep1Title: "State & Age",
     wizardStep1Subtitle: "Your residence state and age",
     wizardStep2Title: "Category & Income",
@@ -807,10 +796,6 @@ export const translations: Record<Language, TranslationDictionary> = {
     statFastMatching: "तुरंत पात्रता मिलान",
     statFastMatchingSub: "सरल व सटीक पात्रता गणना",
 
-    personaTitle: "1-क्लिक डेमो प्रोफाइल से जांचें",
-    personaSubtitle: "भारतीय महिलाओं की वास्तविक परिस्थितियों के आधार पर तुरंत पात्रता जांच का अनुभव करें।",
-    personaTryNow: "इस प्रोफाइल से देखें",
-    personaMatchMe: "पात्रता निकालें",
 
     lifeStageTitle: "जीवन के हर पड़ाव के लिए योजनाएं",
     lifeStageSubtitle: "बालिका शिक्षा से लेकर मातृत्व स्वास्थ्य, आजीविका और वरिष्ठ नागरिक पेंशन तक।",
@@ -839,7 +824,6 @@ export const translations: Record<Language, TranslationDictionary> = {
     // Wizard
     wizardTitle: "अपनी सरकारी योजनाएं खोजें",
     wizardSubtitle: "केवल 3 सरल चरणों में अपने सभी सरकारी लाभ, छात्रवृत्ति व अनुदान खोजें।",
-    wizardPersonaLoaded: "डेमो प्रोफाइल लोड हो गई है। आप इसे अपनी आवश्यकता अनुसार बदल सकते हैं।",
     wizardStep1Title: "राज्य व आयु",
     wizardStep1Subtitle: "आपका निवास राज्य और आयु",
     wizardStep2Title: "वर्ग व आय",

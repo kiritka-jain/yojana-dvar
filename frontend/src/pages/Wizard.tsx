@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useId, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { matchSchemes, saveUserProfile, getStoredUserProfile, setStoredUserProfile } from '../services/api';
@@ -172,7 +172,6 @@ export const Wizard: React.FC = () => {
   const { t, language } = useLanguage();
   const { token, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   // Accessible IDs
   const stateSelectId = useId();
@@ -192,68 +191,14 @@ export const Wizard: React.FC = () => {
   const [rawAgeInput, setRawAgeInput] = useState<string>(DEFAULT_PROFILE.age > 0 ? DEFAULT_PROFILE.age.toString() : '');
   const debounceAgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync with URL parameter on mount (support ?persona=priya/sunita/lakshmi)
+  // Sync with stored profile on mount
   useEffect(() => {
-    const personaParam = searchParams.get('persona');
-    if (personaParam === 'priya') {
-      setProfile({
-        state: 'Karnataka',
-        age: 19,
-        gender: 'Female',
-        marital_status: 'unmarried',
-        caste: 'OBC',
-        income: 180000,
-        residence: 'Urban',
-        life_stage: 'student',
-        occupation: 'Student',
-        education: 'Undergraduate',
-        is_bpl: false,
-        has_disability: false,
-        limit: 15
-      });
-      setRawAgeInput('19');
-    } else if (personaParam === 'sunita') {
-      setProfile({
-        state: 'Bihar',
-        age: 26,
-        gender: 'Female',
-        marital_status: 'married',
-        caste: 'SC',
-        income: 48000,
-        residence: 'Rural',
-        life_stage: 'maternal',
-        occupation: 'Homemaker',
-        education: 'Secondary',
-        is_bpl: true,
-        has_disability: false,
-        limit: 15
-      });
-      setRawAgeInput('26');
-    } else if (personaParam === 'lakshmi') {
-      setProfile({
-        state: 'Tamil Nadu',
-        age: 42,
-        gender: 'Female',
-        marital_status: 'married',
-        caste: 'General',
-        income: 220000,
-        residence: 'Urban',
-        life_stage: 'entrepreneur',
-        occupation: 'Self-Employed / Artisan',
-        education: 'Undergraduate',
-        is_bpl: false,
-        has_disability: false,
-        limit: 15
-      });
-      setRawAgeInput('42');
-    } else {
-      const stored = getStoredUserProfile();
-      if (stored && stored.age > 0) {
-        setProfile(stored);
-        setRawAgeInput(stored.age.toString());
-      }
+    const stored = getStoredUserProfile();
+    if (stored && stored.age > 0) {
+      setProfile(stored);
+      setRawAgeInput(stored.age.toString());
     }
-  }, [searchParams]);
+  }, []);
 
   // Clean up debounce timer on unmount
   useEffect(() => {
