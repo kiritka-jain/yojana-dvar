@@ -604,6 +604,14 @@ class EligibilityMatcher:
                 requires_disability=bool(sch.get("requires_disability", False)),
                 life_stage_tags=str(sch.get("life_stage_tags", "[\"general\"]")),
                 is_active=bool(sch.get("is_active", True)),
+                name_hi=sch.get("name_hi"),
+                ministry_hi=sch.get("ministry_hi"),
+                category_hi=sch.get("category_hi"),
+                benefits_hi=sch.get("benefits_hi"),
+                description_hi=sch.get("description_hi"),
+                application_process_hi=sch.get("application_process_hi"),
+                documents_required_hi=sch.get("documents_required_hi"),
+                eligibility_text_hi=sch.get("eligibility_text_hi"),
                 match_score=sc,
                 match_reasons=rs
             )

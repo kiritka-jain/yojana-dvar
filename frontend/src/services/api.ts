@@ -40,6 +40,14 @@ export interface SchemeMatchResult {
   requires_disability?: boolean;
   life_stage_tags?: string;
   is_active?: boolean;
+  name_hi?: string;
+  ministry_hi?: string;
+  category_hi?: string;
+  benefits_hi?: string;
+  description_hi?: string;
+  application_process_hi?: string;
+  documents_required_hi?: string;
+  eligibility_text_hi?: string;
   match_score?: number;
   match_reasons?: string[];
 }

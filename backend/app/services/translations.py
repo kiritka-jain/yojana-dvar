@@ -239,16 +239,46 @@ def get_scheme_translation(scheme_id: Optional[str]) -> Optional[Dict[str, str]]
     canonical_id = SCHEME_ALIAS_MAP.get(target_id, target_id)
     return SCHEME_TRANSLATIONS.get(canonical_id) or SCHEME_TRANSLATIONS.get(target_id)
 
+# Thread-safe in-memory cache for on-demand scheme translations
+_DYNAMIC_TRANSLATION_CACHE: Dict[str, Dict[str, str]] = {}
+
 def get_localized_scheme_field(scheme: Dict[str, Any], field: str, lang: str = "en") -> str:
-    """Returns localized string for a scheme attribute based on preferred language."""
+    """
+    Returns localized string for a scheme attribute based on preferred language.
+    Priority:
+      1. Direct localized field in scheme dict (e.g. scheme['name_hi'])
+      2. In-memory dynamic translation cache
+      3. Curated static registry (SCHEME_TRANSLATIONS)
+      4. Fallback to English attribute
+    """
     fallback = str(scheme.get(field, "") or "")
     if lang != "hi":
         return fallback
 
-    sid = scheme.get("scheme_id") or scheme.get("id")
-    trans = get_scheme_translation(sid)
-    if not trans:
-        return fallback
-
     field_hi_key = f"{field}_hi"
-    return trans.get(field_hi_key) or fallback
+
+    # 1. Check direct scheme dictionary attribute
+    direct_val = scheme.get(field_hi_key)
+    if direct_val and str(direct_val).strip():
+        return str(direct_val).strip()
+
+    sid = str(scheme.get("scheme_id") or scheme.get("id") or "").strip().lower()
+
+    # 2. Check dynamic cache
+    if sid in _DYNAMIC_TRANSLATION_CACHE and field_hi_key in _DYNAMIC_TRANSLATION_CACHE[sid]:
+        return _DYNAMIC_TRANSLATION_CACHE[sid][field_hi_key]
+
+    # 3. Check curated registry
+    trans = get_scheme_translation(sid)
+    if trans and trans.get(field_hi_key):
+        return trans[field_hi_key]
+
+    return fallback
+
+def store_dynamic_translation(scheme_id: str, translations: Dict[str, str]) -> None:
+    """Caches dynamic translation for a scheme."""
+    sid = scheme_id.strip().lower()
+    if sid not in _DYNAMIC_TRANSLATION_CACHE:
+        _DYNAMIC_TRANSLATION_CACHE[sid] = {}
+    _DYNAMIC_TRANSLATION_CACHE[sid].update(translations)
+

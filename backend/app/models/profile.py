@@ -71,6 +71,15 @@ class SchemeMatchResult(BaseModel):
     requires_disability: bool
     life_stage_tags: str
     is_active: bool
+    # Localized Hindi fields (Epic 1: YD-I18N-101)
+    name_hi: Optional[str] = Field(default=None, description="Localized Hindi scheme name")
+    ministry_hi: Optional[str] = Field(default=None, description="Localized Hindi ministry / department name")
+    category_hi: Optional[str] = Field(default=None, description="Localized Hindi category")
+    benefits_hi: Optional[str] = Field(default=None, description="Localized Hindi benefits summary")
+    description_hi: Optional[str] = Field(default=None, description="Localized Hindi description")
+    application_process_hi: Optional[str] = Field(default=None, description="Localized Hindi application process and steps")
+    documents_required_hi: Optional[str] = Field(default=None, description="Localized Hindi required documents checklist")
+    eligibility_text_hi: Optional[str] = Field(default=None, description="Localized Hindi eligibility criteria narrative")
     match_score: int = Field(description="Normalized match confidence score (0-100%)")
     match_reasons: List[str] = Field(default=[], description="Key reasons why user qualifies for scheme")
 
