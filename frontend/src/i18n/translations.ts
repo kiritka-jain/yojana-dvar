@@ -299,6 +299,15 @@ export interface TranslationDictionary {
   detailExternalNotice: string;
   detailOnlineModeTab: string;
   detailOfflineModeTab: string;
+  detailOfficialGuidelinesTitle: string;
+  detailOfficialGuidelinesSubtitle: string;
+  detailApplicationStepPrefix: string;
+  detailStepHelp: string;
+  detailCopyLink: string;
+  detailLinkCopied: string;
+  detailOpenOfficialPortal: string;
+  detailOfficialPdfNotice: string;
+  detailDirectApplyPortal: string;
   detailSchemeNotFound: string;
   detailSchemeNotFoundDesc: string;
 
@@ -688,6 +697,15 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailExternalNotice: "You will be securely redirected to the official government portal in a new tab.",
     detailOnlineModeTab: "Online Portal Mode",
     detailOfflineModeTab: "Offline / Village Help Points",
+    detailOfficialGuidelinesTitle: "Detailed Official Guidelines & Application Instructions",
+    detailOfficialGuidelinesSubtitle: "Step-by-step verified government procedure with direct portal and form links:",
+    detailApplicationStepPrefix: "Step",
+    detailStepHelp: "Procedure & Guidelines",
+    detailCopyLink: "Copy Link",
+    detailLinkCopied: "Copied!",
+    detailOpenOfficialPortal: "Open Official Portal",
+    detailOfficialPdfNotice: "Official Application Form / Notification PDF",
+    detailDirectApplyPortal: "Direct Apply Portal",
     detailSchemeNotFound: "Scheme Not Found",
     detailSchemeNotFoundDesc: "The requested welfare scheme could not be found in our database.",
 
@@ -1073,6 +1091,15 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailExternalNotice: "क्लिक करने पर आप आधिकारिक सरकारी पोर्टल पर सुरक्षित नए टैब में पहुंचेंगे।",
     detailOnlineModeTab: "डिजिटल ऑनलाइन पोर्टल",
     detailOfflineModeTab: "गांव / वार्ड सहायता केंद्र",
+    detailOfficialGuidelinesTitle: "विस्तृत सरकारी निर्देश व ऑनलाइन आवेदन प्रक्रिया",
+    detailOfficialGuidelinesSubtitle: "सत्यापित सरकारी प्रक्रिया, चरणबद्ध निर्देश एवं आधिकारिक पोर्टल लिंक:",
+    detailApplicationStepPrefix: "चरण",
+    detailStepHelp: "आवेदन प्रक्रिया व नियम",
+    detailCopyLink: "लिंक कॉपी करें",
+    detailLinkCopied: "कॉपी हो गया!",
+    detailOpenOfficialPortal: "आधिकारिक पोर्टल खोलें",
+    detailOfficialPdfNotice: "आधिकारिक आवेदन पत्र / अधिसूचना PDF",
+    detailDirectApplyPortal: "सीधा आवेदन पोर्टल",
     detailSchemeNotFound: "योजना नहीं मिली",
     detailSchemeNotFoundDesc: "अनुरोधित सरकारी योजना कैटलॉग में नहीं मिली।",
 

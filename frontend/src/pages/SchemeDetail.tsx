@@ -50,47 +50,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { extractUrls } from '../utils/urlParser';
-
-/**
- * Component to format narrative application text, converting raw URLs into clickable link chips
- */
-const FormattedApplicationText: React.FC<{ text: string }> = ({ text }) => {
-  if (!text) return null;
-
-  // Split by URL regex
-  const parts = text.split(/(https?:\/\/[^\s"'\)<>]+|www\.[^\s"'\)<>]+)/gi);
-
-  return (
-    <div className="leading-relaxed space-y-2">
-      <p>
-        {parts.map((part, idx) => {
-          if (/^(https?:\/\/|www\.)/i.test(part)) {
-            let cleanUrl = part.trim().replace(/[.,;:!?)'"`>]+$/, '');
-            if (cleanUrl.startsWith('www.')) cleanUrl = `https://${cleanUrl}`;
-            const isPdf = cleanUrl.toLowerCase().endsWith('.pdf') || cleanUrl.toLowerCase().includes('.pdf?');
-            return (
-              <a
-                key={idx}
-                href={cleanUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1 font-bold underline px-2 py-0.5 mx-1 rounded-lg text-xs transition-all shadow-2xs ${
-                  isPdf
-                    ? 'bg-rose-100 text-rose-800 hover:bg-rose-200 decoration-rose-400 border border-rose-200'
-                    : 'bg-saffron-100 text-saffron-900 hover:bg-saffron-200 decoration-saffron-400 border border-saffron-200'
-                }`}
-              >
-                {isPdf ? <FileDown className="w-3.5 h-3.5 flex-shrink-0" /> : <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />}
-                <span className="break-all">{cleanUrl}</span>
-              </a>
-            );
-          }
-          return <span key={idx}>{part}</span>;
-        })}
-      </p>
-    </div>
-  );
-};
+import FormattedApplicationText from '../components/schemes/FormattedApplicationText';
 
 const DEFAULT_PROFILE: ProfileInput = {
   state: 'Uttar Pradesh',
@@ -2007,15 +1967,33 @@ export const SchemeDetail: React.FC = () => {
             {/* ========================================================================= */}
             {/* 2. OFFICIAL APPLICATION INSTRUCTIONS & HYPERLINKED STEPS                  */}
             {/* ========================================================================= */}
-            {scheme.application_process && (
-              <div className="p-5 rounded-2xl bg-cream-100/70 border border-cream-200 text-xs sm:text-sm text-charcoal-800 leading-relaxed space-y-2 shadow-2xs">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-saffron-600" />
-                  <span className="font-bold text-charcoal-900 text-xs sm:text-sm">
-                    {siteLanguage === 'hi' ? 'विस्तृत सरकारी निर्देश व ऑनलाइन लिंक:' : 'Detailed Official Guidelines & Application Text:'}
+            {(scheme.application_process || scheme.application_process_hi) && (
+              <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-cream-50/80 via-white to-amber-50/30 border border-cream-200 text-xs sm:text-sm text-charcoal-800 leading-relaxed space-y-4 shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-cream-200/80 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-saffron-100 text-saffron-700 flex items-center justify-center flex-shrink-0">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-charcoal-900 text-sm sm:text-base">
+                        {t('detailOfficialGuidelinesTitle')}
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-charcoal-500">
+                        {t('detailOfficialGuidelinesSubtitle')}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 self-start sm:self-auto">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{t('detailGovtVerifiedBadge')}</span>
                   </span>
                 </div>
-                <FormattedApplicationText text={scheme.application_process} />
+                <FormattedApplicationText 
+                  text={getLocalizedSchemeField(scheme, 'application_process', siteLanguage)} 
+                  language={siteLanguage}
+                  applyUrl={scheme.apply_url}
+                  officialUrl={scheme.official_url}
+                />
               </div>
             )}
 

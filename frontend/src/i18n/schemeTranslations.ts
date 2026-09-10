@@ -11,6 +11,9 @@ export interface SchemeTranslation {
   category_hi: string;
   benefits_hi: string;
   description_hi?: string;
+  application_process_hi?: string;
+  documents_required_hi?: string;
+  eligibility_text_hi?: string;
 }
 
 export const SCHEME_TRANSLATIONS: Record<string, SchemeTranslation> = {
@@ -309,25 +312,62 @@ export const getSchemeTranslation = (schemeId?: string): SchemeTranslation | und
   return SCHEME_TRANSLATIONS[canonicalId] || SCHEME_TRANSLATIONS[targetId];
 };
 
+export interface LocalizableScheme {
+  scheme_id?: string;
+  id?: string;
+  name?: string;
+  name_hi?: string;
+  ministry?: string;
+  ministry_hi?: string;
+  department?: string;
+  category?: string;
+  category_hi?: string;
+  benefits?: string;
+  benefits_hi?: string;
+  description?: string;
+  description_hi?: string;
+  application_process?: string;
+  application_process_hi?: string;
+  documents_required?: string;
+  documents_required_hi?: string;
+  eligibility_text?: string;
+  eligibility_text_hi?: string;
+  [key: string]: any;
+}
+
+export type LocalizableField = 
+  | 'name' 
+  | 'ministry' 
+  | 'category' 
+  | 'benefits' 
+  | 'description'
+  | 'application_process'
+  | 'documents_required'
+  | 'eligibility_text';
+
 /**
  * Returns localized string for a scheme attribute based on current language.
+ * Priority:
+ *   1. Direct localized field on scheme object (e.g. scheme.name_hi, scheme.application_process_hi)
+ *   2. Curated translation in SCHEME_TRANSLATIONS registry
+ *   3. Fallback to English attribute
  */
 export const getLocalizedSchemeField = (
-  scheme: {
-    scheme_id?: string;
-    id?: string;
-    name?: string;
-    ministry?: string;
-    category?: string;
-    benefits?: string;
-    description?: string;
-  },
-  field: 'name' | 'ministry' | 'category' | 'benefits' | 'description',
-  language: 'en' | 'hi'
+  scheme?: LocalizableScheme | null,
+  field: LocalizableField = 'name',
+  language: 'en' | 'hi' = 'en'
 ): string => {
-  const fallback = scheme[field] || '';
+  if (!scheme) return '';
+
+  const fallback = String(scheme[field] || '');
   if (language !== 'hi') {
     return fallback;
+  }
+
+  const hiFieldKey = `${field}_hi` as keyof LocalizableScheme;
+  const directHiVal = scheme[hiFieldKey];
+  if (directHiVal && String(directHiVal).trim().length > 0) {
+    return String(directHiVal).trim();
   }
 
   const sid = scheme.scheme_id || scheme.id;
@@ -347,6 +387,12 @@ export const getLocalizedSchemeField = (
       return translation.benefits_hi || fallback;
     case 'description':
       return translation.description_hi || translation.benefits_hi || fallback;
+    case 'application_process':
+      return translation.application_process_hi || fallback;
+    case 'documents_required':
+      return translation.documents_required_hi || fallback;
+    case 'eligibility_text':
+      return translation.eligibility_text_hi || fallback;
     default:
       return fallback;
   }
