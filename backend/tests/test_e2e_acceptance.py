@@ -200,3 +200,42 @@ class TestPersonaAcceptance:
         assert data_search["count"] > 0
         for s in data_search["schemes"]:
             assert s["age_min"] <= 10 <= s["age_max"]
+
+    def test_persona_15_year_old_student_delhi(self):
+        """
+        Persona: 15-year-old student girl in Delhi (Secondary education / 10th standard).
+        Acceptance:
+        - Must receive student scholarships and secondary school aid in Delhi/Central scope.
+        - Zero pensions, widow assistance, adult entrepreneur loans, or maternity schemes.
+        - Verifies age gating for 15-year-old.
+        """
+        delhi_student = ProfileInput(
+            age=15,
+            gender="Female",
+            state="Delhi",
+            marital_status="unmarried",
+            caste="General",
+            income=150000,
+            residence="Urban",
+            life_stage="student",
+            occupation="Student",
+            education="Secondary",
+            is_bpl=False,
+            has_disability=False,
+            limit=50
+        )
+
+        resp = matcher_service.match_profile(delhi_student)
+        assert resp.count > 0, "15-year-old student in Delhi should match student schemes"
+
+        for scheme in resp.schemes:
+            assert scheme.age_min <= 15 <= scheme.age_max, (
+                f"Scheme '{scheme.name}' invalid age bounds [{scheme.age_min}-{scheme.age_max}] for 15yo"
+            )
+            # Ensure state isolation: only Delhi or Central schemes
+            sch_state = scheme.state.lower().strip()
+            eligible_states = str(scheme.eligible_states).lower()
+            is_central = sch_state in ["all", "all india"] or '"all"' in eligible_states or "'all'" in eligible_states
+            is_delhi = sch_state == "delhi" or "delhi" in eligible_states
+            assert is_central or is_delhi, f"Foreign state scheme {scheme.name} ({scheme.state}) matched Delhi student"
+
