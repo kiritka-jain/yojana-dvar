@@ -536,3 +536,96 @@ def test_reverse_life_stage_age_gate_general_profile(matcher, base_scheme):
     assert matcher.evaluate_scheme(p_young_adult, senior_scheme)[0] is False
 
 
+# =============================================================================
+# 5. Pan-India Minor & Child Labour Statutory Guardrails (EPIC 1)
+# =============================================================================
+
+def test_minor_student_rejected_from_aatmanirbhar_gujarat_msme(matcher, base_scheme):
+    """
+    Test that an age 10 student from Gujarat is strictly disqualified from
+    Aatmanirbhar Gujarat MSME assistance and industrial subsidy schemes.
+    """
+    base_scheme["name"] = "Aatmanirbhar Gujarat Scheme for assistance to MSMEs: Assistance for Quality Certification"
+    base_scheme["category"] = "Business & Entrepreneurship"
+    base_scheme["eligibility_text"] = "Assistance for MSMEs to obtain quality certification like ISO, ZED, etc."
+    base_scheme["state"] = "Gujarat"
+    base_scheme["eligible_states"] = '["Gujarat"]'
+    base_scheme["life_stage_tags"] = '["entrepreneur"]'
+    base_scheme["age_min"] = 0  # Even if catalog had bad default 0
+    base_scheme["age_max"] = 100
+
+    profile_minor = ProfileInput(age=10, gender="Female", state="Gujarat", life_stage="student", occupation="Student")
+    is_eligible, score, _ = matcher.evaluate_scheme(profile_minor, base_scheme)
+    assert is_eligible is False
+    assert score == 0
+
+
+def test_minor_student_rejected_from_agricultural_skill_and_aquaculture(matcher, base_scheme):
+    """
+    Test that minors and students are disqualified from agricultural training
+    and brackish water aquaculture commercial schemes across India.
+    """
+    # 1. Agricultural Skill Development
+    agri_scheme = dict(base_scheme)
+    agri_scheme["name"] = "Agricultural Skill Development Training Programme For Women Farmers And Farmers"
+    agri_scheme["category"] = "Agriculture, Rural & Environment"
+    agri_scheme["eligibility_text"] = "Training for farmers and farm laborers in agricultural techniques"
+    agri_scheme["age_min"] = 0
+    agri_scheme["age_max"] = 70
+
+    p_child = ProfileInput(age=10, gender="Female", state="Gujarat", life_stage="student", occupation="Student")
+    assert matcher.evaluate_scheme(p_child, agri_scheme)[0] is False
+
+    # 2. Brackish Water Aquaculture
+    aqua_scheme = dict(base_scheme)
+    aqua_scheme["name"] = "Development of Brackish Water Aquaculture"
+    aqua_scheme["category"] = "Agriculture, Rural & Environment"
+    aqua_scheme["eligibility_text"] = "Financial subsidy for brackish water fish and shrimp farming units"
+    aqua_scheme["age_min"] = 0
+    aqua_scheme["age_max"] = 70
+
+    assert matcher.evaluate_scheme(p_child, aqua_scheme)[0] is False
+
+
+def test_pan_india_minor_gating_consistency(matcher, base_scheme):
+    """
+    Verifies that the statutory minor hard-gate operates uniformly across
+    all Indian states (Gujarat, Maharashtra, Uttar Pradesh, Tamil Nadu, etc.).
+    """
+    commercial_scheme = dict(base_scheme)
+    commercial_scheme["name"] = "State MSME Capital Subsidy Scheme"
+    commercial_scheme["category"] = "Business & Entrepreneurship"
+    commercial_scheme["eligibility_text"] = "Term loan subsidy for micro and small manufacturing units"
+    commercial_scheme["age_min"] = 0
+    commercial_scheme["age_max"] = 65
+
+    states_to_test = ["Gujarat", "Maharashtra", "Uttar Pradesh", "Tamil Nadu", "Bihar", "Karnataka", "West Bengal"]
+
+    for state in states_to_test:
+        commercial_scheme["state"] = state
+        commercial_scheme["eligible_states"] = f'["{state}"]'
+        
+        # Minor age 10 student must be rejected in all states
+        p_minor = ProfileInput(age=10, gender="Female", state=state, life_stage="student")
+        assert matcher.evaluate_scheme(p_minor, commercial_scheme)[0] is False, f"Failed for state: {state}"
+
+
+def test_minor_student_permitted_for_child_scholarships(matcher, base_scheme):
+    """
+    Test that child education and scholarship schemes remain eligible for minors (<18).
+    """
+    scholarship_scheme = dict(base_scheme)
+    scholarship_scheme["name"] = "Pre-Matric Scholarship for Minorities and Girl Students"
+    scholarship_scheme["category"] = "Education & Learning"
+    scholarship_scheme["eligibility_text"] = "Financial grant for school students from class 1 to 10"
+    scholarship_scheme["life_stage_tags"] = '["student"]'
+    scholarship_scheme["age_min"] = 6
+    scholarship_scheme["age_max"] = 16
+
+    p_student = ProfileInput(age=10, gender="Female", state="Gujarat", life_stage="student", occupation="Student")
+    is_eligible, score, reasons = matcher.evaluate_scheme(p_student, scholarship_scheme)
+    assert is_eligible is True
+    assert score >= 50
+
+
+

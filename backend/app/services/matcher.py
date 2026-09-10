@@ -57,7 +57,45 @@ RESTRICTIVE_OCCUPATION_GATES: List[Tuple[str, List[str]]] = [
     ("asha worker", ["salaried", "other"]),
     ("ex-servicem", []),
     ("war widow", []),
+    ("agricultural skill development", ["farmer", "daily wage labor"]),
+    ("training programme for farmers", ["farmer"]),
+    ("women farmers and farmers", ["farmer"]),
+    ("brackish water aquaculture", ["farmer", "self-employed / artisan"]),
 ]
+
+# Pan-India Statutory Minor & Child Labour Guardrails (Child Labour Act 2016 / Indian Contract Act 1872 / RTE Act 2009)
+COMMERCIAL_ENTERPRISE_KEYWORDS: List[str] = [
+    "msme", "micro enterprise", "small enterprise", "medium enterprise",
+    "mega industry", "large industry", "thrust sector", "industrial unit",
+    "plant and machinery", "term loan", "working capital", "interest subsidy",
+    "capital subsidy", "sgst reimbursement", "stamp duty", "epf reimbursement",
+    "patent registration", "quality certification", "power connection charges",
+    "udyam", "dpiit", "investor facilitation", "working women hostel", "working woman hostel",
+    "mudra", "stand up india", "stand-up india", "business loan",
+    "credit facility", "subsidy for enterprise", "commercial loan",
+    "entrepreneurship development", "assistance to msme", "assistance to mega",
+    "assistance to large", "shop & establishment", "shop and establishment",
+    "factory", "commercial production", "industrial undertaking"
+]
+
+COMMERCIAL_AGRI_AQUA_KEYWORDS: List[str] = [
+    "aquaculture", "brackish water", "fish farming", "shrimp farming",
+    "horticulture loan", "tractor subsidy", "harvester subsidy",
+    "agri-infrastructure", "commercial dairy", "poultry farm",
+    "agricultural skill development", "farmer training programme",
+    "training programme for women farmers", "training programme for farmers",
+    "fisheries development", "marine fisheries", "inland fisheries",
+    "pmmsy", "coastal aquaculture authority"
+]
+
+EXEMPT_CHILD_EDUCATION_KEYWORDS: List[str] = [
+    "girl child", "balika", "sukanya", "school", "scholarship", "vidyarthi",
+    "chhatravritti", "pre-matric", "post-matric", "poshan", "mid day meal",
+    "mid-day meal", "child welfare", "anganwadi", "infant", "newborn",
+    "pediatric", "immunization", "education", "tuition", "hostel for students",
+    "shiksha", "vidya", "merit-cum-means"
+]
+
 
 class EligibilityMatcher:
     """Deterministic rule-based eligibility match engine for Yojana Dvar."""
@@ -177,6 +215,7 @@ class EligibilityMatcher:
             scheme_full_text = f"{scheme.get('name', '')} {scheme.get('category', '')} {scheme.get('beneficiary_type', '')} {scheme.get('eligibility_text', '')}".lower()
 
         user_life_stage = profile.life_stage.strip().lower()
+        user_occupation = (profile.occupation or "").strip().lower()
 
         # (a) Exclusive Student Scheme Gate:
         # If scheme is exclusively for students/scholarships and user age > 30 or user life_stage == "senior" -> Disqualify
@@ -201,12 +240,22 @@ class EligibilityMatcher:
             if profile.age < 60:
                 return False, 0, []
 
-        # (d) Adult Entrepreneur / Loan / Hostel Gate:
-        # Business loans, working women hostels, and SHG credit facilities require adult age (18+)
-        is_adult_entrepreneur = any(kw in scheme_full_text for kw in ["working women hostel", "working woman hostel", "mudra", "stand up india", "stand-up india", "business loan", "self help group", "credit facility for safai", "safai karamchari"])
-        if is_adult_entrepreneur and not any(cw in scheme_full_text for cw in ["girl child", "balika", "sukanya", "school", "scholarship"]):
-            if profile.age < 18:
+        # (d) Pan-India Statutory Minor & Child Labour Hard Gate (Tickets YD-RULE-101, YD-RULE-102, YD-RULE-103)
+        # Under Child & Adolescent Labour Act 2016, Indian Contract Act 1872, and RTE Act 2009:
+        # Minors (<18) and Students are strictly barred from commercial enterprise, industrial subsidy,
+        # commercial aquaculture/farming, debt-bearing loans, and adult trade labor schemes.
+        if profile.age < 18 or user_life_stage == "student" or user_occupation == "student":
+            category_lower = scheme.get("_category_lower", str(scheme.get("category", "")).strip().lower())
+            is_commercial_category = any(cat in category_lower for cat in [
+                "business & entrepreneurship", "banking, financial services and insurance", "business", "entrepreneurship"
+            ])
+            has_enterprise_kw = any(kw in scheme_full_text for kw in COMMERCIAL_ENTERPRISE_KEYWORDS)
+            has_agri_aqua_kw = any(kw in scheme_full_text for kw in COMMERCIAL_AGRI_AQUA_KEYWORDS)
+            is_child_exempt = any(cw in scheme_full_text for cw in EXEMPT_CHILD_EDUCATION_KEYWORDS)
+
+            if (is_commercial_category or has_enterprise_kw or has_agri_aqua_kw) and not is_child_exempt:
                 return False, 0, []
+
 
         # 3.2 Marital Status Incompatibility Gate
         user_marital = (profile.marital_status or "all").strip().lower()
