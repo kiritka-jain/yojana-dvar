@@ -562,7 +562,16 @@ export const SchemeDetail: React.FC = () => {
                 🌱 {displayCategory}
               </span>
             )}
+
+            {typeof scheme.age_min === 'number' && scheme.age_min < 18 && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-800 border border-teal-200 shadow-2xs">
+                <span>👧</span>
+                <span>{t('minorGuardianBadge')}</span>
+              </span>
+            )}
           </div>
+
+
 
           <div className="flex items-center gap-2">
             {/* Audio Narration Button */}

@@ -69,13 +69,14 @@ export const isLifeStageAllowed = (stageKey: string, age: number): { allowed: bo
 
 export const isOccupationAllowed = (occValue: string, age: number): boolean => {
   if (['Homemaker', 'Self-Employed / Artisan', 'Agricultural / Farmer', 'Daily Wage Labor', 'Salaried'].includes(occValue)) {
-    return age >= 16;
+    return age >= 18;
   }
   if (occValue === 'Student') {
-    return age >= 6;
+    return age >= 5;
   }
   return true;
 };
+
 
 export const EDUCATION_AGE_THRESHOLDS: Record<string, number> = {
   Primary: 5,
@@ -131,7 +132,7 @@ export const reconcileProfileForAge = (
 
   // Age-gate occupation (Ticket YD-BUG-2.1)
   if (sanitized.occupation && !isOccupationAllowed(sanitized.occupation, clampedAge)) {
-    sanitized.occupation = '';
+    sanitized.occupation = clampedAge >= 5 && clampedAge < 18 ? 'Student' : '';
     resetReasons.push('occupation');
   }
 
@@ -142,6 +143,7 @@ export const reconcileProfileForAge = (
   }
 
   return { sanitized, resetReasons };
+
 };
 
 interface FormErrors {
@@ -727,6 +729,16 @@ export const Wizard: React.FC = () => {
                 })}
               </div>
 
+              {/* Minor Welfare Transparent Guidance Banner (< 18 Yrs) */}
+              {profile.age < 18 && (
+                <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-teal-50 border border-teal-200 text-teal-900 text-xs sm:text-sm font-medium animate-fadeIn mt-2 shadow-xs">
+                  <Sparkles className="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5" />
+                  <span className="flex-1 leading-relaxed">
+                    {t('minorWelfareNotice')}
+                  </span>
+                </div>
+              )}
+
               {errors.age && (
                 <p role="alert" className="text-xs text-red-600 font-semibold flex items-center gap-1.5 pt-1">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -749,6 +761,7 @@ export const Wizard: React.FC = () => {
                 </div>
               )}
             </div>
+
 
             {/* Field: Marital Status (5 Plain-Language Options with Icons & Badges) */}
             <div className="space-y-3.5 p-5 sm:p-6 rounded-3xl bg-cream-50/70 border border-saffron-200/80 shadow-xs">

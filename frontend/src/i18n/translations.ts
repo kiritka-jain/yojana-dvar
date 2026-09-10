@@ -135,6 +135,8 @@ export interface TranslationDictionary {
   ageTierAdult: string;
   ageTierSenior: string;
   ageNewbornLabel: string;
+  minorWelfareNotice: string;
+  minorGuardianBadge: string;
 
   fieldResidence: string;
   fieldResidenceRural: string;
@@ -513,6 +515,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     ageTierAdult: "Adult Woman (26–59 Yrs)",
     ageTierSenior: "Senior Citizen (60+ Yrs)",
     ageNewbornLabel: "Newborn / Infant (< 1 year)",
+    minorWelfareNotice: "For applicants under 18, schemes are curated for education, scholarships, and child welfare under Indian statutory guidelines (facilitated by parent or legal guardian).",
+    minorGuardianBadge: "Guardian-Facilitated Child Welfare (Under 18)",
 
     fieldResidence: "Residence Area",
     fieldResidenceRural: "Rural (गाँव / Village)",
@@ -886,6 +890,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     ageTierAdult: "वयस्क महिला (26–59 वर्ष)",
     ageTierSenior: "वरिष्ठ नागरिक (60+ वर्ष)",
     ageNewbornLabel: "नवजात शिशु (आयु < 1 वर्ष)",
+    minorWelfareNotice: "18 वर्ष से कम आयु के आवेदकों के लिए, योजनाएं विशेष रूप से शिक्षा, छात्रवृत्ति एवं बाल कल्याण हेतु प्रदर्शित की जाती हैं (माता-पिता/अभिभावक के माध्यम से आवेदन)।",
+    minorGuardianBadge: "अभिभावक-सुलभ बाल कल्याण योजना (18 वर्ष से कम)",
 
     fieldResidence: "निवास क्षेत्र",
     fieldResidenceRural: "ग्रामीण (गाँव / Rural)",
