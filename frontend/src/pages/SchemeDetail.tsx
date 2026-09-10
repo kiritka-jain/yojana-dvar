@@ -42,8 +42,52 @@ import {
   VolumeX,
   HeartHandshake,
   Landmark,
-  Laptop
+  Laptop,
+  FileDown,
+  Lock
 } from 'lucide-react';
+import { extractUrls } from '../utils/urlParser';
+
+/**
+ * Component to format narrative application text, converting raw URLs into clickable link chips
+ */
+const FormattedApplicationText: React.FC<{ text: string }> = ({ text }) => {
+  if (!text) return null;
+
+  // Split by URL regex
+  const parts = text.split(/(https?:\/\/[^\s"'\)<>]+|www\.[^\s"'\)<>]+)/gi);
+
+  return (
+    <div className="leading-relaxed space-y-2">
+      <p>
+        {parts.map((part, idx) => {
+          if (/^(https?:\/\/|www\.)/i.test(part)) {
+            let cleanUrl = part.trim().replace(/[.,;:!?)'"`>]+$/, '');
+            if (cleanUrl.startsWith('www.')) cleanUrl = `https://${cleanUrl}`;
+            const isPdf = cleanUrl.toLowerCase().endsWith('.pdf') || cleanUrl.toLowerCase().includes('.pdf?');
+            return (
+              <a
+                key={idx}
+                href={cleanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex items-center gap-1 font-bold underline px-2 py-0.5 mx-1 rounded-lg text-xs transition-all shadow-2xs ${
+                  isPdf
+                    ? 'bg-rose-100 text-rose-800 hover:bg-rose-200 decoration-rose-400 border border-rose-200'
+                    : 'bg-saffron-100 text-saffron-900 hover:bg-saffron-200 decoration-saffron-400 border border-saffron-200'
+                }`}
+              >
+                {isPdf ? <FileDown className="w-3.5 h-3.5 flex-shrink-0" /> : <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />}
+                <span className="break-all">{cleanUrl}</span>
+              </a>
+            );
+          }
+          return <span key={idx}>{part}</span>;
+        })}
+      </p>
+    </div>
+  );
+};
 
 const DEFAULT_PROFILE: ProfileInput = {
   state: 'Uttar Pradesh',
@@ -1038,72 +1082,165 @@ export const SchemeDetail: React.FC = () => {
         {/* ========================================================================= */}
         {activeTab === 'apply' && (
           <div className="space-y-6 animate-fadeIn">
-            <div className="flex items-center gap-2 border-b border-cream-200 pb-3">
-              <Globe className="w-5 h-5 text-saffron-600 flex-shrink-0" />
-              <h2 className="text-lg sm:text-xl font-bold text-charcoal-900">
-                {t('detailApplicationProcessTitle')}
-              </h2>
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-cream-200 pb-3">
+              <div className="flex items-center gap-2">
+                <Globe className="w-5 h-5 text-saffron-600 flex-shrink-0" />
+                <h2 className="text-lg sm:text-xl font-bold text-charcoal-900">
+                  {t('detailApplicationProcessTitle')}
+                </h2>
+              </div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>{t('detailGovtVerifiedBadge')}</span>
+              </span>
             </div>
 
-            {/* 3-Step Guided Process Cards */}
-            <div className="space-y-3">
-              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 flex items-start gap-3.5">
-                <div className="w-7 h-7 rounded-xl bg-saffron-100 text-saffron-800 font-bold text-xs flex items-center justify-center flex-shrink-0">
-                  1
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-xs sm:text-sm font-bold text-charcoal-900">
-                    {t('detailApplyStep1Title')}
+            {/* ========================================================================= */}
+            {/* 1. FEATURED ONLINE APPLICATION PORTAL CARD                               */}
+            {/* ========================================================================= */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-saffron-50/90 via-white to-amber-50/50 border-2 border-saffron-200/90 p-5 sm:p-7 shadow-sm space-y-5">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-saffron-500 text-white shadow-2xs">
+                      {t('detailOnlineModeTab')}
+                    </span>
+                    <span className="text-xs font-medium text-charcoal-500 flex items-center gap-1">
+                      <Lock className="w-3 h-3 text-emerald-600" />
+                      <span>{siteLanguage === 'hi' ? 'सुरक्षित सरकारी लिंक' : 'Official Government Redirection'}</span>
+                    </span>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-charcoal-950">
+                    {t('detailOnlinePortalTitle')}
                   </h3>
-                  <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
-                    {t('detailApplyStep1Desc')}
+                  <p className="text-xs sm:text-sm text-charcoal-600">
+                    {t('detailOnlinePortalSubtitle')}
                   </p>
+                </div>
+
+                {/* Main Action CTAs */}
+                <div className="flex flex-wrap items-center gap-3">
+                  {scheme.apply_url && (
+                    <a
+                      href={scheme.apply_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-6 sm:px-8 py-3.5 rounded-2xl bg-saffron-500 hover:bg-saffron-600 active:scale-98 text-white font-bold text-xs sm:text-sm shadow-md transition-all inline-flex items-center justify-center gap-2 group cursor-pointer"
+                      title={scheme.apply_url}
+                    >
+                      <span>{t('detailApplyDirectOnlineBtn')}</span>
+                      <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </a>
+                  )}
+
+                  {scheme.official_url && scheme.official_url !== scheme.apply_url && (
+                    <a
+                      href={scheme.official_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-5 py-3.5 rounded-2xl border border-cream-300 hover:bg-cream-100/80 text-charcoal-700 font-semibold text-xs transition-colors inline-flex items-center justify-center gap-2"
+                      title={scheme.official_url}
+                    >
+                      <span>{t('detailVisitDeptWebsiteBtn')}</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-charcoal-400" />
+                    </a>
+                  )}
+
+                  {/* PDF Form Download if detected in process text */}
+                  {scheme.application_process && scheme.application_process.toLowerCase().includes('.pdf') && (
+                    <a
+                      href={
+                        (extractUrls(scheme.application_process).find((u) => u.isPdf)?.url) ||
+                        scheme.apply_url
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-5 py-3.5 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-bold text-xs transition-colors inline-flex items-center justify-center gap-2"
+                    >
+                      <FileDown className="w-4 h-4 text-rose-600" />
+                      <span>{t('detailDownloadFormPdf')}</span>
+                    </a>
+                  )}
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 flex items-start gap-3.5">
-                <div className="w-7 h-7 rounded-xl bg-saffron-100 text-saffron-800 font-bold text-xs flex items-center justify-center flex-shrink-0">
-                  2
+              {/* 3-Step Online Digital Process Roadmap */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+                <div className="p-3.5 rounded-2xl bg-white/90 border border-saffron-100 flex items-start gap-3 shadow-2xs">
+                  <div className="w-7 h-7 rounded-xl bg-saffron-100 text-saffron-800 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                    1
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="text-xs font-bold text-charcoal-900">
+                      {t('detailOnlineStep1')}
+                    </h4>
+                    <p className="text-[11px] text-charcoal-600 leading-snug">
+                      {t('detailOnlineStep1Sub')}
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-xs sm:text-sm font-bold text-charcoal-900">
-                    {t('detailApplyStep2Title')}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
-                    {t('detailApplyStep2Desc')}
-                  </p>
+
+                <div className="p-3.5 rounded-2xl bg-white/90 border border-saffron-100 flex items-start gap-3 shadow-2xs">
+                  <div className="w-7 h-7 rounded-xl bg-saffron-100 text-saffron-800 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                    2
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="text-xs font-bold text-charcoal-900">
+                      {t('detailOnlineStep2')}
+                    </h4>
+                    <p className="text-[11px] text-charcoal-600 leading-snug">
+                      {t('detailOnlineStep2Sub')}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white/90 border border-saffron-100 flex items-start gap-3 shadow-2xs">
+                  <div className="w-7 h-7 rounded-xl bg-saffron-100 text-saffron-800 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                    3
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="text-xs font-bold text-charcoal-900">
+                      {t('detailOnlineStep3')}
+                    </h4>
+                    <p className="text-[11px] text-charcoal-600 leading-snug">
+                      {t('detailOnlineStep3Sub')}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-cream-50/90 border border-cream-200 flex items-start gap-3.5">
-                <div className="w-7 h-7 rounded-xl bg-saffron-100 text-saffron-800 font-bold text-xs flex items-center justify-center flex-shrink-0">
-                  3
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-xs sm:text-sm font-bold text-charcoal-900">
-                    {t('detailApplyStep3Title')}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">
-                    {t('detailApplyStep3Desc')}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Official Instructions if present */}
-            {scheme.application_process && (
-              <div className="p-4 rounded-2xl bg-cream-100/70 border border-cream-200 text-xs sm:text-sm text-charcoal-800 leading-relaxed space-y-1">
-                <span className="font-bold block text-charcoal-900">
-                  {siteLanguage === 'hi' ? 'आधिकारिक निर्देश:' : 'Official Guidelines:'}
+              {/* Verified Trust Disclaimer */}
+              <div className="pt-2 border-t border-saffron-200/60 flex items-center justify-between text-[11px] text-charcoal-500">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{t('detailExternalNotice')}</span>
                 </span>
-                <p>{scheme.application_process}</p>
+                <span className="font-mono text-[10px] text-charcoal-400 hidden sm:inline">
+                  {scheme.apply_url ? new URL(scheme.apply_url).hostname : ''}
+                </span>
+              </div>
+            </div>
+
+            {/* ========================================================================= */}
+            {/* 2. OFFICIAL APPLICATION INSTRUCTIONS & HYPERLINKED STEPS                  */}
+            {/* ========================================================================= */}
+            {scheme.application_process && (
+              <div className="p-5 rounded-2xl bg-cream-100/70 border border-cream-200 text-xs sm:text-sm text-charcoal-800 leading-relaxed space-y-2 shadow-2xs">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-saffron-600" />
+                  <span className="font-bold text-charcoal-900 text-xs sm:text-sm">
+                    {siteLanguage === 'hi' ? 'विस्तृत सरकारी निर्देश व ऑनलाइन लिंक:' : 'Detailed Official Guidelines & Application Text:'}
+                  </span>
+                </div>
+                <FormattedApplicationText text={scheme.application_process} />
               </div>
             )}
 
             {/* ========================================================================= */}
-            {/* OFFLINE ASSISTANCE MODULE: गांव / वार्ड में कहां से आवेदन करें?          */}
+            {/* 3. OFFLINE ASSISTANCE MODULE: गांव / वार्ड में कहां से आवेदन करें?          */}
             {/* ========================================================================= */}
-            <div className="space-y-4 pt-2 border-t border-cream-200">
+            <div className="space-y-4 pt-4 border-t border-cream-200">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-saffron-600 flex-shrink-0" />
@@ -1189,33 +1326,6 @@ export const SchemeDetail: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Official Link Action Buttons */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
-              {scheme.apply_url && (
-                <a
-                  href={scheme.apply_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-saffron-500 hover:bg-saffron-600 text-white font-bold text-sm shadow-md transition-all hover:scale-102 active:scale-98 inline-flex items-center justify-center gap-2"
-                >
-                  <span>{t('detailOfficialPortalCTA')}</span>
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              )}
-
-              {scheme.official_url && (
-                <a
-                  href={scheme.official_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-6 py-3.5 rounded-2xl border border-cream-300 hover:bg-cream-100 text-charcoal-700 font-semibold text-xs sm:text-sm transition-colors inline-flex items-center justify-center gap-2"
-                >
-                  <span>{t('detailOfficialWebsite')}</span>
-                  <ExternalLink className="w-4 h-4 text-charcoal-400" />
-                </a>
-              )}
             </div>
           </div>
         )}

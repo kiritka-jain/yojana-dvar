@@ -284,6 +284,21 @@ export interface TranslationDictionary {
   detailDocsMissingTip: string;
   detailOfficialPortalCTA: string;
   detailOfficialWebsite: string;
+  detailOnlinePortalTitle: string;
+  detailOnlinePortalSubtitle: string;
+  detailApplyDirectOnlineBtn: string;
+  detailVisitDeptWebsiteBtn: string;
+  detailGovtVerifiedBadge: string;
+  detailOnlineStep1: string;
+  detailOnlineStep1Sub: string;
+  detailOnlineStep2: string;
+  detailOnlineStep2Sub: string;
+  detailOnlineStep3: string;
+  detailOnlineStep3Sub: string;
+  detailDownloadFormPdf: string;
+  detailExternalNotice: string;
+  detailOnlineModeTab: string;
+  detailOfflineModeTab: string;
   detailSchemeNotFound: string;
   detailSchemeNotFoundDesc: string;
 
@@ -658,6 +673,21 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailDocsMissingTip: "Missing some documents? You can apply for income, caste, and domicile certificates at your nearest Tehsil office or CSC center.",
     detailOfficialPortalCTA: "Apply on Official Government Portal",
     detailOfficialWebsite: "Official Ministry Website",
+    detailOnlinePortalTitle: "Official Online Application Portal",
+    detailOnlinePortalSubtitle: "Apply directly on the official state or central government nodal portal:",
+    detailApplyDirectOnlineBtn: "Visit Official Application Portal",
+    detailVisitDeptWebsiteBtn: "Department Website",
+    detailGovtVerifiedBadge: "Verified Government Portal (.gov.in / .nic.in)",
+    detailOnlineStep1: "1. Portal Registration",
+    detailOnlineStep1Sub: "Create citizen account using mobile number & Aadhaar",
+    detailOnlineStep2: "2. Form & Document Upload",
+    detailOnlineStep2Sub: "Fill scheme details and upload scanned certificates",
+    detailOnlineStep3: "3. Acknowledgement & DBT",
+    detailOnlineStep3Sub: "Download receipt and receive direct benefits in bank",
+    detailDownloadFormPdf: "Download Application Form (PDF)",
+    detailExternalNotice: "You will be securely redirected to the official government portal in a new tab.",
+    detailOnlineModeTab: "Online Portal Mode",
+    detailOfflineModeTab: "Offline / Village Help Points",
     detailSchemeNotFound: "Scheme Not Found",
     detailSchemeNotFoundDesc: "The requested welfare scheme could not be found in our database.",
 
@@ -1028,6 +1058,21 @@ export const translations: Record<Language, TranslationDictionary> = {
     detailDocsMissingTip: "कागजात पूरे नहीं हैं? आप आय, जाति व निवास प्रमाण पत्र नजदीकी तहसील या जन सेवा केंद्र से बनवा सकते हैं।",
     detailOfficialPortalCTA: "आधिकारिक पोर्टल पर ऑनलाइन आवेदन करें",
     detailOfficialWebsite: "मंत्रालय की आधिकारिक वेबसाइट",
+    detailOnlinePortalTitle: "आधिकारिक ऑनलाइन आवेदन पोर्टल",
+    detailOnlinePortalSubtitle: "संबंधित राज्य या केंद्र सरकार के आधिकारिक पोर्टल पर सीधे ऑनलाइन आवेदन करें:",
+    detailApplyDirectOnlineBtn: "आधिकारिक आवेदन पोर्टल पर जाएं",
+    detailVisitDeptWebsiteBtn: "विभागीय आधिकारिक वेबसाइट",
+    detailGovtVerifiedBadge: "सत्यापित सरकारी पोर्टल (.gov.in / .nic.in)",
+    detailOnlineStep1: "1. पोर्टल रजिस्ट्रेशन",
+    detailOnlineStep1Sub: "मोबाइल नंबर व आधार द्वारा नागरिक खाता बनाएं",
+    detailOnlineStep2: "2. फॉर्म व दस्तावेज अपलोड",
+    detailOnlineStep2Sub: "मांगी गई जानकारी भरें व स्कैन किए दस्तावेज जोड़ें",
+    detailOnlineStep3: "3. रसीद व DBT लाभ",
+    detailOnlineStep3Sub: "आवेदन पर्ची डाउनलोड करें व बैंक में सीधा लाभ पाएं",
+    detailDownloadFormPdf: "आवेदन पत्र डाउनलोड करें (PDF)",
+    detailExternalNotice: "क्लिक करने पर आप आधिकारिक सरकारी पोर्टल पर सुरक्षित नए टैब में पहुंचेंगे।",
+    detailOnlineModeTab: "डिजिटल ऑनलाइन पोर्टल",
+    detailOfflineModeTab: "गांव / वार्ड सहायता केंद्र",
     detailSchemeNotFound: "योजना नहीं मिली",
     detailSchemeNotFoundDesc: "अनुरोधित सरकारी योजना कैटलॉग में नहीं मिली।",
 
