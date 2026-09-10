@@ -352,14 +352,22 @@ export const SchemeDetail: React.FC = () => {
     return condenseToShortSummary(bestText, 2, 220);
   }, [scheme, displayDescription, displayBenefits, explanation, siteLanguage]);
 
-  // Audio Narration Handler
+  // Audio Narration Handler (Ticket 3.2: Voice guidance directing to official portal & CSC)
   const handleAudioNarration = () => {
     if (isSchemeSpeaking) {
       stop();
     } else {
+      const applyGuidance = scheme?.apply_url
+        ? (siteLanguage === 'hi' 
+            ? `आवेदन करने के लिए आधिकारिक सरकारी पोर्टल अथवा नजदीकी जन सेवा केंद्र से संपर्क करें।` 
+            : `You can apply online via the official government portal or visit your nearest Common Service Centre.`)
+        : (siteLanguage === 'hi'
+            ? `आवेदन के लिए नजदीकी जन सेवा केंद्र अथवा संबंधित विभाग से संपर्क करें।`
+            : `Visit your nearest Common Service Centre or department office to apply.`);
+
       const textToSpeak = siteLanguage === 'hi'
-        ? `${displayName}। ${displayMinistry}। ${displaySummaryText}`
-        : `${displayName}. ${displayMinistry}. ${displaySummaryText}`;
+        ? `${displayName}। ${displayMinistry}। ${displaySummaryText}। ${applyGuidance}`
+        : `${displayName}. ${displayMinistry}. ${displaySummaryText}. ${applyGuidance}`;
       speak(textToSpeak, {
         id: scheme?.scheme_id,
         lang: siteLanguage

@@ -111,6 +111,8 @@ def test_build_prompt_english(service, sample_scheme, sample_profile):
     assert sample_scheme["name"] in prompt
     assert sample_scheme["ministry"] in prompt
     assert sample_scheme["benefits"] in prompt
+    assert sample_scheme["apply_url"] in prompt
+    assert "Official Application Link / Portal" in prompt
     # Profile details
     assert f"Age: {sample_profile.age}" in prompt
     assert f"State of Residence: {sample_profile.state}" in prompt
@@ -129,6 +131,7 @@ def test_build_prompt_hindi(service, sample_scheme, sample_profile):
 
     assert "in Hindi (हिंदी)" in prompt
     assert "compassionate women entitlement advisor" in prompt
+    assert sample_scheme["apply_url"] in prompt
 
 def test_build_portfolio_prompt(service, sample_scheme, sample_profile):
     """Verify portfolio summary prompt builder."""

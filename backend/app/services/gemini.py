@@ -119,6 +119,7 @@ class GeminiService:
     def _build_prompt(self, scheme: Dict[str, Any], profile: ProfileInput, lang: str) -> str:
         """Constructs advisory prompt with token-trimmed scheme narratives and native description."""
         lang_name = "Hindi (हिंदी)" if lang == "hi" else "English"
+        apply_link = scheme.get("apply_url") or scheme.get("official_url") or "official government portal"
         
         prompt = f"""You are Yojana Dvar's compassionate women entitlement advisor.
 Explain clearly and simply in {lang_name} why this applicant qualifies for the welfare scheme '{scheme.get('name')}'.
@@ -143,6 +144,7 @@ Scheme Entitlement Details:
 - Eligibility Criteria: {_trim_text(scheme.get('eligibility_text'), 300)}
 - Required Documents: {_trim_text(scheme.get('documents_required'), 200)}
 - How to Apply: {_trim_text(scheme.get('application_process'), 200)}
+- Official Application Link / Portal: {apply_link}
 
 Guardrails & Instructions:
 1. Tone: Warm, encouraging, empathetic, and plain-language.
@@ -157,7 +159,7 @@ Guardrails & Instructions:
   "summary": "1-2 short, crystal-clear sentences (under 40 words) directly explaining what the applicant receives and why she qualifies.",
   "key_benefits": ["Key benefit 1", "Key benefit 2"],
   "documents_required": ["Document 1", "Document 2"],
-  "next_steps": "Actionable instructions on where to apply online or offline."
+  "next_steps": "Actionable instructions on where to apply online via the official portal ({apply_link}) or offline at the nearest nodal office/CSC."
 }}"""
         return prompt
 
