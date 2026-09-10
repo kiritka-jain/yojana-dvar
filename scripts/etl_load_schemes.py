@@ -123,6 +123,442 @@ SCHEME_EXPLICIT_AGE_BOUNDS = {
     "national-pension-scheme-for-traders-and-self-employed-persons": (18, 40),
 }
 
+# =============================================================================
+# Canonical Official URL Registry & State Portals (Epic 1 / Ticket 1.1)
+# =============================================================================
+SCHEME_CANONICAL_URLS = {
+    # Delhi Schemes
+    "delhi-ladli-scheme": {
+        "apply_url": "https://wcd.delhi.gov.in/wcd/delhi-ladli-schemes-2008",
+        "official_url": "https://edistrict.delhigovt.nic.in/"
+    },
+    "delhi-ladli-yojna": {
+        "apply_url": "https://wcd.delhi.gov.in/wcd/delhi-ladli-schemes-2008",
+        "official_url": "https://edistrict.delhigovt.nic.in/"
+    },
+    "delhi-pension-scheme-to-women-in-distress": {
+        "apply_url": "https://edistrict.delhigovt.nic.in/",
+        "official_url": "https://wcd.delhi.gov.in/"
+    },
+    "widow-daughter-marriage-financial-assistance-delhi": {
+        "apply_url": "https://edistrict.delhigovt.nic.in/",
+        "official_url": "https://wcd.delhi.gov.in/"
+    },
+
+    # Central - Maternity & Women Health
+    "pradhan-mantri-matru-vandana-yojana": {
+        "apply_url": "https://pmmvy.wcd.gov.in/",
+        "official_url": "https://wcd.nic.in/schemes/pradhan-mantri-matru-vandana-yojana"
+    },
+    "pradhan-mantri-matru-vandana-yojana-pmmvy": {
+        "apply_url": "https://pmmvy.wcd.gov.in/",
+        "official_url": "https://wcd.nic.in/schemes/pradhan-mantri-matru-vandana-yojana"
+    },
+    "pmmvy": {
+        "apply_url": "https://pmmvy.wcd.gov.in/",
+        "official_url": "https://wcd.nic.in/schemes/pradhan-mantri-matru-vandana-yojana"
+    },
+    "janani-suraksha-yojana-jsy": {
+        "apply_url": "https://nhm.gov.in/index1.php?lang=1&level=3&sublinkid=841&lid=309",
+        "official_url": "https://nhm.gov.in/"
+    },
+    "janani-suraksha-yojana": {
+        "apply_url": "https://nhm.gov.in/index1.php?lang=1&level=3&sublinkid=841&lid=309",
+        "official_url": "https://nhm.gov.in/"
+    },
+    "janani-shishu-suraksha-karyakram-jssk": {
+        "apply_url": "https://nhm.gov.in/index1.php?lang=1&level=2&sublinkid=822&lid=219",
+        "official_url": "https://nhm.gov.in/"
+    },
+
+    # Central - Girl Child & Education
+    "sukanya-samriddhi-yojana": {
+        "apply_url": "https://www.indiapost.gov.in/Financial/Pages/Content/Sukanya-Samriddhi-Account.aspx",
+        "official_url": "https://wcd.nic.in/bbbp-schemes"
+    },
+    "sukanya-samriddhi-account": {
+        "apply_url": "https://www.indiapost.gov.in/Financial/Pages/Content/Sukanya-Samriddhi-Account.aspx",
+        "official_url": "https://wcd.nic.in/bbbp-schemes"
+    },
+    "cbse-single-girl-child-scholarship": {
+        "apply_url": "https://www.cbse.gov.in/cbsenew/scholar.html",
+        "official_url": "https://www.cbse.gov.in/"
+    },
+    "begum-hazrat-mahal-national-scholarship": {
+        "apply_url": "https://scholarships.gov.in/",
+        "official_url": "https://www.maef.nic.in/"
+    },
+    "post-graduate-indira-gandhi-scholarship-for-single-girl-child": {
+        "apply_url": "https://scholarships.gov.in/",
+        "official_url": "https://www.ugc.gov.in/"
+    },
+    "pragati-scholarship-scheme-for-girl-students": {
+        "apply_url": "https://scholarships.gov.in/",
+        "official_url": "https://www.aicte-india.org/"
+    },
+
+    # Central - Livelihood, Finance & Entrepreneurship
+    "mahila-samman-savings-certificate": {
+        "apply_url": "https://www.indiapost.gov.in/Financial/Pages/Content/MSSC.aspx",
+        "official_url": "https://dea.gov.in/"
+    },
+    "stand-up-india-scheme": {
+        "apply_url": "https://www.standupmitra.in/Home/Apply",
+        "official_url": "https://www.standupmitra.in/"
+    },
+    "stand-up-india-scheme-for-women-entrepreneurs": {
+        "apply_url": "https://www.standupmitra.in/Home/Apply",
+        "official_url": "https://www.standupmitra.in/"
+    },
+    "support-to-training-and-employment-programme-for-women": {
+        "apply_url": "https://wcd.nic.in/schemes/support-training-and-employment-programme-women-step",
+        "official_url": "https://wcd.nic.in/"
+    },
+    "pm-street-vendors-atmanirbhar-nidhi": {
+        "apply_url": "https://pmsvanidhi.mohua.gov.in/",
+        "official_url": "https://mohua.gov.in/"
+    },
+    "pm-svanidhi": {
+        "apply_url": "https://pmsvanidhi.mohua.gov.in/",
+        "official_url": "https://mohua.gov.in/"
+    },
+    "pradhan-mantri-mudra-yojana-pmmy": {
+        "apply_url": "https://www.mudra.org.in/",
+        "official_url": "https://www.mudra.org.in/"
+    },
+    "mudra-yojana": {
+        "apply_url": "https://www.mudra.org.in/",
+        "official_url": "https://www.mudra.org.in/"
+    },
+    "national-safai-karamcharis-finance-development-corporation-nskfdc": {
+        "apply_url": "https://nskfdc.nic.in/",
+        "official_url": "https://nskfdc.nic.in/"
+    },
+    "credit-facility-for-safai-karamcharis": {
+        "apply_url": "https://nskfdc.nic.in/",
+        "official_url": "https://nskfdc.nic.in/"
+    },
+    "vocational-education-and-training-loan-scheme": {
+        "apply_url": "https://nskfdc.nic.in/",
+        "official_url": "https://nskfdc.nic.in/"
+    },
+
+    # Central - Support, Shelters & Pensions
+    "working-women-hostel-scheme": {
+        "apply_url": "https://wcd.nic.in/schemes/sakhi-niwas-working-women-hostel",
+        "official_url": "https://wcd.nic.in/"
+    },
+    "sakhi-niwas-working-women-hostel": {
+        "apply_url": "https://wcd.nic.in/schemes/sakhi-niwas-working-women-hostel",
+        "official_url": "https://wcd.nic.in/"
+    },
+    "one-stop-centre-scheme": {
+        "apply_url": "https://wcd.nic.in/schemes/one-stop-centre-scheme-1",
+        "official_url": "https://wcd.nic.in/"
+    },
+    "sakhi-one-stop-centre": {
+        "apply_url": "https://wcd.nic.in/schemes/one-stop-centre-scheme-1",
+        "official_url": "https://wcd.nic.in/"
+    },
+    "swadhar-greh-scheme": {
+        "apply_url": "https://wcd.nic.in/schemes/swadhar-greh-scheme-women-difficult-circumstances",
+        "official_url": "https://wcd.nic.in/"
+    },
+    "ujjawala-scheme": {
+        "apply_url": "https://wcd.nic.in/schemes/ujjawala-comprehensive-scheme-prevention-trafficking-and-rescue-rehabilitation-and-re",
+        "official_url": "https://wcd.nic.in/"
+    },
+    "indira-gandhi-national-widow-pension-scheme-ignwps": {
+        "apply_url": "https://nsap.nic.in/",
+        "official_url": "https://nsap.nic.in/"
+    },
+    "indira-gandhi-national-widow-pension-scheme": {
+        "apply_url": "https://nsap.nic.in/",
+        "official_url": "https://nsap.nic.in/"
+    },
+    "indira-gandhi-national-old-age-pension-scheme-ignoaps": {
+        "apply_url": "https://nsap.nic.in/",
+        "official_url": "https://nsap.nic.in/"
+    },
+    "indira-gandhi-national-old-age-pension-scheme": {
+        "apply_url": "https://nsap.nic.in/",
+        "official_url": "https://nsap.nic.in/"
+    },
+    "atal-pension-yojana": {
+        "apply_url": "https://www.npscra.nsdl.co.in/scheme-details.php",
+        "official_url": "https://pfrda.org.in/"
+    },
+
+    # State Schemes - Uttar Pradesh
+    "mukhya-mantri-kanya-sumangala-yojana": {
+        "apply_url": "https://mksy.up.gov.in/",
+        "official_url": "https://mksy.up.gov.in/women_welfare/index.php"
+    },
+    "mukhyamantri-kanya-sumangala-yojana": {
+        "apply_url": "https://mksy.up.gov.in/",
+        "official_url": "https://mksy.up.gov.in/women_welfare/index.php"
+    },
+    "mukhyamantri-kanya-vivah-yojana": {
+        "apply_url": "https://shadianudan.upsdc.gov.in/",
+        "official_url": "https://wcd.up.gov.in/"
+    },
+
+    # State Schemes - Madhya Pradesh
+    "ladli-behna-yojana": {
+        "apply_url": "https://cmladlibehna.mp.gov.in/",
+        "official_url": "https://mpwcdmis.gov.in/"
+    },
+    "mukhyamantri-ladli-behna-yojana": {
+        "apply_url": "https://cmladlibehna.mp.gov.in/",
+        "official_url": "https://mpwcdmis.gov.in/"
+    },
+    "ladli-laxmi-yojana": {
+        "apply_url": "https://ladlilaxmi.mp.gov.in/",
+        "official_url": "https://mpwcdmis.gov.in/"
+    },
+
+    # State Schemes - West Bengal
+    "kanyashree-prakalpa": {
+        "apply_url": "https://wbkanyashree.gov.in/",
+        "official_url": "https://wbkanyashree.gov.in/kp_4.0/index.php"
+    },
+    "swami-vivekananda-merit-cum-means-scholarship": {
+        "apply_url": "https://svmcm.wbhed.gov.in/",
+        "official_url": "https://wbhed.gov.in/"
+    },
+    "west-bengal-freeship-scheme": {
+        "apply_url": "https://wbhed.gov.in/wbfs/",
+        "official_url": "https://wbhed.gov.in/"
+    },
+    "rupashree-prakalpa": {
+        "apply_url": "https://wbrupashree.gov.in/",
+        "official_url": "https://wbrupashree.gov.in/"
+    },
+
+    # State Schemes - Tamil Nadu
+    "moovalur-ramamirtham-ammaiyar-higher-education-assurance-scheme": {
+        "apply_url": "https://www.pudhumaipenn.tn.gov.in/",
+        "official_url": "https://tnsocialwelfare.tn.gov.in/"
+    },
+    "pudhumai-penn-scheme": {
+        "apply_url": "https://www.pudhumaipenn.tn.gov.in/",
+        "official_url": "https://tnsocialwelfare.tn.gov.in/"
+    },
+
+    # State Schemes - Karnataka
+    "gruha-lakshmi-scheme": {
+        "apply_url": "https://sevasindhugs.karnataka.gov.in/",
+        "official_url": "https://karnataka.gov.in/"
+    },
+    "udyogini-scheme": {
+        "apply_url": "https://kswdc.karnataka.gov.in/",
+        "official_url": "https://kswdc.karnataka.gov.in/"
+    },
+
+    # State Schemes - Himachal Pradesh
+    "beti-hai-anmol-yojana": {
+        "apply_url": "https://edistrict.hp.gov.in/",
+        "official_url": "https://wcdmis.hp.gov.in/"
+    },
+
+    # State Schemes - Maharashtra
+    "majhi-ladki-bahin-yojana": {
+        "apply_url": "https://ladakibahin.maharashtra.gov.in/",
+        "official_url": "https://womenchild.maharashtra.gov.in/"
+    },
+    "majhi-bhagyashree-kanya-yojana": {
+        "apply_url": "https://aaplesarkar.mahaonline.gov.in/",
+        "official_url": "https://womenchild.maharashtra.gov.in/"
+    },
+
+    # State Schemes - Kerala
+    "kudumbashree-women-empowerment-livelihood-mission": {
+        "apply_url": "https://kudumbashree.org/",
+        "official_url": "https://kudumbashree.org/"
+    },
+
+    # State Schemes - Assam
+    "orunodoi-20-scheme": {
+        "apply_url": "https://orunodoi.assam.gov.in/",
+        "official_url": "https://assam.gov.in/"
+    },
+
+    # State Schemes - Bihar
+    "mukhyamantri-kanya-utthan-yojana": {
+        "apply_url": "https://medhasoft.bih.nic.in/",
+        "official_url": "https://wcdc.bihar.gov.in/"
+    },
+
+    # Specialized ICAR / Research Schemes
+    "icar-emeritus-scientist": {
+        "apply_url": "https://education.icar.gov.in/",
+        "official_url": "https://icar.org.in/"
+    },
+    "ndri-institute-scholarship-for-msc-and-phd": {
+        "apply_url": "https://education.icar.gov.in/",
+        "official_url": "https://ndri.res.in/"
+    }
+}
+
+STATE_PORTAL_FALLBACKS = {
+    "All": {
+        "apply_url": "https://www.myscheme.gov.in/",
+        "official_url": "https://www.india.gov.in/"
+    },
+    "All India": {
+        "apply_url": "https://www.myscheme.gov.in/",
+        "official_url": "https://www.india.gov.in/"
+    },
+    "Central": {
+        "apply_url": "https://www.myscheme.gov.in/",
+        "official_url": "https://www.india.gov.in/"
+    },
+    "Delhi": {
+        "apply_url": "https://edistrict.delhigovt.nic.in/",
+        "official_url": "https://wcd.delhi.gov.in/"
+    },
+    "Gujarat": {
+        "apply_url": "https://digitalgujarat.gov.in/",
+        "official_url": "https://wcd.gujarat.gov.in/"
+    },
+    "Tamil Nadu": {
+        "apply_url": "https://www.tnesevai.tn.gov.in/",
+        "official_url": "https://tnsocialwelfare.tn.gov.in/"
+    },
+    "Puducherry": {
+        "apply_url": "https://edistrict.py.gov.in/",
+        "official_url": "https://wcd.py.gov.in/"
+    },
+    "Haryana": {
+        "apply_url": "https://saralharyana.gov.in/",
+        "official_url": "https://wcdhry.gov.in/"
+    },
+    "Madhya Pradesh": {
+        "apply_url": "https://mpedistrict.gov.in/",
+        "official_url": "https://mpwcdmis.gov.in/"
+    },
+    "Goa": {
+        "apply_url": "https://goaonline.gov.in/",
+        "official_url": "https://wcd.goa.gov.in/"
+    },
+    "Rajasthan": {
+        "apply_url": "https://sso.rajasthan.gov.in/",
+        "official_url": "https://janhoochan.rajasthan.gov.in/"
+    },
+    "West Bengal": {
+        "apply_url": "https://wb.gov.in/",
+        "official_url": "https://wbwcd.gov.in/"
+    },
+    "Bihar": {
+        "apply_url": "https://serviceonline.bihar.gov.in/",
+        "official_url": "https://wcdc.bihar.gov.in/"
+    },
+    "Chhattisgarh": {
+        "apply_url": "https://edistrict.cgstate.gov.in/",
+        "official_url": "https://cglabour.nic.in/"
+    },
+    "Jharkhand": {
+        "apply_url": "https://jharsewa.jharkhand.gov.in/",
+        "official_url": "https://wcdjharkhand.gov.in/"
+    },
+    "Maharashtra": {
+        "apply_url": "https://aaplesarkar.mahaonline.gov.in/",
+        "official_url": "https://womenchild.maharashtra.gov.in/"
+    },
+    "Kerala": {
+        "apply_url": "https://edistrict.kerala.gov.in/",
+        "official_url": "https://wcd.kerala.gov.in/"
+    },
+    "Odisha": {
+        "apply_url": "https://edistrict.odisha.gov.in/",
+        "official_url": "https://wcd.odisha.gov.in/"
+    },
+    "Andhra Pradesh": {
+        "apply_url": "https://gramawardsachivalayam.ap.gov.in/",
+        "official_url": "https://wdcw.ap.gov.in/"
+    },
+    "Himachal Pradesh": {
+        "apply_url": "https://edistrict.hp.gov.in/",
+        "official_url": "https://wcdmis.hp.gov.in/"
+    },
+    "Karnataka": {
+        "apply_url": "https://sevasindhu.karnataka.gov.in/",
+        "official_url": "https://dwcd.karnataka.gov.in/"
+    },
+    "Meghalaya": {
+        "apply_url": "https://megedistrict.gov.in/",
+        "official_url": "https://megedistrict.gov.in/"
+    },
+    "Assam": {
+        "apply_url": "https://sewasetu.assam.gov.in/",
+        "official_url": "https://womenandchild.assam.gov.in/"
+    },
+    "Tripura": {
+        "apply_url": "https://edistrict.tripura.gov.in/",
+        "official_url": "https://tripura.gov.in/"
+    },
+    "Uttar Pradesh": {
+        "apply_url": "https://edistrict.up.gov.in/",
+        "official_url": "https://wcd.up.gov.in/"
+    },
+    "Punjab": {
+        "apply_url": "https://connect.punjab.gov.in/",
+        "official_url": "https://sswcd.punjab.gov.in/"
+    },
+    "Uttarakhand": {
+        "apply_url": "https://eservices.uk.gov.in/",
+        "official_url": "https://wecd.uk.gov.in/"
+    },
+    "Manipur": {
+        "apply_url": "https://eservicesmanipur.gov.in/",
+        "official_url": "https://manipur.gov.in/"
+    },
+    "Telangana": {
+        "apply_url": "https://ts.meeseva.telangana.gov.in/",
+        "official_url": "https://wdcw.tg.nic.in/"
+    },
+    "Arunachal Pradesh": {
+        "apply_url": "https://eservice.arunachal.gov.in/",
+        "official_url": "https://arunachalpradesh.gov.in/"
+    },
+    "Jammu and Kashmir": {
+        "apply_url": "https://jkeservices.jk.gov.in/",
+        "official_url": "https://jk.gov.in/"
+    },
+    "Chandigarh": {
+        "apply_url": "https://serviceonline.gov.in/chandigarh/",
+        "official_url": "https://chandigarh.gov.in/"
+    },
+    "Nagaland": {
+        "apply_url": "https://edistrict.nagaland.gov.in/",
+        "official_url": "https://nagaland.gov.in/"
+    },
+    "Sikkim": {
+        "apply_url": "https://sikkim.gov.in/",
+        "official_url": "https://sikkim.gov.in/"
+    },
+    "Mizoram": {
+        "apply_url": "https://edistrict.mizoram.gov.in/",
+        "official_url": "https://mizoram.gov.in/"
+    },
+    "Dadra and Nagar Haveli": {
+        "apply_url": "https://dnh.gov.in/",
+        "official_url": "https://dnh.gov.in/"
+    },
+    "Lakshadweep": {
+        "apply_url": "https://lakshadweep.gov.in/",
+        "official_url": "https://lakshadweep.gov.in/"
+    },
+    "Andaman and Nicobar": {
+        "apply_url": "https://edistrict.andaman.gov.in/",
+        "official_url": "https://andaman.gov.in/"
+    },
+    "Ladakh": {
+        "apply_url": "https://ladakh.nic.in/",
+        "official_url": "https://ladakh.nic.in/"
+    }
+}
+
 # Canonical Life-Stage Tags (Section 6.1 / Ticket 2.3)
 CANONICAL_LIFE_STAGES = ["maternal", "student", "entrepreneur", "senior", "general"]
 
@@ -869,6 +1305,101 @@ def extract_state_from_text(text: str) -> str:
             return st
     return "All"
 
+def normalize_canonical_name(name: str) -> str:
+    """Normalizes a scheme name by stripping parenthetical acronyms, non-alphanumeric characters, and whitespace."""
+    if not name:
+        return ""
+    n = name.lower().strip()
+    n = re.sub(r'\(.*?\)', '', n)
+    n = re.sub(r'[^a-z0-9]', '', n)
+    return n
+
+def clean_extracted_url(url: str) -> str:
+    """Cleans punctuation, parentheses, brackets, and quotes from an extracted URL."""
+    if not url:
+        return ""
+    u = str(url).strip().strip("'\"()[]{}<>,;*` \n\t\r")
+    while u and u[-1] in ".,;:!?)'\">":
+        u = u[:-1]
+    if u.startswith("www."):
+        u = "https://" + u
+    elif not u.startswith("http://") and not u.startswith("https://"):
+        if any(domain in u for domain in [".gov.in", ".nic.in", ".org.in", ".ac.in", ".edu.in"]):
+            u = "https://" + u
+    return u.strip()
+
+def extract_urls_from_text(text: str) -> list:
+    """Extracts valid URLs from unstructured narrative text."""
+    if not text:
+        return []
+    pattern = re.compile(r'(?:https?://|www\.)[^\s\"\'<>]+', re.IGNORECASE)
+    raw_matches = pattern.findall(text)
+    cleaned = []
+    for m in raw_matches:
+        c = clean_extracted_url(m)
+        if c.startswith("http://") or c.startswith("https://"):
+            cleaned.append(c)
+    return cleaned
+
+def resolve_scheme_urls(
+    scheme_id: str,
+    name: str,
+    raw_apply_url: str = "",
+    raw_official_url: str = "",
+    state: str = "All",
+    narrative_text: str = ""
+) -> tuple:
+    """
+    Resolves apply_url and official_url using the following priority:
+    1. Canonical URL Registry (SCHEME_CANONICAL_URLS)
+    2. Explicitly supplied raw URLs
+    3. URLs extracted from narrative text (application_process, details, etc.)
+    4. State-level unified portal fallback
+    5. National portal fallback (https://www.myscheme.gov.in/)
+    """
+    slug = slugify(scheme_id or name)
+    norm_name = normalize_canonical_name(name)
+    
+    # 1. Canonical Registry Lookup
+    canon = (
+        SCHEME_CANONICAL_URLS.get(slug) or 
+        SCHEME_CANONICAL_URLS.get(norm_name) or 
+        SCHEME_CANONICAL_URLS.get(scheme_id)
+    )
+    apply_url = canon.get("apply_url", "").strip() if canon else ""
+    official_url = canon.get("official_url", "").strip() if canon else ""
+
+    # 2. Check Raw URLs
+    if not apply_url and raw_apply_url:
+        cleaned_apply = clean_extracted_url(raw_apply_url)
+        if cleaned_apply.startswith("http://") or cleaned_apply.startswith("https://"):
+            apply_url = cleaned_apply
+            
+    if not official_url and raw_official_url:
+        cleaned_off = clean_extracted_url(raw_official_url)
+        if cleaned_off.startswith("http://") or cleaned_off.startswith("https://"):
+            official_url = cleaned_off
+
+    # 3. Extract from text if still missing
+    if not apply_url or not official_url:
+        extracted = extract_urls_from_text(narrative_text)
+        if extracted:
+            if not apply_url:
+                apply_url = extracted[0]
+            if not official_url:
+                official_url = extracted[1] if len(extracted) > 1 else extracted[0]
+
+    # 4. State / National Fallback
+    state_norm = (state or "All").strip().title()
+    state_fallback = STATE_PORTAL_FALLBACKS.get(state_norm, STATE_PORTAL_FALLBACKS.get("All", {}))
+    
+    if not apply_url:
+        apply_url = state_fallback.get("apply_url") or "https://www.myscheme.gov.in/"
+    if not official_url:
+        official_url = state_fallback.get("official_url") or apply_url
+
+    return apply_url, official_url
+
 def transform_kaggle_myscheme_record(row: dict) -> dict:
     """
     Transforms a raw Kaggle MyScheme CSV record into the BigQuery `schemes_women` data model (Ticket 2.1 & 2.4).
@@ -951,20 +1482,30 @@ def transform_kaggle_myscheme_record(row: dict) -> dict:
         row.get("required_documents") or row.get("documents_required") or ""
     ).strip()
 
-    apply_url = (
+    raw_apply = (
         row.get("Source URL") or row.get("application_url") or
         row.get("apply_url") or row.get("source_url") or ""
     ).strip()
+
+    raw_official = (
+        row.get("official_website") or row.get("official_url") or ""
+    ).strip()
+
+    narrative_full = f"{name} {details} {eligibility_text} {benefits} {tags} {documents_required} {row.get('application', '')} {row.get('Application Process', '')}"
+
+    apply_url, official_url = resolve_scheme_urls(
+        scheme_id=scheme_id,
+        name=name,
+        raw_apply_url=raw_apply,
+        raw_official_url=raw_official,
+        state=state,
+        narrative_text=narrative_full
+    )
 
     application_process = (
         row.get("application") or row.get("Application Process") or 
         row.get("application_process") or
         (f"Apply online at {apply_url} or visit designated nodal office." if apply_url else "Apply through official portal or designated nodal office.")
-    ).strip()
-
-    official_url = (
-        row.get("official_website") or row.get("official_url") or
-        row.get("Source URL") or apply_url
     ).strip()
 
     life_stage_tags = classify_life_stage(row)
@@ -1080,6 +1621,20 @@ def transform_csv_record(row: dict) -> dict:
     extracted_income = extract_income_cap(f"{name} {row.get('eligibility_criteria_text', '')} {row.get('scheme_benefits', '')}", default_income=0)
     income_max = raw_income if raw_income > 0 else extracted_income
 
+    narrative_full = f"{name} {row.get('eligibility_criteria_text', '')} {row.get('scheme_benefits', '')} {row.get('application_process', '')}"
+    apply_url, official_url = resolve_scheme_urls(
+        scheme_id=scheme_id,
+        name=name,
+        raw_apply_url=row.get("application_url", "").strip(),
+        raw_official_url=row.get("official_website", "").strip(),
+        state=state,
+        narrative_text=narrative_full
+    )
+    raw_app_proc = row.get("application_process")
+    application_process = (
+        raw_app_proc.strip() if raw_app_proc else f"Apply online at {apply_url} or visit designated nodal office."
+    )
+
     return {
         "scheme_id": scheme_id,
         "name": name,
@@ -1092,9 +1647,9 @@ def transform_csv_record(row: dict) -> dict:
         "benefits": row.get("scheme_benefits", "").strip(),
         "eligibility_text": row.get("eligibility_criteria_text", "").strip(),
         "documents_required": row.get("required_documents", "").strip(),
-        "application_process": f"Apply online at {row.get('application_url', 'official portal')}.",
-        "apply_url": row.get("application_url", "").strip(),
-        "official_url": row.get("official_website", "").strip(),
+        "application_process": application_process,
+        "apply_url": apply_url,
+        "official_url": official_url,
         "age_min": age_min,
         "age_max": age_max,
         "gender": row.get("gender_applicable", "Female").strip(),
@@ -1142,6 +1697,16 @@ def transform_json_record(item: dict) -> dict:
     extracted_income = extract_income_cap(f"{name} {item.get('summary', '')} {item.get('benefits_text', '')}", default_income=0)
     income_max = raw_income if raw_income > 0 else extracted_income
 
+    narrative_full = f"{name} {item.get('summary', '')} {item.get('benefits_text', '')}"
+    apply_url, official_url = resolve_scheme_urls(
+        scheme_id=scheme_id,
+        name=name,
+        raw_apply_url=urls.get("apply", "").strip(),
+        raw_official_url=urls.get("portal", "").strip(),
+        state=item.get("geography", "All").strip(),
+        narrative_text=narrative_full
+    )
+
     return {
         "scheme_id": scheme_id,
         "name": name,
@@ -1154,9 +1719,9 @@ def transform_json_record(item: dict) -> dict:
         "benefits": item.get("benefits_text", "").strip(),
         "eligibility_text": item.get("summary", "").strip(),
         "documents_required": ", ".join(item.get("documents", [])),
-        "application_process": f"Submit application via official portal: {urls.get('apply', '')}",
-        "apply_url": urls.get("apply", "").strip(),
-        "official_url": urls.get("portal", "").strip(),
+        "application_process": f"Submit application via official portal: {apply_url}",
+        "apply_url": apply_url,
+        "official_url": official_url,
         "age_min": age_min,
         "age_max": age_max,
         "gender": eligibility.get("gender", "Female"),
@@ -1170,15 +1735,6 @@ def transform_json_record(item: dict) -> dict:
         "is_active": True,
         "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }
-
-def normalize_canonical_name(name: str) -> str:
-    """Normalizes a scheme name by stripping parenthetical acronyms, non-alphanumeric characters, and whitespace."""
-    if not name:
-        return ""
-    n = name.lower().strip()
-    n = re.sub(r'\(.*?\)', '', n)
-    n = re.sub(r'[^a-z0-9]', '', n)
-    return n
 
 def get_canonical_slug(existing_id: str, incoming_id: str, scheme_name: str) -> str:
     """Determines the most descriptive, canonical slug for a scheme record."""
@@ -1251,22 +1807,30 @@ def merge_scheme_records(existing: dict, incoming: dict) -> dict:
             # Both specific or both generic: pick longer string
             merged[field] = inc_val if len(inc_val) > len(ex_val) else ex_val
 
-    # 4. URLs (Prefer valid http/https URLs)
-    url_fields = ["apply_url", "official_url"]
-    for field in url_fields:
-        ex_url = str(existing.get(field) or "").strip()
-        inc_url = str(incoming.get(field) or "").strip()
-        ex_valid = ex_url.startswith("http://") or ex_url.startswith("https://")
-        inc_valid = inc_url.startswith("http://") or inc_url.startswith("https://")
+    # 4. URLs (Canonical & Priority URL Resolution)
+    merged_slug = merged.get("scheme_id", "")
+    merged_name = merged.get("name", "")
+    merged_state = merged.get("state", "All")
+    narrative_full = f"{merged.get('application_process', '')} {merged.get('description', '')} {merged.get('eligibility_text', '')}"
+    
+    ex_apply = str(existing.get("apply_url") or "").strip()
+    inc_apply = str(incoming.get("apply_url") or "").strip()
+    raw_apply = inc_apply if inc_apply and inc_apply.startswith("http") else ex_apply
 
-        if not ex_valid and inc_valid:
-            merged[field] = inc_url
-        elif ex_valid and not inc_valid:
-            merged[field] = ex_url
-        elif inc_valid and ex_valid:
-            merged[field] = inc_url if len(inc_url) > len(ex_url) else ex_url
-        else:
-            merged[field] = inc_url or ex_url
+    ex_off = str(existing.get("official_url") or "").strip()
+    inc_off = str(incoming.get("official_url") or "").strip()
+    raw_off = inc_off if inc_off and inc_off.startswith("http") else ex_off
+
+    final_apply, final_official = resolve_scheme_urls(
+        scheme_id=merged_slug,
+        name=merged_name,
+        raw_apply_url=raw_apply,
+        raw_official_url=raw_off,
+        state=merged_state,
+        narrative_text=narrative_full
+    )
+    merged["apply_url"] = final_apply
+    merged["official_url"] = final_official
 
     # 5. Geography & States
     ex_state = str(existing.get("state") or "All").strip()

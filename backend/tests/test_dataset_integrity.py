@@ -241,22 +241,53 @@ def test_eligible_states_validity(json_catalog):
 
 def test_url_formats_hygiene(json_catalog):
     """
-    Ticket 3.3 Acceptance Criteria:
-    Verifies valid URL formats on apply_url and official_url (http:// or https:// or empty string).
+    Ticket 3.3 & Epic 1 Acceptance Criteria:
+    Verifies 100% valid, non-empty URL formats on apply_url and official_url (http:// or https://).
     """
+    assert len(json_catalog) > 0
     for rec in json_catalog:
         name = rec.get("name")
         apply_url = str(rec.get("apply_url") or "").strip()
         official_url = str(rec.get("official_url") or "").strip()
 
-        if apply_url:
-            assert apply_url.startswith("http://") or apply_url.startswith("https://"), (
-                f"Invalid apply_url format in '{name}': '{apply_url}'"
-            )
-        if official_url:
-            assert official_url.startswith("http://") or official_url.startswith("https://"), (
-                f"Invalid official_url format in '{name}': '{official_url}'"
-            )
+        assert apply_url != "", f"Empty apply_url for scheme '{name}'"
+        assert official_url != "", f"Empty official_url for scheme '{name}'"
+        assert apply_url.startswith("http://") or apply_url.startswith("https://"), (
+            f"Invalid apply_url format in '{name}': '{apply_url}'"
+        )
+        assert official_url.startswith("http://") or official_url.startswith("https://"), (
+            f"Invalid official_url format in '{name}': '{official_url}'"
+        )
+
+
+def test_canonical_schemes_url_integrity(json_catalog):
+    """
+    Epic 1 / Ticket 1.4:
+    Verifies that key flagship state and central schemes resolve to verified canonical portals.
+    """
+    schemes_by_id = {s.get("scheme_id"): s for s in json_catalog}
+
+    # Delhi Ladli Scheme
+    delhi_ladli = schemes_by_id.get("delhi-ladli-scheme")
+    assert delhi_ladli is not None, "Delhi Ladli Scheme missing from catalog"
+    assert delhi_ladli["apply_url"] == "https://wcd.delhi.gov.in/wcd/delhi-ladli-schemes-2008"
+    assert delhi_ladli["official_url"] == "https://edistrict.delhigovt.nic.in/"
+
+    # PMMVY
+    pmmvy = schemes_by_id.get("pradhan-mantri-matru-vandana-yojana") or schemes_by_id.get("pradhan-mantri-matru-vandana-yojana-pmmvy")
+    assert pmmvy is not None, "PMMVY missing from catalog"
+    assert "pmmvy" in pmmvy["apply_url"]
+
+    # Sukanya Samriddhi
+    ssy = schemes_by_id.get("sukanya-samriddhi-yojana") or schemes_by_id.get("ssy-central")
+    assert ssy is not None, "Sukanya Samriddhi missing from catalog"
+    assert "indiapost.gov.in" in ssy["apply_url"]
+
+    # Swami Vivekananda Merit-cum-Means
+    svmcm = schemes_by_id.get("swami-vivekananda-merit-cum-means-scholarship")
+    assert svmcm is not None, "SVMCM missing from catalog"
+    assert svmcm["apply_url"] == "https://svmcm.wbhed.gov.in/"
+
 
 
 # =============================================================================

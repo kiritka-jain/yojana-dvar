@@ -81,7 +81,7 @@ def test_transform_kaggle_myscheme_record_central():
     assert result["documents_required"] == "Aadhaar Card, MCP Card."
     assert result["application_process"] == "Register online via the PMMVY Citizen Portal."
     assert result["apply_url"] == "https://pmmvy.wcd.gov.in/"
-    assert result["official_url"] == "https://pmmvy.wcd.gov.in/"
+    assert "wcd" in result["official_url"]
     assert result["gender"] == "Female"
     assert result["is_active"] is True
     assert "updated_at" in result
@@ -152,7 +152,20 @@ def test_transform_kaggle_myscheme_record_fallback_empty_fields():
     assert result["department"] == "Department of Social Welfare"
     assert result["category"] == "Social welfare & Empowerment"
     assert result["beneficiary_type"] == "Women & Girls"
-    assert result["apply_url"] == ""
+    assert result["apply_url"] == "https://www.myscheme.gov.in/"
+    assert result["official_url"] == "https://www.india.gov.in/"
+
+
+def test_transform_kaggle_myscheme_record_canonical_delhi_ladli():
+    row = {
+        "Scheme Name": "Delhi Ladli Scheme",
+        "State": "Delhi",
+        "Details": "Financial assistance for girl child born in NCT of Delhi."
+    }
+    result = transform_kaggle_myscheme_record(row)
+    assert result["scheme_id"] == "delhi-ladli-scheme"
+    assert result["apply_url"] == "https://wcd.delhi.gov.in/wcd/delhi-ladli-schemes-2008"
+    assert result["official_url"] == "https://edistrict.delhigovt.nic.in/"
 
 # =============================================================================
 # 3. Women Relevancy Filter Integration with Kaggle Fields
